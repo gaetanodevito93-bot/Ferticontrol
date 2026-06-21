@@ -827,7 +827,10 @@ function calcAcidVolume(aq, prodL){
 // ════════════════════════════════════════════════
 const SERB_SI_PH = 6.0, SERB_SI_TC = 20;
 function serbSIs(righeSerb, aq, dil){
-  const p = profiloDaRighe(righeSerb, aq);
+  // I serbatoi concentrati contengono SOLO i sali disciolti, non l'acqua di
+  // processo (quella entra solo nella soluzione finale diluita). Passare aq
+  // provocava falsi allarmi: Ca dell'acqua×dil appariva nel tank A (fosfati).
+  const p = profiloDaRighe(righeSerb, null);
   const pc = {};
   for(const k in p) pc[k] = (p[k]||0) * (dil||1);
   return siForIons(pc, SERB_SI_PH, SERB_SI_TC);
@@ -2600,6 +2603,8 @@ function verificaSicurezza(righe, dil, aq, phFinale){
 
   // ── CHECK 2b: SI nel concentrato PER-SERBATOIO (CaHPO4, Struvite, CaSO4) ──
   // Usa worstSerbSI: peggior SI tra i serbatoi dove gli ioni coesistono.
+  // siFin calcolato qui così 2b può usarlo per distinguere problemi solo-concentrato.
+  const siFin = siFinaleSoluzione(righe, aq, phFinale);
   try {
     const siWorst = worstSerbSI(righe, aq, dil);
     const siConcChecks = [
@@ -2614,10 +2619,16 @@ function verificaSicurezza(righe, dil, aq, phFinale){
         : `Sovrasaturo (SI +${sc.si.toFixed(2)}): rischio precipitazione nel serbatoio madre`;
       audit.push({check: sc.label, esito, dettaglio: nota});
       if(sc.si > -0.5){
+        // Struvite solo-concentrato (soluzione finale sicura) → AVVISO, non critico.
+        // La struvite nel concentrato è gestibile (pulizia tank, 3° serbatoio);
+        // è critico solo se precipita anche nella soluzione finale diluita.
+        const soloConc = sc.key === 'struvite' && siFin[sc.key] < 0;
         conflitti.push({
-          gravita: sc.si > 0 ? 'C' : 'A',
+          gravita: (sc.si > 0 && !soloConc) ? 'C' : 'A',
           titolo: sc.label,
-          dettaglio: `${nota}. Valuta di ridurre le dosi o aumentare la diluizione.`
+          dettaglio: soloConc
+            ? `${nota}. La soluzione finale è sicura (SI ${siFin[sc.key].toFixed(2)}). Usa 3 serbatoi (MAP nel serb. C separato da Mg) o pulisci il tank periodicamente.`
+            : `${nota}. Valuta di ridurre le dosi o aumentare la diluizione.`
         });
       }
     });
@@ -2630,7 +2641,7 @@ function verificaSicurezza(righe, dil, aq, phFinale){
   // struvite sono pH-dipendenti: se un pH ≤ impostato li riporta sotto
   // saturazione → AVVISO con suggerimento pH (tagliare le dosi sarebbe
   // inutile e dannoso per il profilo). CaSO₄ non dipende dal pH.
-  const siFin = siFinaleSoluzione(righe, aq, phFinale);
+  // (siFin è già calcolato sopra, prima di CHECK 2b)
   const phSicuroVal = phSicuroFinale(righe, aq, phFinale);
   const phSuggerito = (phSicuroVal!==null && phSicuroVal < phFinale - 0.05) ? phSicuroVal : null;
   [['CaSO₄','CaSO4'],['CaHPO₄','CaHPO4'],['Struvite','struvite']].forEach(([lab,key])=>{
