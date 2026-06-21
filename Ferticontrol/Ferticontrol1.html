@@ -126,18 +126,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 }
 
 /* ── DARK MODE SUPPORT (optional) ── */
-@media(prefers-color-scheme:dark){
-  :root{
-    --vs:#0d2818;--vm:#1a4a2d;--vc:#3a7a4e;
-    --cr:#1a1f1c;--cs:#252b28;--bl:#2a302d;
-    --tx:#e8e4dc;--ts:#a0a89a;--bo:#3a4038;
-    --ro:#e74c3c;--az:#3498db;--vi:#9b59b6;
-  }
-  body{background:linear-gradient(180deg,var(--cr) 0%,#151a17 100%)}
-  .card{box-shadow:0 4px 20px rgba(0,0,0,.3)}
-  input[type="number"],input[type="text"],select,textarea{background:var(--bl);color:var(--tx);border-color:var(--bo)}
-  .modal{background:var(--bl)}
-}
+/* tema scuro disabilitato — forza sempre light */
 
 /* ── ALERT ── */
 .alert{border-radius:var(--r);padding:12px 14px;font-size:.78rem;margin-bottom:10px;display:flex;width:100%;gap:10px;align-items:flex-start;line-height:1.6;box-shadow:0 2px 8px rgba(0,0,0,.05)}
