@@ -3567,54 +3567,79 @@ function stampaMiscela(){
   if(!contenuto){ window.print(); return; }
   const dataOra = new Date().toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'});
 
+  // Helper: ricerca card per titolo (case-insensitive)
+  const cards = [...contenuto.querySelectorAll('.card')];
+  const trovaCard = key => cards.find(c => (c.querySelector('.ch')?.innerText || '').toLowerCase().includes(key.toLowerCase()));
+  // Helper: escape HTML per evitare che il testo estratto rompa il layout
+  const esc = s => String(s||'').replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
+
   const badgeEl = contenuto.querySelector('.al-ok, .al-err');
-  const badge   = badgeEl ? badgeEl.innerText.trim().substring(0,160) : '';
+  let badge = badgeEl ? badgeEl.innerText.replace(/\s+/g,' ').trim() : '';
+  // Tronca senza spezzare le parole a metà
+  if(badge.length > 220){
+    const taglio = badge.slice(0,220);
+    const ultimoSpazio = taglio.lastIndexOf(' ');
+    badge = (ultimoSpazio > 120 ? taglio.slice(0,ultimoSpazio) : taglio).trim() + '…';
+  }
   const badgeOk = badgeEl && badgeEl.classList.contains('al-ok');
 
-  // Serbatoi
+  // Serbatoi — raccogli anche i dati per generare la procedura
   let serbHtml = '';
+  const serbDati = [];
   const serbCards = contenuto.querySelectorAll('.serb-card');
   const nSerb = serbCards.length || 2;
   serbCards.forEach(card => {
     const titolo = card.querySelector('.serb-title')?.innerText?.replace(/\s+/g,' ').trim() || '';
     let righe = '';
+    const sali = [];
     card.querySelectorAll('.sale-row').forEach(row => {
       const nome = row.children[0]?.innerText || '';
       const dose = row.children[1]?.innerText?.split('\n')[0] || '';
-      righe += `<tr><td>${nome}</td><td class="r">${dose}</td></tr>`;
+      righe += `<tr><td>${esc(nome)}</td><td class="r">${esc(dose)}</td></tr>`;
+      if(nome && !/total/i.test(nome)) sali.push(nome.replace(/\s+/g,' ').trim());
     });
-    serbHtml += `<div class="serb"><div class="st">${titolo}</div><table>${righe}</table></div>`;
+    serbDati.push({titolo, sali});
+    serbHtml += `<div class="serb"><div class="st">${esc(titolo)}</div><table>${righe}</table></div>`;
   });
 
-  // Riepilogo
+  // Riepilogo (match case-insensitive: titolo reale = "📊 RIEPILOGO — …")
   let riepilogoHtml = '';
-  const rCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Riepilogo'));
+  const rCard = trovaCard('riepilogo');
   if(rCard){
     rCard.querySelectorAll('.eco-row').forEach(r => {
-      riepilogoHtml += `<tr><td>${r.children[0]?.innerText||''}</td><td class="r">${r.children[1]?.innerText||''}</td></tr>`;
+      riepilogoHtml += `<tr><td>${esc(r.children[0]?.innerText)}</td><td class="r">${esc(r.children[1]?.innerText)}</td></tr>`;
     });
   }
 
-  // Apporti ionici principali
+  // Apporti ionici principali (titolo reale = "💧 SOLUZIONE FINALE — …")
   let ioniHtml = '';
-  const ioniCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Soluzione Finale'));
+  const ioniCard = trovaCard('soluzione finale');
   if(ioniCard){
     ioniCard.querySelectorAll('.ri-box').forEach(box => {
       const lbl = box.querySelector('.ri-lbl')?.innerText || '';
       const val = box.querySelector('.ri-val')?.innerText || '';
       const sub = box.querySelector('.ri-sub')?.innerText || '';
-      if(lbl && val) ioniHtml += `<tr><td>${lbl}</td><td class="r"><strong>${val}</strong>&nbsp;<small>${sub}</small></td></tr>`;
+      if(lbl && val) ioniHtml += `<tr><td>${esc(lbl)}</td><td class="r"><strong>${esc(val)}</strong>&nbsp;<small>${esc(sub)}</small></td></tr>`;
     });
   }
 
-  // Procedura
+  // Procedura — non è presente nel DOM dei risultati: la generiamo qui
+  // come scheda operativa standard basata sui serbatoi e sui parametri.
+  const dil = (document.getElementById('diluizione')?.value || '').trim();
+  const phT = (document.getElementById('ph-finale')?.value || '').trim();
   let procHtml = '';
-  const procCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Procedura'));
-  if(procCard){
-    procCard.querySelectorAll('li').forEach(li => {
-      procHtml += `<li>${li.innerText}</li>`;
-    });
-  }
+  const passi = [];
+  serbDati.forEach(s => {
+    const sigla = (s.titolo.split('—')[0].trim() || s.titolo).replace(/^([A-Za-z])\s+(SERB)/i, '$2');
+    passi.push(`Riempire <strong>${esc(sigla)}</strong> con circa l'80% del volume d'acqua indicato.`);
+    if(s.sali.length){
+      passi.push(`In ${esc(sigla)} sciogliere i sali <em>uno alla volta</em>, nell'ordine elencato (${s.sali.map(esc).join(', ')}), attendendo la completa dissoluzione di ciascuno prima di aggiungere il successivo.`);
+    }
+  });
+  passi.push(`Portare ogni serbatoio al volume finale con acqua e mescolare bene. <strong>Non miscelare mai i concentrati A e B tra loro.</strong>`);
+  if(dil) passi.push(`In fertirrigazione dosare i concentrati separatamente al fattore <strong>1 : ${esc(dil)}</strong> (stessa portata per ogni serbatoio).`);
+  passi.push(`Verificare EC e pH della soluzione finale al punto di consegna${phT?`, correggendo il pH al target di <strong>${esc(phT)}</strong>`:''}, prima dell'irrigazione.`);
+  passi.forEach(p => { procHtml += `<li>${p}</li>`; });
 
   const gridCols = nSerb >= 3 ? '1fr 1fr 1fr' : '1fr 1fr';
 
@@ -3690,12 +3715,32 @@ li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
   if(vecchio) vecchio.remove();
   const iframe = document.createElement('iframe');
   iframe.id='print-frame';
-  iframe.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';
-  iframe.setAttribute('sandbox','allow-same-origin allow-modals');
+  iframe.setAttribute('aria-hidden','true');
+  // Niente sandbox: su diversi browser blocca silenziosamente window.print() dell'iframe.
+  iframe.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
   document.body.appendChild(iframe);
+
+  let lanciata = false;
+  const lanciaStampa = () => {
+    if(lanciata) return; lanciata = true;
+    try{
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    }catch(e){
+      console.error('Stampa iframe fallita, uso fallback:', e);
+      window.print();
+    }
+    // Pulizia: rimuovi l'iframe dopo la stampa (con margine per il dialogo)
+    const cleanup = () => { setTimeout(()=>{ try{ iframe.remove(); }catch(_){} }, 1000); };
+    try{ iframe.contentWindow.addEventListener('afterprint', cleanup, {once:true}); }catch(_){}
+    setTimeout(cleanup, 60000); // rete di sicurezza
+  };
+
+  // Avvia alla fine del caricamento del documento; fallback su timeout se onload non scatta.
+  iframe.onload = () => setTimeout(lanciaStampa, 250);
   const idoc = iframe.contentDocument || iframe.contentWindow.document;
   idoc.open(); idoc.write(htmlStampa); idoc.close();
-  setTimeout(()=>{ try{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }catch(e){ window.print(); } }, 450);
+  setTimeout(lanciaStampa, 800); // garantisce l'avvio anche se onload non viene emesso dopo document.write
 }
 
 
