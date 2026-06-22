@@ -3691,7 +3691,7 @@ li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
   const iframe = document.createElement('iframe');
   iframe.id='print-frame';
   iframe.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';
-  iframe.setAttribute('sandbox','allow-same-origin');
+  iframe.setAttribute('sandbox','allow-same-origin allow-modals');
   document.body.appendChild(iframe);
   const idoc = iframe.contentDocument || iframe.contentWindow.document;
   idoc.open(); idoc.write(htmlStampa); idoc.close();
