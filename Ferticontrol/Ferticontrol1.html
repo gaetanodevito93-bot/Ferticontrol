@@ -331,10 +331,53 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 </header>
 
 <div class="tabs" role="tablist" aria-label="Menu principale">
+  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-acqua" tabindex="0" onclick="showTab('acqua')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('acqua');event.preventDefault()}">💧 Acqua</div>
   <div class="tab active" role="tab" aria-selected="true" aria-controls="tab-ricette" tabindex="0" onclick="showTab('ricette')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('ricette');event.preventDefault()}">🌿 Ricette</div>
   <div class="tab" role="tab" aria-selected="false" aria-controls="tab-calcola" tabindex="0" onclick="showTab('calcola')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('calcola');event.preventDefault()}">⚗️ Calcola</div>
   <div class="tab" role="tab" aria-selected="false" aria-controls="tab-catalogo" tabindex="0" onclick="showTab('catalogo')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('catalogo');event.preventDefault()}">📦 Catalogo</div>
   <div class="tab" role="tab" aria-selected="false" aria-controls="tab-dati" tabindex="0" onclick="showTab('dati')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('dati');event.preventDefault()}">💾 Dati</div>
+</div>
+
+<!-- ═══ TAB ACQUA ═══ -->
+<div class="panel" id="tab-acqua" role="tabpanel" aria-labelledby="tab-acqua">
+  <div class="card">
+    <div class="ch">💧 Acqua di Partenza <span style="font-size:.65rem;font-weight:400;opacity:.75">(acquedotto / pozzo / osmosi)</span></div>
+    <div class="cb">
+      <div class="alert al-blu" style="margin-bottom:12px">
+        <span>ℹ️</span><span>Inserisci l'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.</span>
+      </div>
+      <div class="row2" style="margin-bottom:8px">
+        <div class="tg-box">
+          <div class="tg-lbl">EC acqua <span class="tg-unit">mS/cm</span></div>
+          <input type="number" id="aq-ec" value="0.3" min="0" step="0.01">
+        </div>
+        <div class="tg-box">
+          <div class="tg-lbl">pH acqua</div>
+          <input type="number" id="aq-ph" value="7.2" min="0" max="14" step="0.1">
+        </div>
+      </div>
+      <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Ioni presenti (mg/L)</div>
+      <div class="row3">
+        <div class="tg-box"><div class="tg-lbl">Ca²⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">Mg²⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">K⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">Na⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">SO₄²⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">Cl⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">HCO₃⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃"></div>
+        <div class="tg-box"><div class="tg-lbl">NO₃⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl">Fe <span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')">💧 Ottima (EC 0.1)</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('media')">🚰 Acquedotto medio</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('dura')">🪨 Acqua dura</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('osmosi')">🔬 Osmosi inversa</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')">🌧️ Piovana</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')">💎 Distillata</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ TAB RICETTE ═══ -->
@@ -408,78 +451,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
     </div>
   </div>
 
-  <!-- ═══ ACQUA DI PARTENZA ═══ -->
-  <div class="card">
-    <div class="ch" style="justify-content:space-between;cursor:pointer" onclick="toggleAcquaPanel()">
-      <span>💧 Acqua di Partenza <span style="font-size:.65rem;font-weight:400;opacity:.75">(acquedotto / pozzo)</span></span>
-      <span id="acqua-toggle-icon" style="font-size:.9rem">▼</span>
-    </div>
-    <div id="acqua-panel" style="display:none">
-      <div class="cb" style="padding-bottom:6px">
-        <div class="alert al-blu" style="margin-bottom:12px">
-          <span>ℹ️</span><span>Inserisci l'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.</span>
-        </div>
-        <div class="row2" style="margin-bottom:8px">
-          <div class="tg-box">
-            <div class="tg-lbl">EC acqua <span class="tg-unit">mS/cm</span></div>
-            <input type="number" id="aq-ec" value="0.3" min="0" step="0.01">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">pH acqua</div>
-            <input type="number" id="aq-ph" value="7.2" min="0" max="14" step="0.1">
-          </div>
-        </div>
-        <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Ioni presenti (mg/L)</div>
-        <div class="row3">
-          <div class="tg-box">
-            <div class="tg-lbl">Ca²⁺ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-ca" value="80" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">Mg²⁺ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-mg" value="20" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">K⁺ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-k" value="5" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">Na⁺ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-na" value="30" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">SO₄²⁻ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-so4" value="40" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">Cl⁻ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-cl" value="50" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">HCO₃⁻ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">NO₃⁻ <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-no3" value="10" min="0" step="1">
-          </div>
-          <div class="tg-box">
-            <div class="tg-lbl">Fe <span class="tg-unit">mg/L</span></div>
-            <input type="number" id="aq-fe" value="0.1" min="0" step="0.01">
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')">💧 Acqua ottima (EC 0.1)</button>
-          <button class="btn btn-se btn-sm" onclick="presetAcqua('media')">🚰 Acquedotto medio</button>
-          <button class="btn btn-se btn-sm" onclick="presetAcqua('dura')">🪨 Acqua dura</button>
-          <button class="btn btn-se btn-sm" onclick="presetAcqua('osmosi')">🔬 Osmosi inversa</button>
-          <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')">🌧️ Acqua piovana</button>
-          <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')">💎 Distillata</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- ═══ SALI DA PREPARARE ═══ -->
   <div class="card">
     <div class="ch" id="ch-sali-calc">🧂 Sali da Preparare</div>
     <div class="cb" style="padding:0">
@@ -934,87 +906,198 @@ let origDosiSnapshot = null;
 let bilanciaReportData = null;
 
 // ─ RICETTE PREDEFINITE ─
+// ═══════════════════════════════════════════════════════════════════
+// RICETTE BUILT-IN — fabbisogni da Romano Tesi "Colture Fuori Suolo"
+// (Edagricole, 2010) e Sonneveld & Straver (2002) per colture orticole
+// in substrato inerte (coco, perlite, lana di roccia).
+// Dosi in g/1000L soluzione finale. MixCh = mix micro chelati standard.
+// Risultante ioni (mg/L) annotata in note per trasparenza scientifica.
+// ═══════════════════════════════════════════════════════════════════
 const PIANTE_BUILTIN = [
+
+  // ─── POMODORO ──────────────────────────────────────────────────
+  // Romano Tesi: Ca 140-185, Mg 30-52, K 135-325, P 30-45 mg/L
+  // Sonneveld std: Ca=140, Mg=30, K=254, P=39, N=178 (vegetativo)
   { id:"pomodoro", nome:"Pomodoro", emoji:"🍅",
-    note:"Ca e K elevati. pH 5.8-6.2. Drain EC = input EC + 0.5-1.0.",
+    note:"Fabbisogni da Romano Tesi (2010) e Sonneveld & Straver (2002). Ca e K elevati in fruttificazione. pH 5.8-6.2. Drain EC = EC input + 0.5.",
     fasi:[
-      {nome:"Germinazione / Trapianto",icon:"🌱",ec:[1.0,1.2],ph:[5.8,6.2],
-       note:"EC 1.0-1.2. Radici giovani sensibili. Nessun NH₄.",
-       sali:[{id:"CaN",g:500},{id:"KNO3",g:400},{id:"KH2PO4",g:170},{id:"MgNO3",g:250},{id:"MixCh",g:15}]},
-      {nome:"Vegetativo (1°-2° truss)",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.2],
-       note:"N moderato. Ca e Mg fondamentali per cell wall.",
-       sali:[{id:"CaN",g:945},{id:"KNO3",g:810},{id:"KH2PO4",g:340},{id:"MgNO3",g:500},{id:"MixCh",g:25}]},
-      {nome:"Fruttificazione (3°+ truss)",icon:"🍅",ec:[2.5,3.2],ph:[5.8,6.2],
-       note:"K alto per zuccheri. Ca alto contro BER. Ridurre N.",
-       sali:[{id:"CaN",g:1100},{id:"KNO3",g:950},{id:"K2SO4",g:350},{id:"KH2PO4",g:380},{id:"MgNO3",g:500},{id:"MixCh",g:28}]},
+      {nome:"Trapianto / Radicamento",icon:"🌱",ec:[1.0,1.2],ph:[5.8,6.2],
+       note:"Ca=90 K=130 P=30 Mg=28 N≈124 mg/L. EC 1.0-1.2. Radici giovani, nessun NH₄.",
+       sali:[{id:"CaN",g:530},{id:"KNO3",g:240},{id:"KH2PO4",g:132},{id:"MgNO3",g:295},{id:"MixCh",g:15}]},
+      {nome:"Vegetativo (1°-3° truss)",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.2],
+       note:"Ca=140 K=254 P=39 Mg=30 N≈204 mg/L. Riferimento Sonneveld (2002) standard pomodoro.",
+       sali:[{id:"CaN",g:824},{id:"KNO3",g:530},{id:"KH2PO4",g:171},{id:"MgNO3",g:316},{id:"MixCh",g:25}]},
+      {nome:"Fruttificazione (4°+ truss)",icon:"🍅",ec:[2.5,3.2],ph:[5.8,6.2],
+       note:"Ca=180 K=325 P=42 Mg=45 N≈250 mg/L. K/Ca = 1.8 (Romano Tesi: 1.5-2.0). Ca alto contro BER.",
+       sali:[{id:"CaN",g:1059},{id:"KNO3",g:529},{id:"KH2PO4",g:184},{id:"MgNO3",g:474},{id:"K2SO4",g:150},{id:"MixCh",g:28}]},
       {nome:"Fine ciclo / Lavaggio",icon:"🏁",ec:[0.5,1.0],ph:[5.8,6.2],
-       note:"Ridurre EC. Lavare coco con EC 0.5.",
-       sali:[{id:"CaN",g:300},{id:"KNO3",g:200},{id:"KH2PO4",g:100},{id:"MgNO3",g:150}]},
+       note:"Ca=65 K=90 P=20 Mg=18 N≈89 mg/L. Ridurre EC. Lavare substrato con EC 0.5.",
+       sali:[{id:"CaN",g:380},{id:"KNO3",g:168},{id:"KH2PO4",g:88},{id:"MgNO3",g:190}]},
     ]},
+
+  // ─── LATTUGA ───────────────────────────────────────────────────
+  // Romano Tesi: Ca 80-140, Mg 20-40, K 120-200, P 30-42, N 120-175 mg/L
   { id:"lattuga", nome:"Lattuga", emoji:"🥬",
-    note:"N alto, K moderato. EC bassa 1.0-1.8. pH 5.5-6.2.",
+    note:"Romano Tesi (2010): EC 1.0-2.0. N alto per foglie. Ca contro tip-burn. pH 5.5-6.2.",
     fasi:[
-      {nome:"Germinazione",icon:"🌱",ec:[0.8,1.0],ph:[5.5,6.2],note:"EC 0.8-1.0. Soluzione leggera.",
-       sali:[{id:"CaN",g:400},{id:"KNO3",g:350},{id:"KH2PO4",g:130},{id:"MgNO3",g:200},{id:"MixCh",g:12}]},
-      {nome:"Crescita vegetativa",icon:"🥬",ec:[1.2,1.8],ph:[5.5,6.2],note:"N elevato per foglie. Ca alto contro tip-burn.",
-       sali:[{id:"CaN",g:750},{id:"KNO3",g:700},{id:"KH2PO4",g:260},{id:"MgNO3",g:400},{id:"MixCh",g:20}]},
-      {nome:"Pre-raccolta (7 gg)",icon:"🏁",ec:[1.0,1.2],ph:[5.5,6.2],note:"Ridurre EC per migliorare turgore e sapore.",
-       sali:[{id:"CaN",g:550},{id:"KNO3",g:500},{id:"K2SO4",g:150},{id:"KH2PO4",g:180},{id:"MgNO3",g:300},{id:"MixCh",g:15}]},
+      {nome:"Germinazione / Plantula",icon:"🌱",ec:[0.8,1.0],ph:[5.5,6.2],
+       note:"Ca=70 K=100 P=22 Mg=20 N≈98 mg/L. Soluzione leggera.",
+       sali:[{id:"CaN",g:412},{id:"KNO3",g:187},{id:"KH2PO4",g:96},{id:"MgNO3",g:211},{id:"MixCh",g:12}]},
+      {nome:"Crescita vegetativa",icon:"🥬",ec:[1.5,2.0],ph:[5.5,6.2],
+       note:"Ca=125 K=175 P=38 Mg=35 N≈172 mg/L. Romano Tesi target per DFT/NFT.",
+       sali:[{id:"CaN",g:735},{id:"KNO3",g:329},{id:"KH2PO4",g:167},{id:"MgNO3",g:368},{id:"MixCh",g:20}]},
+      {nome:"Pre-raccolta (7 gg)",icon:"🏁",ec:[0.8,1.2],ph:[5.5,6.2],
+       note:"Ca=80 K=110 P=25 Mg=22 N≈109 mg/L. Ridurre EC per turgore e sapore (Romano Tesi).",
+       sali:[{id:"CaN",g:471},{id:"KNO3",g:202},{id:"KH2PO4",g:110},{id:"MgNO3",g:232},{id:"MixCh",g:12}]},
     ]},
+
+  // ─── BASILICO ──────────────────────────────────────────────────
+  // Romano Tesi: Ca 100-140, Mg 30-45, K 140-200, P 32-42, N 130-170 mg/L
   { id:"basilico", nome:"Basilico", emoji:"🌿",
-    note:"Ca e Mg alti per oli essenziali. N moderato. pH 5.8-6.2.",
+    note:"Romano Tesi (2010): Mg elevato per sintesi oli essenziali. N moderato. pH 5.8-6.2.",
     fasi:[
-      {nome:"Germinazione",icon:"🌱",ec:[0.6,1.0],ph:[5.8,6.2],note:"EC 0.6-1.0. Radici molto delicate.",
-       sali:[{id:"CaN",g:380},{id:"KNO3",g:300},{id:"KH2PO4",g:120},{id:"MgNO3",g:180},{id:"MixCh",g:12}]},
-      {nome:"Crescita vegetativa",icon:"🌿",ec:[1.2,1.8],ph:[5.8,6.2],note:"N moderato per foglie aromatiche. Ca e Mg elevati.",
-       sali:[{id:"CaN",g:700},{id:"KNO3",g:650},{id:"KH2PO4",g:240},{id:"MgNO3",g:450},{id:"MixCh",g:20}]},
-      {nome:"Pre-bolting / Raccolta",icon:"✂️",ec:[1.0,1.5],ph:[5.8,6.2],note:"Ridurre N per concentrare aromi. Aumentare K.",
-       sali:[{id:"CaN",g:600},{id:"KNO3",g:550},{id:"K2SO4",g:200},{id:"KH2PO4",g:200},{id:"MgNO3",g:400},{id:"MixCh",g:18}]},
+      {nome:"Germinazione",icon:"🌱",ec:[0.6,1.0],ph:[5.8,6.2],
+       note:"Ca=65 K=90 P=20 Mg=20 N≈91 mg/L. Radici molto delicate.",
+       sali:[{id:"CaN",g:382},{id:"KNO3",g:168},{id:"KH2PO4",g:88},{id:"MgNO3",g:211},{id:"MixCh",g:12}]},
+      {nome:"Crescita vegetativa",icon:"🌿",ec:[1.2,1.8],ph:[5.8,6.2],
+       note:"Ca=115 K=165 P=38 Mg=38 N≈166 mg/L. Mg alto per clorofilla e oli.",
+       sali:[{id:"CaN",g:676},{id:"KNO3",g:302},{id:"KH2PO4",g:167},{id:"MgNO3",g:400},{id:"MixCh",g:20}]},
+      {nome:"Pre-bolting / Raccolta",icon:"✂️",ec:[1.0,1.5],ph:[5.8,6.2],
+       note:"Ca=95 K=180 P=32 Mg=35 N≈156 mg/L. K alto concentra aromi. Ridurre N.",
+       sali:[{id:"CaN",g:559},{id:"KNO3",g:361},{id:"KH2PO4",g:140},{id:"MgNO3",g:368},{id:"MixCh",g:18}]},
     ]},
+
+  // ─── PEPERONE ──────────────────────────────────────────────────
+  // Romano Tesi: Ca 120-170, Mg 35-55, K 190-280, P 38-48, N 140-200 mg/L
   { id:"peperone", nome:"Peperone", emoji:"🫑",
-    note:"K alto in fruttificazione. Sensibile a carenza Ca. pH 5.8-6.2.",
+    note:"Romano Tesi (2010): K alto in fruttificazione. Sensibile a carenza Ca (BER). pH 5.8-6.2.",
     fasi:[
-      {nome:"Trapianto",icon:"🌱",ec:[1.0,1.5],ph:[5.8,6.2],note:"EC 1.0-1.5. Sensibile a NH₄ in fase giovane.",
-       sali:[{id:"CaN",g:550},{id:"KNO3",g:450},{id:"KH2PO4",g:180},{id:"MgNO3",g:270},{id:"MixCh",g:15}]},
-      {nome:"Vegetativo",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.2],note:"N e Ca bilanciati. K moderato.",
-       sali:[{id:"CaN",g:950},{id:"KNO3",g:820},{id:"KH2PO4",g:350},{id:"MgNO3",g:500},{id:"MixCh",g:25}]},
-      {nome:"Fioritura e Fruttificazione",icon:"🫑",ec:[2.5,3.0],ph:[5.8,6.2],note:"K alto per allegagione. Ca contro BER.",
-       sali:[{id:"CaN",g:1100},{id:"KNO3",g:900},{id:"K2SO4",g:400},{id:"KH2PO4",g:400},{id:"MgNO3",g:500},{id:"MixCh",g:28}]},
+      {nome:"Trapianto",icon:"🌱",ec:[1.0,1.5],ph:[5.8,6.2],
+       note:"Ca=95 K=140 P=32 Mg=28 N≈134 mg/L. Sensibile a NH₄ in fase giovane.",
+       sali:[{id:"CaN",g:559},{id:"KNO3",g:258},{id:"KH2PO4",g:140},{id:"MgNO3",g:295},{id:"MixCh",g:15}]},
+      {nome:"Vegetativo",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.2],
+       note:"Ca=145 K=230 P=40 Mg=42 N≈213 mg/L. N e Ca bilanciati.",
+       sali:[{id:"CaN",g:853},{id:"KNO3",g:465},{id:"KH2PO4",g:175},{id:"MgNO3",g:442},{id:"MixCh",g:25}]},
+      {nome:"Fioritura e Fruttificazione",icon:"🫑",ec:[2.5,3.0],ph:[5.8,6.2],
+       note:"Ca=165 K=300 P=42 Mg=48 N≈235 mg/L. K alto per allegagione. Ca contro BER.",
+       sali:[{id:"CaN",g:971},{id:"KNO3",g:474},{id:"KH2PO4",g:184},{id:"MgNO3",g:505},{id:"K2SO4",g:150},{id:"MixCh",g:28}]},
     ]},
+
+  // ─── CETRIOLO ──────────────────────────────────────────────────
+  // Romano Tesi: Ca 130-180, Mg 40-55, K 220-310, P 40-50, N 160-235 mg/L
   { id:"cetriolo", nome:"Cetriolo", emoji:"🥒",
-    note:"Alta richiesta K. Crescita rapida. pH 5.8-6.0. Drenaggio 30%.",
+    note:"Romano Tesi (2010): alta richiesta K. Crescita rapida. pH 5.8-6.0. Drenaggio ≥30%.",
     fasi:[
-      {nome:"Giovane",icon:"🌱",ec:[1.5,2.0],ph:[5.8,6.0],note:"EC 1.5-2.0.",
-       sali:[{id:"CaN",g:700},{id:"KNO3",g:650},{id:"KH2PO4",g:260},{id:"MgNO3",g:380},{id:"MixCh",g:20}]},
-      {nome:"Vegetativo / Fioritura",icon:"🌸",ec:[2.0,2.8],ph:[5.8,6.0],note:"K elevato. Ca alto contro punta amara.",
-       sali:[{id:"CaN",g:950},{id:"KNO3",g:850},{id:"K2SO4",g:300},{id:"KH2PO4",g:360},{id:"MgNO3",g:480},{id:"MixCh",g:25}]},
-      {nome:"Produzione piena",icon:"🥒",ec:[2.5,3.0],ph:[5.8,6.0],note:"Refresh soluzione ogni 7-10 giorni.",
-       sali:[{id:"CaN",g:1050},{id:"KNO3",g:950},{id:"K2SO4",g:380},{id:"KH2PO4",g:400},{id:"MgNO3",g:500},{id:"MixCh",g:28}]},
+      {nome:"Giovane",icon:"🌱",ec:[1.5,2.0],ph:[5.8,6.0],
+       note:"Ca=120 K=200 P=38 Mg=38 N≈181 mg/L.",
+       sali:[{id:"CaN",g:706},{id:"KNO3",g:393},{id:"KH2PO4",g:167},{id:"MgNO3",g:400},{id:"MixCh",g:20}]},
+      {nome:"Vegetativo / Fioritura",icon:"🌸",ec:[2.0,2.8],ph:[5.8,6.0],
+       note:"Ca=155 K=265 P=43 Mg=48 N≈239 mg/L. K elevato. Ca contro punta amara.",
+       sali:[{id:"CaN",g:912},{id:"KNO3",g:548},{id:"KH2PO4",g:189},{id:"MgNO3",g:505},{id:"MixCh",g:25}]},
+      {nome:"Produzione piena",icon:"🥒",ec:[2.5,3.0],ph:[5.8,6.0],
+       note:"Ca=170 K=300 P=46 Mg=52 N≈232 mg/L. Refresh ogni 7-10 gg.",
+       sali:[{id:"CaN",g:1000},{id:"KNO3",g:392},{id:"KH2PO4",g:202},{id:"MgNO3",g:547},{id:"K2SO4",g:200},{id:"MixCh",g:28}]},
     ]},
+
+  // ─── FRAGOLA ───────────────────────────────────────────────────
+  // Romano Tesi: Ca 80-160, Mg 25-50, K 120-240, P 28-42, N 90-190 mg/L
   { id:"fragola", nome:"Fragola", emoji:"🍓",
-    note:"Ca alto per struttura frutto. EC media-bassa. pH 5.8-6.2.",
+    note:"Romano Tesi (2010): Ca alto per struttura frutto. EC media-bassa. pH 5.8-6.2.",
     fasi:[
-      {nome:"Radicamento",icon:"🌱",ec:[0.8,1.2],ph:[5.8,6.2],note:"EC 0.8-1.2. Radici sensibili alla salinità.",
-       sali:[{id:"CaN",g:450},{id:"KNO3",g:380},{id:"KH2PO4",g:150},{id:"MgNO3",g:220},{id:"MixCh",g:15}]},
-      {nome:"Vegetativo",icon:"🌿",ec:[1.2,1.8],ph:[5.8,6.0],note:"N e Ca bilanciati.",
-       sali:[{id:"CaN",g:800},{id:"KNO3",g:720},{id:"KH2PO4",g:290},{id:"MgNO3",g:420},{id:"MixCh",g:22}]},
-      {nome:"Fioritura e Frutto",icon:"🍓",ec:[1.8,2.4],ph:[5.8,6.2],note:"K alto per zuccheri. Ca contro spaccatura.",
-       sali:[{id:"CaN",g:1000},{id:"KNO3",g:880},{id:"K2SO4",g:320},{id:"KH2PO4",g:370},{id:"MgNO3",g:450},{id:"MixCh",g:25}]},
+      {nome:"Radicamento",icon:"🌱",ec:[0.8,1.2],ph:[5.8,6.2],
+       note:"Ca=68 K=120 P=26 Mg=25 N≈107 mg/L. Radici sensibili alla salinità.",
+       sali:[{id:"CaN",g:400},{id:"KNO3",g:226},{id:"KH2PO4",g:114},{id:"MgNO3",g:263},{id:"MixCh",g:12}]},
+      {nome:"Vegetativo",icon:"🌿",ec:[1.5,2.0],ph:[5.8,6.0],
+       note:"Ca=130 K=189 P=36 Mg=38 N≈185 mg/L. N e Ca bilanciati.",
+       sali:[{id:"CaN",g:765},{id:"KNO3",g:372},{id:"KH2PO4",g:158},{id:"MgNO3",g:400},{id:"MixCh",g:20}]},
+      {nome:"Fioritura e Frutto",icon:"🍓",ec:[1.8,2.4],ph:[5.8,6.2],
+       note:"Ca=150 K=234 P=38 Mg=44 N≈220 mg/L. K alto per zuccheri. Ca contro spaccatura.",
+       sali:[{id:"CaN",g:882},{id:"KNO3",g:481},{id:"KH2PO4",g:167},{id:"MgNO3",g:463},{id:"MixCh",g:22}]},
     ]},
+
+  // ─── CANNABIS / CANAPA ─────────────────────────────────────────
+  // Nutrizione intensa. N alto veg, P+K alti flora.
   { id:"cannabis", nome:"Cannabis / Canapa", emoji:"🌿",
-    note:"Nutrizione intensa. N alto in veg, P e K alti in flora. pH 5.8-6.2.",
+    note:"Nutrizione intensa. N alto in vegetativo, P e K alti in flora. pH 5.8-6.2.",
     fasi:[
-      {nome:"Germinazione / Cloni",icon:"🌱",ec:[0.8,1.2],ph:[5.8,6.2],note:"EC 0.8-1.2. Radici molto sensibili.",
-       sali:[{id:"CaN",g:500},{id:"KNO3",g:400},{id:"KH2PO4",g:160},{id:"MgNO3",g:250},{id:"MixCh",g:15}]},
-      {nome:"Vegetativo (sett. 2-5)",icon:"🌿",ec:[1.8,2.5],ph:[5.8,6.2],note:"N molto alto. Ca e Mg per struttura.",
-       sali:[{id:"CaN",g:1100},{id:"KNO3",g:1000},{id:"KH2PO4",g:380},{id:"MgNO3",g:600},{id:"MixCh",g:30}]},
-      {nome:"Stretch / Early Flora",icon:"🌸",ec:[2.0,2.8],ph:[5.8,6.2],note:"Ridurre N, aumentare P e K.",
-       sali:[{id:"CaN",g:1000},{id:"KNO3",g:850},{id:"K2SO4",g:300},{id:"KH2PO4",g:450},{id:"MgNO3",g:550},{id:"MixCh",g:28}]},
-      {nome:"Fioritura piena (sett. 4-7)",icon:"🌺",ec:[2.5,3.2],ph:[5.8,6.2],note:"P e K alti, N relativamente basso rispetto a K.",
-       sali:[{id:"CaN",g:1100},{id:"KNO3",g:700},{id:"K2SO4",g:500},{id:"KH2PO4",g:550},{id:"MAP",g:200},{id:"MgNO3",g:500},{id:"MixCh",g:22}]},
-      {nome:"Ripening / Flush",icon:"🏁",ec:[0.5,1.0],ph:[5.8,6.2],note:"Lavaggio coco. EC 0.5-1.0.",
-       sali:[{id:"CaN",g:250},{id:"KNO3",g:200},{id:"KH2PO4",g:80},{id:"FeEDTA",g:8}]},
+      {nome:"Germinazione / Cloni",icon:"🌱",ec:[0.8,1.2],ph:[5.8,6.2],
+       note:"EC 0.8-1.2. Ca=90 K=130 P=30 Mg=28 mg/L. Radici molto sensibili.",
+       sali:[{id:"CaN",g:530},{id:"KNO3",g:240},{id:"KH2PO4",g:132},{id:"MgNO3",g:295},{id:"MixCh",g:15}]},
+      {nome:"Vegetativo (sett. 2-5)",icon:"🌿",ec:[1.8,2.5],ph:[5.8,6.2],
+       note:"Ca=165 K=280 P=43 Mg=52 N≈255 mg/L. N molto alto, Ca e Mg per struttura.",
+       sali:[{id:"CaN",g:971},{id:"KNO3",g:600},{id:"KH2PO4",g:189},{id:"MgNO3",g:547},{id:"MixCh",g:28}]},
+      {nome:"Stretch / Early Flora",icon:"🌸",ec:[2.0,2.8],ph:[5.8,6.2],
+       note:"Ca=155 K=295 P=46 Mg=50 N≈235 mg/L. Ridurre N, aumentare P e K.",
+       sali:[{id:"CaN",g:912},{id:"KNO3",g:525},{id:"KH2PO4",g:202},{id:"MgNO3",g:526},{id:"K2SO4",g:130},{id:"MixCh",g:26}]},
+      {nome:"Fioritura piena (sett. 4-7)",icon:"🌺",ec:[2.5,3.2],ph:[5.8,6.2],
+       note:"Ca=165 K=310 P=52 Mg=48 N≈235 mg/L. P e K alti, N moderato rispetto a K.",
+       sali:[{id:"CaN",g:971},{id:"KNO3",g:480},{id:"KH2PO4",g:228},{id:"MgNO3",g:505},{id:"K2SO4",g:200},{id:"MixCh",g:22}]},
+      {nome:"Ripening / Flush",icon:"🏁",ec:[0.5,1.0],ph:[5.8,6.2],
+       note:"EC 0.5-1.0. Lavaggio coco. Ca residuo + Mg per prevenire yellowing foglie.",
+       sali:[{id:"CaN",g:250},{id:"KNO3",g:168},{id:"KH2PO4",g:80},{id:"MgNO3",g:158},{id:"FeEDTA",g:8}]},
     ]},
+
+  // ─── MELANZANA ─────────────────────────────────────────────────
+  // Romano Tesi (2010): Ca 130-180, Mg 40-55, K 200-290, P 38-48, N 155-220 mg/L
+  { id:"melanzana", nome:"Melanzana", emoji:"🍆",
+    note:"Romano Tesi (2010): simile al peperone ma più esigente in Ca. pH 5.8-6.5.",
+    fasi:[
+      {nome:"Trapianto",icon:"🌱",ec:[1.0,1.5],ph:[5.8,6.5],
+       note:"Ca=95 K=140 P=30 Mg=28 N≈134 mg/L. Acclimatazione lenta.",
+       sali:[{id:"CaN",g:559},{id:"KNO3",g:264},{id:"KH2PO4",g:132},{id:"MgNO3",g:295},{id:"MixCh",g:15}]},
+      {nome:"Vegetativo",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.5],
+       note:"Ca=155 K=246 P=42 Mg=45 N≈229 mg/L. Romano Tesi: Ca critico per prevenire amare.",
+       sali:[{id:"CaN",g:912},{id:"KNO3",g:499},{id:"KH2PO4",g:184},{id:"MgNO3",g:474},{id:"MixCh",g:25}]},
+      {nome:"Fruttificazione",icon:"🍆",ec:[2.5,3.2],ph:[5.8,6.5],
+       note:"Ca=175 K=300 P=45 Mg=52 N≈244 mg/L. K/Ca = 1.7. Aumentare K per colore.",
+       sali:[{id:"CaN",g:1029},{id:"KNO3",g:456},{id:"KH2PO4",g:197},{id:"MgNO3",g:547},{id:"K2SO4",g:150},{id:"MixCh",g:28}]},
+    ]},
+
+  // ─── ZUCCHINA ──────────────────────────────────────────────────
+  // Romano Tesi (2010): Ca 130-185, Mg 35-52, K 220-310, P 38-50, N 160-255 mg/L
+  { id:"zucchina", nome:"Zucchina", emoji:"🥦",
+    note:"Romano Tesi (2010): crescita rapida, alta richiesta N e K. Ciclo breve. pH 5.8-6.2.",
+    fasi:[
+      {nome:"Giovane",icon:"🌱",ec:[1.5,2.0],ph:[5.8,6.2],
+       note:"Ca=120 K=200 P=38 Mg=36 N≈178 mg/L.",
+       sali:[{id:"CaN",g:706},{id:"KNO3",g:394},{id:"KH2PO4",g:167},{id:"MgNO3",g:379},{id:"MixCh",g:20}]},
+      {nome:"Produzione",icon:"🥦",ec:[2.5,3.2],ph:[5.8,6.2],
+       note:"Ca=165 K=291 P=45 Mg=50 N≈255 mg/L. N alto per crescita rapida.",
+       sali:[{id:"CaN",g:971},{id:"KNO3",g:604},{id:"KH2PO4",g:197},{id:"MgNO3",g:526},{id:"MixCh",g:28}]},
+      {nome:"Fine stagione",icon:"🏁",ec:[1.0,1.5],ph:[5.8,6.2],
+       note:"Ca=68 K=118 P=20 Mg=20 N≈103 mg/L. Ridurre EC per chiusura ciclo.",
+       sali:[{id:"CaN",g:400},{id:"KNO3",g:240},{id:"KH2PO4",g:88},{id:"MgNO3",g:211},{id:"MixCh",g:12}]},
+    ]},
+
+  // ─── SPINACIO ──────────────────────────────────────────────────
+  // Romano Tesi (2010): N altissimo! Ca 100-165, Mg 30-50, K 180-280, P 35-55, N 200-280 mg/L
+  { id:"spinacio", nome:"Spinacio", emoji:"🌱",
+    note:"Romano Tesi (2010): N altissimo tra le colture orticole. pH 5.5-6.5. EC 1.5-3.0.",
+    fasi:[
+      {nome:"Germoglio / Plantula",icon:"🌱",ec:[0.8,1.5],ph:[5.5,6.5],
+       note:"Ca=80 K=130 P=32 Mg=25 N≈117 mg/L. Soluzione leggera.",
+       sali:[{id:"CaN",g:471},{id:"KNO3",g:233},{id:"KH2PO4",g:140},{id:"MgNO3",g:263},{id:"MixCh",g:12}]},
+      {nome:"Crescita",icon:"🌿",ec:[1.5,3.0],ph:[5.5,6.5],
+       note:"Ca=130 K=220 P=45 Mg=40 N≈194 mg/L. N molto alto per accumulo fogliare.",
+       sali:[{id:"CaN",g:765},{id:"KNO3",g:420},{id:"KH2PO4",g:197},{id:"MgNO3",g:421},{id:"MixCh",g:20}]},
+      {nome:"Pre-raccolta",icon:"🏁",ec:[1.0,1.5],ph:[5.5,6.5],
+       note:"Ca=68 K=102 P=20 Mg=14 N≈95 mg/L. Ridurre EC. Fe micronutriente mantenuto.",
+       sali:[{id:"CaN",g:400},{id:"KNO3",g:200},{id:"KH2PO4",g:88},{id:"MgNO3",g:147},{id:"FeEDTA",g:12}]},
+    ]},
+
+  // ─── RUCOLA ────────────────────────────────────────────────────
+  // Romano Tesi (2010): Ca 80-140, Mg 22-42, K 130-210, P 28-40, N 130-205 mg/L
+  { id:"rucola", nome:"Rucola", emoji:"🥗",
+    note:"Romano Tesi (2010): ciclo brevissimo (25-35 gg). EC moderata. pH 5.8-6.2.",
+    fasi:[
+      {nome:"Crescita",icon:"🌿",ec:[1.2,2.0],ph:[5.8,6.2],
+       note:"Ca=110 K=164 P=35 Mg=30 N≈153 mg/L. Ciclo unico, crescita rapida.",
+       sali:[{id:"CaN",g:647},{id:"KNO3",g:311},{id:"KH2PO4",g:154},{id:"MgNO3",g:316},{id:"MixCh",g:15}]},
+      {nome:"Pre-raccolta (5 gg)",icon:"🏁",ec:[0.8,1.5],ph:[5.8,6.2],
+       note:"Ca=70 K=100 P=22 Mg=19 N≈97 mg/L. Ridurre EC per intensificare aromi.",
+       sali:[{id:"CaN",g:412},{id:"KNO3",g:185},{id:"KH2PO4",g:96},{id:"MgNO3",g:200},{id:"MixCh",g:10}]},
+    ]},
+
 ];
 
 let piantaSel = null, faseSel = null;
@@ -1794,51 +1877,24 @@ function ricalcolaConDisponibili(){
 // ACQUA DI PARTENZA — helpers
 // ════════════════════════════════════════════════
 function getAcqua(){
-  // Se il pannello acqua è nascosto oppure tutti i valori sono 0 → nessuna correzione
-  const panel = document.getElementById('acqua-panel');
-  const attiva = panel && panel.style.display !== 'none';
-  if(!attiva) return null;
-  return {
-    ec:   parseFloat(document.getElementById('aq-ec').value)  ||0,
-    ph:   parseFloat(document.getElementById('aq-ph').value)  ||7,
-    ca:   parseFloat(document.getElementById('aq-ca').value)  ||0,
-    mg:   parseFloat(document.getElementById('aq-mg').value)  ||0,
-    k:    parseFloat(document.getElementById('aq-k').value)   ||0,
-    na:   parseFloat(document.getElementById('aq-na').value)  ||0,
-    so4:  parseFloat(document.getElementById('aq-so4').value) ||0,
-    cl:   parseFloat(document.getElementById('aq-cl').value)  ||0,
-    hco3: parseFloat(document.getElementById('aq-hco3').value)||0,
-    no3:  parseFloat(document.getElementById('aq-no3').value) ||0,
-    fe:   parseFloat(document.getElementById('aq-fe').value)  ||0,
-  };
+  // Il tab acqua è sempre accessibile — leggi direttamente i valori.
+  // Se tutti sono 0 non si applica alcuna correzione.
+  const ec   = parseFloat(document.getElementById('aq-ec')?.value)  ||0;
+  const ph   = parseFloat(document.getElementById('aq-ph')?.value)  ||7;
+  const ca   = parseFloat(document.getElementById('aq-ca')?.value)  ||0;
+  const mg   = parseFloat(document.getElementById('aq-mg')?.value)  ||0;
+  const k    = parseFloat(document.getElementById('aq-k')?.value)   ||0;
+  const na   = parseFloat(document.getElementById('aq-na')?.value)  ||0;
+  const so4  = parseFloat(document.getElementById('aq-so4')?.value) ||0;
+  const cl   = parseFloat(document.getElementById('aq-cl')?.value)  ||0;
+  const hco3 = parseFloat(document.getElementById('aq-hco3')?.value)||0;
+  const no3  = parseFloat(document.getElementById('aq-no3')?.value) ||0;
+  const fe   = parseFloat(document.getElementById('aq-fe')?.value)  ||0;
+  if(!ec && !ca && !mg && !k && !na && !so4 && !cl && !hco3 && !no3 && !fe) return null;
+  return {ec, ph, ca, mg, k, na, so4, cl, hco3, no3, fe};
 }
 
-function toggleAcquaPanel(){
-  const p=document.getElementById('acqua-panel');
-  const icon=document.getElementById('acqua-toggle-icon');
-  const open=p.style.display!=='none';
-  p.style.display=open?'none':'block';
-  icon.textContent=open?'▼':'▲';
-  // Mostra indicatore se pannello chiuso ma ha valori non zero
-  const hdr = p.parentElement.querySelector('.ch');
-  const oldBadge = hdr.querySelector('.acqua-active-badge');
-  if(oldBadge) oldBadge.remove();
-  if(open){
-    // Pannello chiuso: verifica se ci sono valori significativi
-    const aq = {
-      ca: parseFloat(document.getElementById('aq-ca')?.value)||0,
-      mg: parseFloat(document.getElementById('aq-mg')?.value)||0,
-      hco3: parseFloat(document.getElementById('aq-hco3')?.value)||0,
-    };
-    if(aq.ca > 20 || aq.mg > 5 || aq.hco3 > 50){
-      const badge = document.createElement('span');
-      badge.className = 'acqua-active-badge';
-      badge.style.cssText = 'background:var(--az);color:#fff;border-radius:4px;padding:1px 6px;font-size:.58rem;font-weight:700;margin-left:6px';
-      badge.textContent = '💧 attiva';
-      hdr.appendChild(badge);
-    }
-  }
-}
+function toggleAcquaPanel(){ /* rimosso: acqua ora nel tab dedicato */ }
 
 function presetAcqua(tipo){
   const map={
