@@ -3556,128 +3556,121 @@ function stampaMiscela(){
   if(!contenuto){ window.print(); return; }
   const dataOra = new Date().toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'});
 
-  // Raccoglie solo i dati essenziali per 1 pagina
-  const badgeEl   = contenuto.querySelector('.al-ok, .al-err');
-  const badge      = badgeEl ? badgeEl.innerText.trim().substring(0,120) : '';
-  const badgeOk   = badgeEl && badgeEl.classList.contains('al-ok');
+  const badgeEl = contenuto.querySelector('.al-ok, .al-err');
+  const badge   = badgeEl ? badgeEl.innerText.trim().substring(0,160) : '';
+  const badgeOk = badgeEl && badgeEl.classList.contains('al-ok');
 
   // Serbatoi
   let serbHtml = '';
-  contenuto.querySelectorAll('.serb-card').forEach(card=>{
-    const titolo = card.querySelector('.serb-title')?.innerText || '';
+  const serbCards = contenuto.querySelectorAll('.serb-card');
+  const nSerb = serbCards.length || 2;
+  serbCards.forEach(card => {
+    const titolo = card.querySelector('.serb-title')?.innerText?.replace(/\s+/g,' ').trim() || '';
     let righe = '';
-    card.querySelectorAll('.sale-row').forEach(row=>{
-      righe += `<tr><td>${row.children[0]?.innerText||''}</td><td style="text-align:right;font-weight:600">${row.children[1]?.innerText?.split('\n')[0]||''}</td></tr>`;
+    card.querySelectorAll('.sale-row').forEach(row => {
+      const nome = row.children[0]?.innerText || '';
+      const dose = row.children[1]?.innerText?.split('\n')[0] || '';
+      righe += `<tr><td>${nome}</td><td class="r">${dose}</td></tr>`;
     });
     serbHtml += `<div class="serb"><div class="st">${titolo}</div><table>${righe}</table></div>`;
   });
 
-  // Riepilogo numerico
+  // Riepilogo
   let riepilogoHtml = '';
-  const riepilogoCard = [...contenuto.querySelectorAll('.card')].find(c=>c.querySelector('.ch')?.innerText.includes('Riepilogo'));
-  if(riepilogoCard){
-    riepilogoCard.querySelectorAll('.eco-row').forEach(r=>{
-      riepilogoHtml += `<tr><td>${r.children[0]?.innerText||''}</td><td style="text-align:right;font-weight:600">${r.children[1]?.innerText||''}</td></tr>`;
+  const rCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Riepilogo'));
+  if(rCard){
+    rCard.querySelectorAll('.eco-row').forEach(r => {
+      riepilogoHtml += `<tr><td>${r.children[0]?.innerText||''}</td><td class="r">${r.children[1]?.innerText||''}</td></tr>`;
     });
   }
 
-  // Procedura (passi numerati)
+  // Apporti ionici principali
+  let ioniHtml = '';
+  const ioniCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Soluzione Finale'));
+  if(ioniCard){
+    ioniCard.querySelectorAll('.ri-box').forEach(box => {
+      const lbl = box.querySelector('.ri-lbl')?.innerText || '';
+      const val = box.querySelector('.ri-val')?.innerText || '';
+      const sub = box.querySelector('.ri-sub')?.innerText || '';
+      if(lbl && val) ioniHtml += `<tr><td>${lbl}</td><td class="r"><strong>${val}</strong>&nbsp;<small>${sub}</small></td></tr>`;
+    });
+  }
+
+  // Procedura
   let procHtml = '';
-  const procCard = [...contenuto.querySelectorAll('.card')].find(c=>c.querySelector('.ch')?.innerText.includes('Procedura'));
+  const procCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Procedura'));
   if(procCard){
-    procCard.querySelectorAll('li').forEach(li=>{
+    procCard.querySelectorAll('li').forEach(li => {
       procHtml += `<li>${li.innerText}</li>`;
     });
   }
 
-  // Audit sintetico (solo esiti)
-  let auditHtml = '';
-  const auditBody = contenuto.querySelector('#audit-body');
-  if(auditBody){
-    auditBody.querySelectorAll('div[style*="border-bottom"]').forEach(row=>{
-      const ico = row.querySelector('span')?.innerText || '';
-      const chk = row.querySelectorAll('strong')[0]?.innerText || '';
-      const esito = row.querySelectorAll('span[style*="color"]')[0]?.innerText || '';
-      auditHtml += `<tr><td>${ico} ${chk}</td><td style="text-align:right;font-weight:700">${esito}</td></tr>`;
-    });
-  }
-
-  // Interventi automatici (breve lista)
-  let intervHtml = '';
-  const intervCard = [...contenuto.querySelectorAll('.card')].find(c=>c.querySelector('.ch')?.innerText.includes('Interventi'));
-  if(intervCard){
-    intervCard.querySelectorAll('div[style*="border-bottom"]').forEach((row,i)=>{
-      if(i>5) return;
-      intervHtml += `<li>${row.innerText.substring(0,120)}${row.innerText.length>120?'…':''}</li>`;
-    });
-  }
+  const gridCols = nSerb >= 3 ? '1fr 1fr 1fr' : '1fr 1fr';
 
   const htmlStampa = `<!DOCTYPE html><html lang="it"><head><meta charset="utf-8">
 <title>FertiControl ${dataOra}</title>
 <style>
-@page{size:A4 landscape;margin:7mm}
+@page{size:A4 portrait;margin:10mm}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;font-size:8pt;color:#111;line-height:1.35}
-.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #2d6a2d;padding-bottom:4px;margin-bottom:6px}
-.header h1{font-size:11pt;color:#2d6a2d;font-weight:700}
-.header .meta{font-size:6.5pt;color:#555;text-align:right}
-.badge{padding:4px 8px;border-radius:4px;font-size:7pt;font-weight:700;margin-bottom:6px;border:1px solid}
+body{font-family:Arial,Helvetica,sans-serif;font-size:7pt;color:#111;line-height:1.35}
+.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:3px;margin-bottom:4px}
+.header h1{font-size:10pt;color:#2d6a2d;font-weight:700}
+.header .meta{font-size:6pt;color:#555;text-align:right;line-height:1.5}
+.badge{display:inline-block;padding:2.5px 8px;border-radius:3px;font-size:6.5pt;font-weight:700;margin-bottom:3px;border:1px solid}
 .badge.ok{background:#e8f5e8;border-color:#2d6a2d;color:#155724}
 .badge.err{background:#fde8e8;border-color:#c0392b;color:#721c24}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
-.grid3col{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:6mm;align-items:start}
-.avviso-dosi{background:#fff3cd;border:1.5px solid #e0a800;border-radius:4px;padding:4px 8px;font-size:7.5pt;font-weight:700;color:#7a5c00;margin-bottom:6px;text-align:center}
-.box{border:1px solid #bbb;border-radius:3px;overflow:hidden;margin-bottom:4mm}
-.box-title{background:#2d6a2d;color:#fff;padding:3px 6px;font-weight:700;font-size:7pt}
-.serb{border:1px solid #2d6a2d;border-radius:3px;overflow:hidden}
-.st{background:#2d6a2d;color:#fff;padding:2px 5px;font-weight:700;font-size:7pt}
+.warn{background:#fff8e1;border:1px solid #f0c040;border-radius:3px;padding:2px 6px;font-size:6pt;color:#7a5c00;margin-bottom:5px}
+.serb-grid{display:grid;grid-template-columns:${gridCols};gap:3.5mm;margin-bottom:5mm}
+.serb{border:1.5px solid #2d6a2d;border-radius:3px;overflow:hidden}
+.st{background:#2d6a2d;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
+.bottom-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:5mm;align-items:start}
+.box{border:1px solid #ccc;border-radius:3px;overflow:hidden;margin-bottom:3mm}
+.box-title{background:#4a7c59;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
 table{width:100%;border-collapse:collapse}
-td{padding:1.5px 5px;border-bottom:1px solid #eee;font-size:7pt}
-tr:last-child td{border-bottom:none;font-weight:700;background:#f5f5f5}
-ol,ul{padding-left:12px}
-li{font-size:6.5pt;margin-bottom:1.5px;line-height:1.3}
-.firma{border-top:1px dashed #999;margin-top:4mm;padding-top:3mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm;font-size:6.5pt;color:#555}
-.firma div{border-top:1px solid #333;padding-top:2px;margin-top:8mm}
-h2{font-size:8pt;color:#2d6a2d;font-weight:700;margin-bottom:2px;margin-top:3mm}
+td{padding:1.5px 5px;border-bottom:1px solid #eee;font-size:6.5pt}
+tr:last-child td{border-bottom:none;font-weight:700;background:#f0f5f0}
+.r{text-align:right;font-family:monospace}
+small{font-size:5.5pt;color:#666;font-weight:normal}
+h2{font-size:7pt;color:#2d6a2d;font-weight:700;margin-bottom:2px;margin-top:0;border-bottom:1px solid #c8e6c8;padding-bottom:1px}
+ol{padding-left:13px;margin:0}
+li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
+.firma{border-top:1px dashed #aaa;margin-top:5mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
+.firma-line{border-top:1px solid #333;padding-top:2px;margin-top:7mm;font-size:6pt;color:#444}
 </style></head><body>
 
 <div class="header">
   <div>
-    <h1>🌿 FertiControl — Scheda Miscela</h1>
-    <div style="font-size:7pt;color:#555">Generata: ${dataOra}</div>
+    <h1>FertiControl — Scheda Miscela Nutritiva</h1>
+    <div style="font-size:6pt;color:#555;margin-top:1px">Generata: ${dataOra}</div>
   </div>
-  <div class="meta">Fertirrigazione Coco Coir<br>Soluzioni Madri A/B${usaSerbC?'/C':''}</div>
+  <div class="meta">Coltura Coco Coir — Soluzioni Madri A/B${nSerb>=3?'/C':''}<br>Fertirrigazione idroponica</div>
 </div>
 
 <div class="badge ${badgeOk?'ok':'err'}">${badge}</div>
+<div class="warn">⚠️ Verificare sempre EC e pH al punto di consegna prima dell'irrigazione. Non miscelare mai i concentrati direttamente tra loro.</div>
 
-<div class="avviso-dosi">⚠️ Verificare sempre le dosi calcolate prima della preparazione e misurare EC/pH della soluzione finale.</div>
+<h2 style="margin-bottom:3px">Soluzioni Madri — Dosi per Concentrato</h2>
+<div class="serb-grid">${serbHtml}</div>
 
-<div class="grid3col">
+<div class="bottom-grid">
   <div>
-    <h2>Soluzioni Madri</h2>
-    ${serbHtml}
-  </div>
-  <div>
-    <h2>Riepilogo</h2>
+    <h2>Riepilogo Parametri</h2>
     <div class="box">
-      <div class="box-title">📊 Parametri</div>
+      <div class="box-title">Risultati calcolo</div>
       <table>${riepilogoHtml}</table>
     </div>
-    ${intervHtml?`<h2>Interventi Automatici</h2><ul>${intervHtml}</ul>`:''}
+    ${ioniHtml?`<h2>Apporti Ionici Finali</h2><div class="box"><div class="box-title">mg/L soluzione diluita</div><table>${ioniHtml}</table></div>`:''}
   </div>
   <div>
-    ${auditHtml?`<h2>Controlli di Sicurezza</h2><div class="box"><div class="box-title">🔍 Audit</div><table>${auditHtml}</table></div>`:''}
-    <h2>Procedura</h2>
+    <h2>Procedura di Preparazione</h2>
     <ol>${procHtml}</ol>
   </div>
 </div>
 
 <div class="firma">
-  <div>Preparata da</div>
-  <div>Verificata da</div>
-  <div>Data preparazione</div>
+  <div class="firma-line">Preparata da</div>
+  <div class="firma-line">Verificata da</div>
+  <div class="firma-line">Data preparazione</div>
 </div>
 
 </body></html>`;
