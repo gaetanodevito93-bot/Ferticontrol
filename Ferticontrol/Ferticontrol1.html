@@ -91,6 +91,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .el-txt{font-size:.65rem;color:var(--vi);font-family:'JetBrains Mono',monospace;margin-top:3px}
 
 /* ── STAMPA ── */
+@page{size:A4 landscape;margin:10mm}
 @media print{
   .no-print,.tabbar,.topbar,header{display:none!important}
   body{background:#fff!important}
@@ -3621,7 +3622,7 @@ function stampaMiscela(){
   const htmlStampa = `<!DOCTYPE html><html lang="it"><head><meta charset="utf-8">
 <title>FertiControl ${dataOra}</title>
 <style>
-@page{size:A4 portrait;margin:10mm}
+@page{size:A4 landscape;margin:10mm}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,Helvetica,sans-serif;font-size:7pt;color:#111;line-height:1.35}
 .header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:3px;margin-bottom:4px}
