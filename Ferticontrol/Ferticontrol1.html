@@ -3647,7 +3647,10 @@ ol{padding-left:13px;margin:0}
 li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
 .firma{border-top:1px dashed #aaa;margin-top:5mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
 .firma-line{border-top:1px solid #333;padding-top:2px;margin-top:7mm;font-size:6pt;color:#444}
-</style></head><body>
+html,body{width:100%}
+.sheet{transform-origin:top left}
+@media print{html,body{width:auto}}
+</style></head><body><div class="sheet">
 
 <div class="header">
   <div>
@@ -3684,18 +3687,38 @@ li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
   <div class="firma-line">Data preparazione</div>
 </div>
 
-</body></html>`;
+</div></body></html>`;
 
   const vecchio = document.getElementById('print-frame');
   if(vecchio) vecchio.remove();
   const iframe = document.createElement('iframe');
   iframe.id='print-frame';
-  iframe.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';
-  iframe.setAttribute('sandbox','allow-same-origin allow-modals');
+  // Off-screen ma con dimensioni reali A4 (area stampabile 190×277mm) così
+  // il layout e le misure corrispondono alla pagina stampata.
+  iframe.style.cssText='position:fixed;left:-9999px;top:0;width:190mm;height:277mm;border:0;visibility:hidden';
+
+  iframe.onload = function(){
+    try{
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const sheet = doc.querySelector('.sheet');
+      if(sheet){
+        // Scala il contenuto per farlo stare in una sola pagina A4.
+        const avail = iframe.clientHeight;            // altezza stampabile (277mm in px)
+        const h = sheet.scrollHeight;
+        if(h > avail){
+          const scale = Math.max(0.5, (avail - 2) / h);
+          sheet.style.transform = 'scale(' + scale + ')';
+        }
+      }
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    }catch(e){ window.print(); }
+  };
+
+  // srcdoc garantisce che onload scatti SEMPRE al primo click,
+  // dopo che il documento e i font sono pronti (niente "serve premere 2 volte").
   document.body.appendChild(iframe);
-  const idoc = iframe.contentDocument || iframe.contentWindow.document;
-  idoc.open(); idoc.write(htmlStampa); idoc.close();
-  setTimeout(()=>{ try{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }catch(e){ window.print(); } }, 450);
+  iframe.srcdoc = htmlStampa;
 }
 
 
