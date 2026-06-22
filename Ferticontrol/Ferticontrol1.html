@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>FertiControl v1.2</title>
+<meta name="description" content="FertiControl — Calcolatore professionale per soluzioni nutritive in fertirrigazione. Ricette scientifiche per pomodoro, lattuga, cetriolo, fragola e altre colture in coco coir. Calcolo dosi, verifica chimica, compatibilità serbatoi.">
+<meta name="theme-color" content="#2d5a3d">
+<meta property="og:title" content="FertiControl — Calcolatore Fertirrigazione">
+<meta property="og:description" content="Ricette scientifiche per soluzioni nutritive in coco coir. Calcolo automatico dosi, verifica compatibilità chimica e stampa scheda operativa.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232d5a3d'/><text x='16' y='23' text-anchor='middle' font-size='20'>🌿</text></svg>">
+<title>FertiControl — Calcolatore Fertirrigazione</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -26,7 +33,7 @@ html{scroll-behavior:smooth}
 ::-webkit-scrollbar-thumb{background:var(--bo);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--ts)}
 html,body{width:100%;max-width:100%;overflow-x:hidden}
-body{font-family:'Inter',sans-serif;background:linear-gradient(180deg,var(--cr) 0%,#f0ece4 100%);color:var(--tx);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--cr) 0%,#f0ece4 100%);color:var(--tx);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 
 /* ── HEADER ── */
 header{background:linear-gradient(135deg,var(--vs) 0%,var(--vm) 100%);color:var(--cr);padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--ar);width:100%;box-shadow:0 4px 16px rgba(26,58,42,.2)}
@@ -53,7 +60,7 @@ header span{font-size:.7rem;opacity:.7;font-weight:300}
 
 /* ── FORM ── */
 label{display:block;font-size:.68rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-input[type="number"],input[type="text"],select,textarea{width:100%;padding:10px 12px;border:2px solid var(--bo);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.85rem;color:var(--tx);background:var(--bl);transition:var(--transition);-moz-appearance:textfield;-webkit-appearance:none;box-shadow:0 2px 8px rgba(0,0,0,.04) inset}
+input[type="number"],input[type="text"],select,textarea{width:100%;padding:10px 12px;border:2px solid var(--bo);border-radius:var(--r);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:.85rem;color:var(--tx);background:var(--bl);transition:var(--transition);-moz-appearance:textfield;-webkit-appearance:none;box-shadow:0 2px 8px rgba(0,0,0,.04) inset}
 input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);background:#fff;box-shadow:0 0 0 3px rgba(74,140,94,.15)}
 .field{margin-bottom:14px}
@@ -327,7 +334,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 <header>
   <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><rect x="2" y="9" width="9" height="14" rx="2" fill="#4a8c5e" stroke="#fff" stroke-width="1"/><rect x="15" y="9" width="9" height="14" rx="2" fill="#2471a3" stroke="#fff" stroke-width="1.2"/><path d="M7 9V6a2 2 0 0 1 4 0v3M20 9V6a2 2 0 0 1 8 0v3" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/><circle cx="13" cy="4" r="2.5" fill="#d4660a"/></svg>
   <div><h1>FertiControl <span>— Ricette pensate per sub Coco </span></h1></div>
-  <div class="hbadge">v1.2</div>
+  <div class="hbadge">v2.0</div>
 </header>
 
 <div class="tabs" role="tablist" aria-label="Menu principale">
@@ -1119,6 +1126,10 @@ function saveCatalogo(){ try{ localStorage.setItem('fc_catalogo', JSON.stringify
 function saveRicette(){ try{ localStorage.setItem('fc_ricette', JSON.stringify(ricetteCustom)); }catch(e){ console.warn('Salvataggio ricette fallito:', e.message); showToast('Errore salvataggio: spazio esaurito', false); } }
 function openModal(id){ document.getElementById(id).classList.add('open') }
 function closeModal(id){ document.getElementById(id).classList.remove('open') }
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function fmtGram(g){
   g = Math.max(0, g); // protezione valori negativi
   if(g===0) return '0 g';
@@ -1147,7 +1158,7 @@ function initPiante(){
     const d = document.createElement('div');
     d.className='pianta-btn'; d.dataset.id=ri; d.dataset.tipo='custom';
     d.style.position='relative';
-    d.innerHTML=`<span class="em">${ric.emoji||'🌱'}</span>${ric.nome}<button class="btn-del btn-sm" style="position:absolute;top:4px;right:4px;padding:2px 6px;font-size:.6rem" onclick="event.stopPropagation();eliminaRicettaCustom(${ri})" aria-label="Elimina ricetta ${ric.nome}">✕</button>`;
+    d.innerHTML=`<span class="em">${esc(ric.emoji)||'🌱'}</span>${esc(ric.nome)}<button class="btn-del btn-sm" style="position:absolute;top:4px;right:4px;padding:2px 6px;font-size:.6rem" onclick="event.stopPropagation();eliminaRicettaCustom(${ri})" aria-label="Elimina ricetta ${esc(ric.nome)}">✕</button>`;
     d.onclick=()=>selPianta(ri, 'custom');
     grid.appendChild(d);
   });
@@ -3106,7 +3117,7 @@ function calcola(){
       righeSerb.forEach(r=>{
         const g=grConc(r.dose,vol); const pz=(r.prezzo||0)*(g/1000); costoSerb+=pz; costoTot+=pz;
         const infoR=getSale(r.id);
-        html+=`<div class="sale-row"><span class="sale-nome">${r.nome||r.nomeCustom||r.id}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtDose(infoR,g)}</span>${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</div></div>`;
+        html+=`<div class="sale-row"><span class="sale-nome">${esc(r.nome||r.nomeCustom||r.id)}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtDose(infoR,g)}</span>${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</div></div>`;
       });
       html+=`<div class="sale-row tot-row"><span>TOTALE</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtGram(righeSerb.reduce((s,r)=>s+grConc(r.dose,vol),0))}</span></div>`;
     }
@@ -4026,7 +4037,7 @@ function esportaDati(){
   const payload = {
     _meta: {
       app: 'FertiControl',
-      version: '1.2',
+      version: '2.0',
       esportato: new Date().toISOString(),
       descrizione: 'Backup catalogo ingredienti, ricette personalizzate e scorta magazzino'
     },
