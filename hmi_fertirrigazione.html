@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1512">
+<title>FertiControl — Centrale di Fertirrigazione</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FERTICONTROL — INDUSTRIAL CONTROL HMI
+   Design language: greenhouse control-room instrumentation
+   ============================================================ */
+:root{
+  --c-void:#0a110e;
+  --c-base:#0d1512;
+  --c-panel:#111c17;
+  --c-panel-2:#152420;
+  --c-raised:#1a2c26;
+  --c-line:#243b33;
+  --c-line-2:#2f4c42;
+  --c-line-soft:#1c2e28;
+
+  --c-grow:#3ddc84;
+  --c-grow-dim:#2aa866;
+  --c-grow-deep:#176b46;
+  --c-grow-glow:rgba(61,220,132,.16);
+
+  --s-run:#3ddc84;        --s-run-bg:rgba(61,220,132,.10);
+  --s-manual:#ffb23e;     --s-manual-bg:rgba(255,178,62,.10);
+  --s-idle:#5d7068;       --s-idle-bg:rgba(93,112,104,.10);
+  --s-fault:#ff5a52;      --s-fault-bg:rgba(255,90,82,.10);
+  --s-water:#42b4e6;      --s-water-bg:rgba(66,180,230,.10);
+
+  --t-bright:#eaf3ee;
+  --t-primary:#c2d4cc;
+  --t-muted:#7f968c;
+  --t-faint:#56685f;
+  --t-data:#dff0e7;
+
+  --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+  --f-ui:'Inter Tight',system-ui,sans-serif;
+
+  --r-sm:5px; --r-md:8px; --r-lg:12px; --r-xl:16px;
+  --topbar-h:54px; --statusbar-h:30px; --tabbar-h:62px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+
+  --sh-panel:0 1px 0 rgba(255,255,255,.02),0 2px 8px rgba(0,0,0,.4);
+  --sh-raised:0 2px 14px rgba(0,0,0,.5);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overscroll-behavior:none;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  background:var(--c-base);color:var(--t-primary);
+  font-family:var(--f-ui);font-size:15px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  display:flex;flex-direction:column;height:100dvh;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--c-line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--c-line-soft) 1px,transparent 1px);
+  background-size:34px 34px;opacity:.30;
+  -webkit-mask-image:radial-gradient(ellipse 130% 90% at 50% 0%,#000 35%,transparent 78%);
+  mask-image:radial-gradient(ellipse 130% 90% at 50% 0%,#000 35%,transparent 78%);
+}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none;}
+input,select{font-family:inherit;}
+::selection{background:var(--c-grow-dim);color:var(--c-void);}
+.scroll::-webkit-scrollbar{width:7px;height:7px;}
+.scroll::-webkit-scrollbar-track{background:transparent;}
+.scroll::-webkit-scrollbar-thumb{background:var(--c-line);border-radius:4px;}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums;}
+.tnum{font-variant-numeric:tabular-nums;}
+.eyebrow{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--t-faint);}
+
+/* ============================================================
+   APP SHELL — top bar / status strip / scroll / tab bar
+   ============================================================ */
+.topbar{
+  height:calc(var(--topbar-h) + var(--safe-top));
+  padding:var(--safe-top) 14px 0;
+  flex-shrink:0;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(180deg,var(--c-panel-2),var(--c-panel));
+  border-bottom:1px solid var(--c-line);position:relative;z-index:40;
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.brand-logo{
+  width:32px;height:32px;flex-shrink:0;border-radius:7px;
+  background:radial-gradient(circle at 35% 30%,var(--c-grow-dim),var(--c-grow-deep));
+  display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(61,220,132,.4),0 0 14px var(--c-grow-glow);
+}
+.brand-logo svg{width:19px;height:19px;}
+.brand-name{font-weight:700;font-size:16px;letter-spacing:-.01em;color:var(--t-bright);line-height:1;}
+.brand-sub{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.14em;color:var(--t-faint);text-transform:uppercase;margin-top:2px;}
+.topbar-spacer{flex:1;}
+.estop{
+  height:38px;padding:0 14px 0 12px;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;border-radius:var(--r-md);
+  background:var(--s-fault-bg);box-shadow:inset 0 0 0 1px rgba(255,90,82,.35);
+  color:#ff8a84;font-weight:600;font-size:13px;letter-spacing:.02em;
+  transition:all .15s var(--ease);
+}
+.estop:active{background:var(--s-fault);color:#fff;box-shadow:inset 0 0 0 1px var(--s-fault),0 0 20px rgba(255,90,82,.4);}
+.estop-ico{width:13px;height:13px;border-radius:2px;background:currentColor;box-shadow:0 0 8px currentColor;}
+
+/* status strip — live machine state ribbon */
+.statusbar{
+  height:var(--statusbar-h);flex-shrink:0;display:flex;align-items:center;
+  gap:0;background:var(--c-void);border-bottom:1px solid var(--c-line);
+  position:relative;z-index:39;font-family:var(--f-mono);overflow:hidden;
+}
+.sb-cell{display:flex;align-items:center;gap:6px;padding:0 12px;height:100%;white-space:nowrap;border-right:1px solid var(--c-line-soft);}
+.sb-key{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--t-faint);}
+.sb-val{font-size:11px;font-weight:600;color:var(--t-data);}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--s-idle);flex-shrink:0;}
+.sb-dot.live{background:var(--s-run);box-shadow:0 0 8px var(--s-run);animation:pulse 2s var(--ease) infinite;}
+.sb-dot.warn{background:var(--s-manual);box-shadow:0 0 8px var(--s-manual);}
+.sb-dot.fault{background:var(--s-fault);box-shadow:0 0 8px var(--s-fault);animation:pulse 1s var(--ease) infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.sb-scroll-fade{margin-left:auto;height:100%;display:flex;align-items:center;padding:0 12px;border-right:none;}
+.sb-clock{font-size:11px;color:var(--t-muted);letter-spacing:.04em;}
+
+/* main scroll viewport */
+.viewport{flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overflow-x:hidden;position:relative;z-index:1;-webkit-overflow-scrolling:touch;}
+.viewport.viewport-locked{overflow-y:hidden;}
+.screen{flex-shrink:0;}
+.screen{display:none;padding:16px 14px calc(20px + var(--safe-bot));max-width:760px;margin:0 auto;}
+.screen.active{display:block;animation:screenIn .26s var(--ease);}
+@keyframes screenIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.screen-full{display:none;min-height:0;}
+.screen-full.active{display:flex;flex-direction:column;min-height:0;flex:1;animation:screenIn .26s var(--ease);}
+
+/* tab bar */
+.tabbar{
+  height:calc(var(--tabbar-h) + var(--safe-bot));
+  padding-bottom:var(--safe-bot);flex-shrink:0;display:flex;
+  background:linear-gradient(0deg,var(--c-panel-2),var(--c-panel));
+  border-top:1px solid var(--c-line);position:relative;z-index:40;
+}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--t-faint);position:relative;transition:color .18s var(--ease);}
+.tab svg{width:21px;height:21px;stroke-width:1.7;transition:transform .2s var(--ease);}
+.tab-label{font-size:10px;font-weight:600;letter-spacing:.01em;}
+.tab.active{color:var(--c-grow);}
+.tab.active svg{transform:translateY(-1px);}
+.tab.active::before{content:'';position:absolute;top:0;width:26px;height:2.5px;border-radius:0 0 3px 3px;background:var(--c-grow);box-shadow:0 0 12px var(--c-grow);}
+.tab:active svg{transform:scale(.9);}
+
+/* ============================================================
+   PANEL / CARD PRIMITIVES
+   ============================================================ */
+.panel{background:var(--c-panel);border:1px solid var(--c-line);border-radius:var(--r-lg);box-shadow:var(--sh-panel);overflow:hidden;}
+.panel + .panel{margin-top:12px;}
+.panel-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--c-line-soft);}
+.panel-hd .eyebrow{flex:1;}
+.panel-bd{padding:14px;}
+.panel-bd.flush{padding:0;}
+
+.section-gap{height:12px;}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+
+/* ============================================================
+   PROCESS STATE HERO — the centerpiece readout
+   ============================================================ */
+.process{position:relative;background:linear-gradient(165deg,var(--c-panel-2),var(--c-panel));border:1px solid var(--c-line);border-radius:var(--r-xl);padding:16px;overflow:hidden;box-shadow:var(--sh-raised);}
+.process::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:var(--r-xl);box-shadow:inset 0 0 60px rgba(61,220,132,.04);}
+.proc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px;}
+.proc-state-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:100px;background:var(--s-run-bg);box-shadow:inset 0 0 0 1px rgba(61,220,132,.3);}
+.proc-state-tag .sb-dot{width:8px;height:8px;}
+.proc-state-name{font-family:var(--f-mono);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--c-grow);text-transform:uppercase;}
+.proc-cycle-id{font-family:var(--f-mono);font-size:10px;color:var(--t-faint);letter-spacing:.1em;text-align:right;line-height:1.5;}
+.proc-cycle-id b{color:var(--t-muted);font-weight:600;}
+
+/* phase ladder — vertical-feel horizontal stepper */
+.phase-ladder{display:flex;gap:4px;margin-bottom:8px;}
+.ph-step{flex:1;height:5px;border-radius:100px;background:var(--c-raised);position:relative;overflow:hidden;transition:background .3s var(--ease);}
+.ph-step.done{background:var(--c-grow-deep);}
+.ph-step.now{background:var(--c-raised);}
+.ph-step.now::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--c-grow),transparent);animation:scan 1.6s linear infinite;}
+@keyframes scan{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.phase-names{display:flex;gap:4px;margin-bottom:18px;}
+.ph-name{flex:1;text-align:center;font-family:var(--f-mono);font-size:8px;letter-spacing:.04em;text-transform:uppercase;color:var(--t-faint);transition:color .3s var(--ease);}
+.ph-name.done{color:var(--c-grow-dim);}
+.ph-name.now{color:var(--c-grow);font-weight:600;}
+
+/* big phase timer */
+.proc-timer-wrap{display:flex;align-items:baseline;justify-content:center;gap:14px;margin-bottom:16px;}
+.proc-timer{font-family:var(--f-mono);font-size:52px;font-weight:600;letter-spacing:-.02em;color:var(--t-bright);line-height:.9;text-shadow:0 0 30px var(--c-grow-glow);}
+.proc-timer-meta{display:flex;flex-direction:column;gap:3px;}
+.proc-timer-meta .eyebrow{color:var(--t-faint);}
+.proc-timer-sub{font-family:var(--f-mono);font-size:12px;color:var(--t-muted);}
+
+.proc-actions{display:flex;gap:10px;}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 18px;border-radius:var(--r-md);font-weight:600;font-size:14.5px;letter-spacing:.01em;transition:all .15s var(--ease);white-space:nowrap;}
+.btn svg{width:18px;height:18px;stroke-width:2;}
+.btn-primary{flex:1;background:linear-gradient(180deg,var(--c-grow),var(--c-grow-dim));color:#04140c;box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 4px 14px rgba(61,220,132,.25);}
+.btn-primary:active{transform:translateY(1px);box-shadow:0 2px 8px rgba(61,220,132,.3);}
+.btn-stop{flex:1;background:var(--s-fault-bg);color:#ff8a84;box-shadow:inset 0 0 0 1px rgba(255,90,82,.4);}
+.btn-stop:active{background:var(--s-fault);color:#fff;}
+.btn-ghost{background:var(--c-raised);color:var(--t-primary);box-shadow:inset 0 0 0 1px var(--c-line);}
+.btn-ghost:active{background:var(--c-panel-2);box-shadow:inset 0 0 0 1px var(--c-line-2);}
+.btn-manual{background:var(--s-manual-bg);color:var(--s-manual);box-shadow:inset 0 0 0 1px rgba(255,178,62,.35);}
+.btn-manual:active{background:var(--s-manual);color:var(--c-void);}
+.btn-sm{height:38px;padding:0 13px;font-size:13px;border-radius:var(--r-sm);}
+.btn-full{width:100%;}
+.btn[disabled]{opacity:.4;pointer-events:none;}
+
+/* ============================================================
+   INSTRUMENT READOUTS — pH / EC gauges
+   ============================================================ */
+.gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.gauge{position:relative;background:var(--c-panel);border:1px solid var(--c-line);border-radius:var(--r-lg);padding:14px;overflow:hidden;box-shadow:var(--sh-panel);}
+.gauge-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.gauge-label{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--t-muted);text-transform:uppercase;}
+.gauge-state-dot{width:8px;height:8px;border-radius:50%;background:var(--s-run);box-shadow:0 0 8px var(--s-run);}
+.gauge-state-dot.warn{background:var(--s-manual);box-shadow:0 0 8px var(--s-manual);}
+.gauge-read{display:flex;align-items:baseline;gap:6px;margin-bottom:3px;}
+.gauge-value{font-family:var(--f-mono);font-size:38px;font-weight:600;line-height:.85;letter-spacing:-.02em;color:var(--t-data);transition:color .4s var(--ease);}
+.gauge-unit{font-family:var(--f-mono);font-size:12px;color:var(--t-faint);font-weight:500;}
+.gauge-target{font-family:var(--f-mono);font-size:10px;color:var(--t-faint);letter-spacing:.04em;margin-bottom:12px;}
+/* linear scale track with target window + live needle */
+.gauge-scale{position:relative;height:8px;border-radius:100px;background:var(--c-void);box-shadow:inset 0 1px 2px rgba(0,0,0,.5);overflow:hidden;}
+.gauge-window{position:absolute;top:0;bottom:0;background:var(--s-run-bg);box-shadow:inset 0 0 0 1px rgba(61,220,132,.3);}
+.gauge-needle{position:absolute;top:-3px;width:3px;height:14px;border-radius:2px;background:var(--t-bright);box-shadow:0 0 8px var(--t-bright);transition:left .6s var(--ease),background .4s;transform:translateX(-50%);}
+.gauge-needle.warn{background:var(--s-manual);box-shadow:0 0 8px var(--s-manual);}
+.gauge-scale-ticks{display:flex;justify-content:space-between;margin-top:5px;}
+.gauge-scale-ticks span{font-family:var(--f-mono);font-size:8px;color:var(--t-faint);}
+
+/* ============================================================
+   MOISTURE ZONES
+   ============================================================ */
+.moist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.moist-cell{background:var(--c-panel-2);border:1px solid var(--c-line-soft);border-radius:var(--r-md);padding:9px 8px;text-align:center;position:relative;overflow:hidden;}
+.moist-fill{position:absolute;left:0;right:0;bottom:0;background:var(--s-water-bg);transition:height .6s var(--ease);}
+.moist-z{position:relative;font-family:var(--f-mono);font-size:8.5px;letter-spacing:.08em;color:var(--t-faint);text-transform:uppercase;margin-bottom:3px;}
+.moist-v{position:relative;font-family:var(--f-mono);font-size:20px;font-weight:600;color:var(--s-water);line-height:1;}
+.moist-pct{position:relative;font-family:var(--f-mono);font-size:9px;color:var(--t-faint);}
+.moist-avg{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--c-panel-2);border:1px solid var(--c-line);border-radius:var(--r-md);}
+.moist-avg-l{display:flex;flex-direction:column;gap:2px;}
+.moist-avg-lbl{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t-muted);}
+.moist-avg-thr{font-family:var(--f-mono);font-size:9.5px;color:var(--t-faint);}
+.moist-avg-r{display:flex;align-items:baseline;gap:4px;}
+.moist-avg-v{font-family:var(--f-mono);font-size:30px;font-weight:600;color:var(--s-water);line-height:1;}
+.moist-avg-u{font-family:var(--f-mono);font-size:12px;color:var(--t-faint);}
+
+/* ============================================================
+   ACTUATOR ROWS
+   ============================================================ */
+.act-list{display:flex;flex-direction:column;}
+.act-row{display:flex;align-items:center;gap:13px;padding:13px 14px;border-bottom:1px solid var(--c-line-soft);transition:background .15s var(--ease);}
+.act-row:last-child{border-bottom:none;}
+.act-row:active{background:var(--c-panel-2);}
+.act-icon{width:36px;height:36px;flex-shrink:0;border-radius:9px;display:grid;place-items:center;background:var(--c-raised);box-shadow:inset 0 0 0 1px var(--c-line);color:var(--t-muted);transition:all .25s var(--ease);}
+.act-icon svg{width:19px;height:19px;stroke-width:1.7;}
+.act-row[data-state="run"] .act-icon{background:var(--s-run-bg);color:var(--s-run);box-shadow:inset 0 0 0 1px rgba(61,220,132,.4),0 0 16px var(--c-grow-glow);}
+.act-row[data-state="manual"] .act-icon{background:var(--s-manual-bg);color:var(--s-manual);box-shadow:inset 0 0 0 1px rgba(255,178,62,.4);}
+.act-row[data-state="off"] .act-icon{background:var(--c-raised);color:var(--t-faint);}
+.act-main{flex:1;min-width:0;}
+.act-name{font-weight:600;font-size:14.5px;color:var(--t-bright);letter-spacing:-.005em;}
+.act-meta{font-family:var(--f-mono);font-size:10.5px;color:var(--t-muted);letter-spacing:.02em;margin-top:1px;}
+.act-pill{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:100px;font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.act-pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor;}
+.pill-run{background:var(--s-run-bg);color:var(--s-run);}
+.pill-manual{background:var(--s-manual-bg);color:var(--s-manual);}
+.pill-off{background:var(--s-idle-bg);color:var(--t-muted);}
+.pill-off .dot{box-shadow:none;}
+
+/* ============================================================
+   INLINE CONFIG ROWS / INPUTS / TOGGLES
+   ============================================================ */
+.cfg-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--c-line-soft);}
+.cfg-row:first-child{padding-top:0;}
+.cfg-row:last-child{border-bottom:none;padding-bottom:0;}
+.cfg-label{flex:1;font-size:14px;color:var(--t-primary);}
+.cfg-hint{display:block;font-family:var(--f-mono);font-size:10px;color:var(--t-faint);margin-top:2px;letter-spacing:.02em;}
+.cfg-unit{font-family:var(--f-mono);font-size:11px;color:var(--t-faint);min-width:30px;text-align:left;}
+
+.field{background:var(--c-void);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--c-line);color:var(--t-data);font-family:var(--f-mono);font-size:14px;font-weight:500;height:40px;padding:0 12px;width:88px;text-align:right;transition:box-shadow .15s var(--ease);outline:none;}
+.field:focus{box-shadow:inset 0 0 0 1px var(--c-grow-dim),0 0 0 3px var(--c-grow-glow);}
+.field-wide{width:100%;text-align:left;}
+select.field{text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237f968c' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;}
+
+/* segmented toggle */
+.seg{display:inline-flex;background:var(--c-void);border-radius:var(--r-sm);padding:3px;box-shadow:inset 0 0 0 1px var(--c-line);gap:2px;}
+.seg button{height:32px;padding:0 14px;border-radius:5px;font-family:var(--f-mono);font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--t-muted);transition:all .15s var(--ease);white-space:nowrap;}
+.seg button.on{background:var(--c-grow-deep);color:var(--c-grow);box-shadow:inset 0 0 0 1px rgba(61,220,132,.3);}
+.seg.seg-amber button.on{background:rgba(255,178,62,.18);color:var(--s-manual);box-shadow:inset 0 0 0 1px rgba(255,178,62,.3);}
+
+/* save bar */
+.savebar{display:flex;align-items:center;gap:12px;margin-top:14px;}
+.save-ok{font-family:var(--f-mono);font-size:11.5px;color:var(--c-grow);opacity:0;transition:opacity .3s var(--ease);display:flex;align-items:center;gap:6px;}
+.save-ok.show{opacity:1;}
+.save-ok svg{width:14px;height:14px;stroke-width:2.5;}
+
+/* ============================================================
+   LOG / EVENT FEED
+   ============================================================ */
+.log-feed{display:flex;flex-direction:column;}
+.log-line{display:flex;align-items:baseline;gap:10px;padding:9px 14px;border-bottom:1px solid var(--c-line-soft);font-family:var(--f-mono);position:relative;}
+.log-line:last-child{border-bottom:none;}
+.log-line::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c-line-2);}
+.log-line.ok::before{background:var(--s-run);}
+.log-line.warn::before{background:var(--s-manual);}
+.log-line.err::before{background:var(--s-fault);}
+.log-t{font-size:10.5px;color:var(--t-faint);flex-shrink:0;letter-spacing:.02em;}
+.log-m{font-size:12px;color:var(--t-primary);flex:1;line-height:1.4;}
+.log-v{font-size:11.5px;color:var(--c-grow);font-weight:600;flex-shrink:0;}
+
+/* ============================================================
+   DATA TABLE
+   ============================================================ */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tbl{width:100%;border-collapse:collapse;min-width:540px;}
+.tbl th{font-family:var(--f-mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t-faint);text-align:left;padding:10px 12px;border-bottom:1px solid var(--c-line);white-space:nowrap;}
+.tbl td{font-family:var(--f-mono);font-size:11.5px;color:var(--t-primary);padding:11px 12px;border-bottom:1px solid var(--c-line-soft);white-space:nowrap;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:active td{background:var(--c-panel-2);}
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:5px;font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.tag-ok{background:var(--s-run-bg);color:var(--s-run);}
+.tag-warn{background:var(--s-manual-bg);color:var(--s-manual);}
+.tag-err{background:var(--s-fault-bg);color:var(--s-fault);}
+
+/* alarm banner */
+.alarm{display:none;align-items:center;gap:12px;padding:13px 15px;background:var(--s-fault-bg);border:1px solid rgba(255,90,82,.4);border-radius:var(--r-lg);margin-bottom:12px;}
+.alarm.show{display:flex;animation:alarmPulse 1.4s var(--ease) infinite;}
+@keyframes alarmPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,82,.0);}50%{box-shadow:0 0 0 4px rgba(255,90,82,.08);}}
+.alarm-ico{width:34px;height:34px;flex-shrink:0;border-radius:8px;background:rgba(255,90,82,.15);display:grid;place-items:center;color:var(--s-fault);}
+.alarm-ico svg{width:19px;height:19px;stroke-width:2;}
+.alarm-body{flex:1;min-width:0;}
+.alarm-title{font-weight:600;font-size:13.5px;color:#ff8a84;}
+.alarm-desc{font-family:var(--f-mono);font-size:10.5px;color:var(--t-muted);margin-top:1px;}
+.alarm-x{height:34px;padding:0 14px;border-radius:var(--r-sm);background:rgba(255,90,82,.15);color:#ff8a84;font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
+.alarm-x:active{background:var(--s-fault);color:#fff;}
+
+/* ============================================================
+   SYNOPTIC SCREEN (process schematic, full height)
+   ============================================================ */
+.syn-shell{flex:1;display:flex;flex-direction:column;min-height:0;}
+.syn-bar{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--c-line);background:var(--c-panel);flex-shrink:0;}
+.syn-bar .eyebrow{flex:1;}
+.syn-legend{display:flex;gap:14px;padding:9px 14px;background:var(--c-void);border-bottom:1px solid var(--c-line);flex-shrink:0;overflow-x:auto;}
+.lg-item{display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.lg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.lg-txt{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--t-muted);}
+.syn-canvas{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;display:block;padding:14px 14px calc(90px + var(--safe-bot));}
+#schematic{width:100%;max-width:420px;height:auto;display:block;margin:0 auto;}
+
+/* ---------- pipe flow: idle vs active vs manual ---------- */
+.pipe{fill:none;stroke:#243b33;stroke-width:6;stroke-linecap:round;transition:stroke .35s var(--ease);}
+.pipe.flow-run{stroke:#2aa866;stroke-dasharray:3 9;animation:flowmove .55s linear infinite;}
+.pipe.flow-manual{stroke:#cf9233;stroke-dasharray:3 9;animation:flowmove .85s linear infinite;}
+@keyframes flowmove{to{stroke-dashoffset:-24;}}
+
+/* ---------- component glow ring when active ---------- */
+.node{cursor:pointer;}
+.node circle[id$="-glow"]{transition:opacity .3s var(--ease),stroke .3s var(--ease);}
+.node.is-run circle[id$="-glow"]{opacity:.55;stroke:#3ddc84;filter:url(#glow-g);animation:glowpulse 1.8s var(--ease) infinite;}
+.node.is-manual circle[id$="-glow"]{opacity:.55;stroke:#ffb23e;filter:url(#glow-a);animation:glowpulse 1.8s var(--ease) infinite;}
+@keyframes glowpulse{0%,100%{opacity:.35;}50%{opacity:.75;}}
+
+/* ---------- peristaltic rotor spin when running ---------- */
+g[id$="-rotor"]{transform-box:fill-box;transform-origin:center;}
+.node.is-run g[id$="-rotor"]{animation:rotorspin 1.1s linear infinite;}
+.node.is-manual g[id$="-rotor"]{animation:rotorspin 1.7s linear infinite;}
+@keyframes rotorspin{to{transform:rotate(360deg);}}
+
+/* ---------- tank liquid: gentle wave while mixing (transform-based, universally supported) ---------- */
+#tank-wave{transition:opacity .4s var(--ease);transform-box:fill-box;transform-origin:center;}
+.tank-mixing #tank-wave{animation:tankwave 2.6s ease-in-out infinite;}
+@keyframes tankwave{
+  0%,100%{transform:translateY(0) scaleY(1);}
+  50%{transform:translateY(-3px) scaleY(1.04);}
+}
+@media (prefers-reduced-motion:reduce){
+  .pipe.flow-run,.pipe.flow-manual,.node.is-run circle[id$="-glow"],.node.is-manual circle[id$="-glow"],
+  .node.is-run g[id$="-rotor"],.node.is-manual g[id$="-rotor"],.tank-mixing #tank-wave{animation:none;}
+}
+.node{cursor:pointer;}
+.node *{transition:fill .25s var(--ease),stroke .25s var(--ease);}
+.node:active{opacity:.85;}
+
+/* ============================================================
+   RECIPES
+   ============================================================ */
+.screen-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+.screen-title{font-weight:700;font-size:20px;letter-spacing:-.02em;color:var(--t-bright);}
+.screen-title-sub{font-family:var(--f-mono);font-size:10.5px;color:var(--t-faint);letter-spacing:.04em;margin-top:2px;}
+
+.recipe{position:relative;background:var(--c-panel);border:1px solid var(--c-line);border-radius:var(--r-lg);padding:14px;margin-bottom:11px;box-shadow:var(--sh-panel);transition:border-color .2s var(--ease);}
+.recipe.active{border-color:var(--c-grow-dim);box-shadow:var(--sh-panel),0 0 0 1px var(--c-grow-deep),0 0 24px var(--c-grow-glow);}
+.recipe-top{display:flex;align-items:flex-start;gap:13px;margin-bottom:12px;}
+.recipe-emoji{width:46px;height:46px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;font-size:24px;background:var(--c-raised);box-shadow:inset 0 0 0 1px var(--c-line);}
+.recipe-id{flex:1;min-width:0;}
+.recipe-name{font-weight:700;font-size:16.5px;letter-spacing:-.01em;color:var(--t-bright);line-height:1.15;}
+.recipe-sci{font-family:var(--f-mono);font-size:11px;color:var(--t-muted);font-style:normal;margin-top:2px;}
+.recipe-live{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:100px;background:var(--s-run-bg);color:var(--s-run);font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.recipe-live .dot{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor;}
+.recipe-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--c-line-soft);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px;}
+.spec{background:var(--c-panel-2);padding:8px 6px;text-align:center;}
+.spec-k{font-family:var(--f-mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--t-faint);margin-bottom:3px;}
+.spec-v{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--t-data);line-height:1;}
+.spec-u{font-family:var(--f-mono);font-size:8px;color:var(--t-faint);}
+.recipe-acts{display:flex;gap:8px;}
+.recipe-acts .btn{flex:1;}
+
+/* empty state */
+.empty{text-align:center;padding:56px 24px;}
+.empty-ico{width:60px;height:60px;margin:0 auto 16px;border-radius:16px;background:var(--c-panel);display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--c-line);color:var(--t-faint);}
+.empty-ico svg{width:30px;height:30px;stroke-width:1.5;}
+.empty-title{font-weight:600;font-size:16px;color:var(--t-primary);margin-bottom:5px;}
+.empty-text{font-size:13.5px;color:var(--t-muted);max-width:280px;margin:0 auto 18px;line-height:1.5;}
+
+/* ============================================================
+   MAINTENANCE
+   ============================================================ */
+.maint-note{font-family:var(--f-mono);font-size:10.5px;color:var(--t-muted);line-height:1.5;margin-bottom:14px;display:flex;gap:8px;align-items:flex-start;}
+.maint-note svg{width:14px;height:14px;stroke-width:2;flex-shrink:0;margin-top:1px;color:var(--s-manual);}
+.maint-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.maint-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border-radius:var(--r-lg);background:var(--c-panel-2);box-shadow:inset 0 0 0 1px var(--c-line);transition:all .18s var(--ease);}
+.maint-btn svg{width:24px;height:24px;stroke-width:1.6;color:var(--t-muted);transition:color .2s;}
+.maint-btn-name{font-weight:600;font-size:13px;color:var(--t-primary);}
+.maint-btn-state{font-family:var(--f-mono);font-size:10px;color:var(--t-faint);letter-spacing:.04em;}
+.maint-btn.live{box-shadow:inset 0 0 0 1px var(--s-manual),0 0 20px rgba(255,178,62,.12);background:var(--s-manual-bg);}
+.maint-btn.live svg{color:var(--s-manual);}
+.maint-btn.live .maint-btn-name{color:var(--s-manual);}
+.maint-btn.live .maint-btn-state{color:var(--s-manual);}
+.maint-span{grid-column:1/-1;}
+
+.cal-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--c-line-soft);}
+.cal-row:last-child{border-bottom:none;padding-bottom:0;}
+.cal-row:first-child{padding-top:0;}
+.cal-name{font-size:13.5px;color:var(--t-primary);flex:1;}
+.cal-val{font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--s-water);min-width:54px;text-align:right;}
+
+/* ============================================================
+   BOTTOM SHEET MODAL
+   ============================================================ */
+.scrim{position:fixed;inset:0;z-index:80;background:rgba(5,9,7,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s var(--ease);}
+.scrim.open{opacity:1;pointer-events:auto;}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:81;background:var(--c-panel);border-top:1px solid var(--c-line-2);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:10px 16px calc(24px + var(--safe-bot));max-width:560px;margin:0 auto;transform:translateY(100%);transition:transform .3s var(--ease);max-height:90dvh;overflow-y:auto;}
+.sheet.open{transform:translateY(0);}
+.sheet-grip{width:38px;height:4px;border-radius:100px;background:var(--c-line-2);margin:0 auto 16px;}
+.sheet-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;}
+.sheet-title{font-weight:700;font-size:18px;letter-spacing:-.01em;color:var(--t-bright);}
+.sheet-sub{font-family:var(--f-mono);font-size:11px;color:var(--t-muted);margin-top:3px;letter-spacing:.02em;}
+.sheet-x{width:34px;height:34px;flex-shrink:0;border-radius:8px;background:var(--c-raised);display:grid;place-items:center;color:var(--t-muted);box-shadow:inset 0 0 0 1px var(--c-line);}
+.sheet-x svg{width:18px;height:18px;stroke-width:2;}
+
+/* mode option buttons in sheet */
+.mode-opts{display:flex;flex-direction:column;gap:9px;}
+.mode-opt{display:flex;align-items:center;gap:13px;padding:15px;border-radius:var(--r-md);background:var(--c-panel-2);box-shadow:inset 0 0 0 1px var(--c-line);transition:all .15s var(--ease);text-align:left;}
+.mode-opt-ico{width:38px;height:38px;flex-shrink:0;border-radius:9px;display:grid;place-items:center;background:var(--c-raised);color:var(--t-muted);box-shadow:inset 0 0 0 1px var(--c-line);}
+.mode-opt-ico svg{width:20px;height:20px;stroke-width:1.8;}
+.mode-opt-tx{flex:1;}
+.mode-opt-name{font-weight:600;font-size:15px;color:var(--t-bright);}
+.mode-opt-desc{font-family:var(--f-mono);font-size:10.5px;color:var(--t-muted);margin-top:1px;}
+.mode-opt-check{width:22px;height:22px;flex-shrink:0;border-radius:50%;box-shadow:inset 0 0 0 2px var(--c-line-2);display:grid;place-items:center;}
+.mode-opt-check svg{width:13px;height:13px;stroke-width:3;opacity:0;}
+.mode-opt.sel-run{box-shadow:inset 0 0 0 1px var(--s-run);background:var(--s-run-bg);}
+.mode-opt.sel-run .mode-opt-ico{background:var(--s-run-bg);color:var(--s-run);box-shadow:inset 0 0 0 1px rgba(61,220,132,.4);}
+.mode-opt.sel-run .mode-opt-check{box-shadow:inset 0 0 0 2px var(--s-run);background:var(--s-run);}
+.mode-opt.sel-run .mode-opt-check svg{opacity:1;color:var(--c-void);}
+.mode-opt.sel-manual{box-shadow:inset 0 0 0 1px var(--s-manual);background:var(--s-manual-bg);}
+.mode-opt.sel-manual .mode-opt-ico{background:var(--s-manual-bg);color:var(--s-manual);box-shadow:inset 0 0 0 1px rgba(255,178,62,.4);}
+.mode-opt.sel-manual .mode-opt-check{box-shadow:inset 0 0 0 2px var(--s-manual);background:var(--s-manual);}
+.mode-opt.sel-manual .mode-opt-check svg{opacity:1;color:var(--c-void);}
+.mode-opt.sel-water{box-shadow:inset 0 0 0 1px var(--s-water);background:var(--s-water-bg);}
+.mode-opt.sel-water .mode-opt-ico{background:var(--s-water-bg);color:var(--s-water);box-shadow:inset 0 0 0 1px rgba(66,180,230,.4);}
+.mode-opt.sel-water .mode-opt-check{box-shadow:inset 0 0 0 2px var(--s-water);background:var(--s-water);}
+.mode-opt.sel-water .mode-opt-check svg{opacity:1;color:var(--c-void);}
+
+/* recipe form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field.col-2{grid-column:1/-1;}
+.form-label{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t-muted);}
+.form-input{background:var(--c-void);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--c-line);color:var(--t-data);font-size:15px;height:46px;padding:0 13px;outline:none;transition:box-shadow .15s var(--ease);width:100%;}
+.form-input:focus{box-shadow:inset 0 0 0 1px var(--c-grow-dim),0 0 0 3px var(--c-grow-glow);}
+select.form-input{-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237f968c' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;}
+.emoji-pick{display:flex;gap:7px;flex-wrap:wrap;}
+.emoji-opt{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;font-size:22px;background:var(--c-void);box-shadow:inset 0 0 0 1px var(--c-line);transition:all .15s var(--ease);}
+.emoji-opt.on{box-shadow:inset 0 0 0 2px var(--c-grow-dim);background:var(--c-grow-deep);}
+.form-foot{display:flex;gap:10px;margin-top:20px;}
+
+/* reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ TOP BAR ════════════════ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#04140c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-4-2-7-5-11Z"/>
+        <path d="M12 22v-6"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">FertiControl</div>
+      <div class="brand-sub">Centrale · R4</div>
+    </div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <button class="estop" onclick="emergencyStop()">
+    <span class="estop-ico"></span>ARRESTO
+  </button>
+</header>
+
+<!-- ════════════════ STATUS STRIP ════════════════ -->
+<div class="statusbar scroll">
+  <div class="sb-cell">
+    <span class="sb-dot live" id="sb-dot"></span>
+    <span class="sb-key">Stato</span>
+    <span class="sb-val" id="sb-state">DOSAGGIO</span>
+  </div>
+  <div class="sb-cell">
+    <span class="sb-key">Rete</span>
+    <span class="sb-val" style="color:var(--s-run)">AP ATTIVO</span>
+  </div>
+  <div class="sb-cell">
+    <span class="sb-key">Ricetta</span>
+    <span class="sb-val" id="sb-recipe">Basilico</span>
+  </div>
+  <div class="sb-scroll-fade">
+    <span class="sb-clock mono" id="sb-clock">--:--:--</span>
+  </div>
+</div>
+
+<!-- ════════════════ VIEWPORT ════════════════ -->
+<main class="viewport scroll" id="viewport">
+
+<!-- ╔══════════════ DASHBOARD ══════════════╗ -->
+<section class="screen active" id="s-dashboard">
+
+  <!-- alarm banner -->
+  <div class="alarm" id="alarm">
+    <div class="alarm-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    </div>
+    <div class="alarm-body">
+      <div class="alarm-title">Allarme di processo</div>
+      <div class="alarm-desc" id="alarm-desc">pH non correggibile entro i tentativi</div>
+    </div>
+    <button class="alarm-x" onclick="clearAlarm()">Reset</button>
+  </div>
+
+  <!-- process hero -->
+  <div class="process">
+    <div class="proc-top">
+      <div class="proc-state-tag" id="proc-tag">
+        <span class="sb-dot live"></span>
+        <span class="proc-state-name" id="proc-state">Dosaggio nutrienti</span>
+      </div>
+      <div class="proc-cycle-id">
+        <div>CICLO <b id="proc-cycle">#0428</b></div>
+        <div id="proc-started">avviato 10:42</div>
+      </div>
+    </div>
+
+    <div class="phase-ladder" id="phase-ladder"></div>
+    <div class="phase-names" id="phase-names"></div>
+
+    <div class="proc-timer-wrap">
+      <div class="proc-timer mono" id="proc-timer">04:22</div>
+      <div class="proc-timer-meta">
+        <span class="eyebrow">tempo fase</span>
+        <span class="proc-timer-sub" id="proc-timer-sub">stima 06:00</span>
+      </div>
+    </div>
+
+    <div class="proc-actions">
+      <button class="btn btn-primary" id="cycle-btn" onclick="toggleCycle()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" id="cycle-icon"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        <span id="cycle-label">Arresta ciclo</span>
+      </button>
+      <button class="btn btn-ghost" onclick="allAuto()" title="Riporta tutti gli attuatori in automatico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="section-gap"></div>
+
+  <!-- pH / EC gauges -->
+  <div class="gauge-grid">
+    <div class="gauge">
+      <div class="gauge-hd">
+        <span class="gauge-label">pH</span>
+        <span class="gauge-state-dot" id="ph-dot"></span>
+      </div>
+      <div class="gauge-read">
+        <span class="gauge-value mono" id="ph-val">6.21</span>
+      </div>
+      <div class="gauge-target" id="ph-target">finestra 5.5 – 6.5</div>
+      <div class="gauge-scale">
+        <div class="gauge-window" id="ph-window" style="left:41.7%;right:16.7%"></div>
+        <div class="gauge-needle" id="ph-needle" style="left:53.5%"></div>
+      </div>
+      <div class="gauge-scale-ticks"><span>3.0</span><span>9.0</span></div>
+    </div>
+
+    <div class="gauge">
+      <div class="gauge-hd">
+        <span class="gauge-label">EC</span>
+        <span class="gauge-state-dot" id="ec-dot" style="background:var(--s-water);box-shadow:0 0 8px var(--s-water)"></span>
+      </div>
+      <div class="gauge-read">
+        <span class="gauge-value mono" id="ec-val" style="color:var(--s-water)">2.40</span>
+        <span class="gauge-unit">mS/cm</span>
+      </div>
+      <div class="gauge-target" id="ec-target">finestra 1.0 – 2.0</div>
+      <div class="gauge-scale">
+        <div class="gauge-window" id="ec-window" style="left:20%;right:60%;background:var(--s-water-bg);box-shadow:inset 0 0 0 1px rgba(66,180,230,.3)"></div>
+        <div class="gauge-needle" id="ec-needle" style="left:48%;background:var(--s-water);box-shadow:0 0 8px var(--s-water)"></div>
+      </div>
+      <div class="gauge-scale-ticks"><span>0</span><span>5.0</span></div>
+    </div>
+  </div>
+
+  <div class="section-gap"></div>
+
+  <!-- moisture -->
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="eyebrow">Umidità suolo</span>
+      <span class="mono" style="font-size:10px;color:var(--t-faint)" id="moist-count">4 zone</span>
+    </div>
+    <div class="panel-bd">
+      <div class="moist-grid" id="moist-grid"></div>
+      <div class="moist-avg">
+        <div class="moist-avg-l">
+          <span class="moist-avg-lbl">Media zone</span>
+          <span class="moist-avg-thr" id="moist-thr">soglia avvio ≤ 40%</span>
+        </div>
+        <div class="moist-avg-r">
+          <span class="moist-avg-v mono" id="moist-avg">39.5</span>
+          <span class="moist-avg-u">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap"></div>
+
+  <!-- actuators -->
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="eyebrow">Attuatori</span>
+      <span class="mono" style="font-size:10px;color:var(--t-faint)">tocca per controllo</span>
+    </div>
+    <div class="act-list" id="act-list"></div>
+  </div>
+
+  <div class="section-gap"></div>
+
+  <!-- event feed -->
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Registro eventi</span></div>
+    <div class="log-feed" id="log-feed"></div>
+  </div>
+
+</section>
+
+<!-- ╔══════════════ SYNOPTIC ══════════════╗ -->
+<section class="screen-full" id="s-synoptic">
+  <div class="syn-shell">
+    <div class="syn-bar">
+      <span class="eyebrow">Schema di processo</span>
+      <button class="btn btn-ghost btn-sm" onclick="allAuto()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Tutto auto
+      </button>
+    </div>
+    <div class="syn-legend scroll">
+      <div class="lg-item"><span class="lg-dot" style="background:var(--s-run);box-shadow:0 0 6px var(--s-run)"></span><span class="lg-txt">Auto / Attivo</span></div>
+      <div class="lg-item"><span class="lg-dot" style="background:var(--s-manual);box-shadow:0 0 6px var(--s-manual)"></span><span class="lg-txt">Manuale</span></div>
+      <div class="lg-item"><span class="lg-dot" style="background:var(--s-idle)"></span><span class="lg-txt">Fermo</span></div>
+      <div class="lg-item"><span class="lg-dot" style="background:var(--s-water);box-shadow:0 0 6px var(--s-water)"></span><span class="lg-txt">Flusso acqua</span></div>
+    </div>
+    <div class="syn-canvas scroll">
+      <svg id="schematic" viewBox="0 0 360 760" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- flow dash pattern, animated via CSS on .flow-active -->
+          <marker id="mk" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#2f4c42" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          <marker id="mk-g" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          <marker id="mk-w" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#42b4e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          <filter id="glow-g" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glow-a" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="liquid-grad" cx="50%" cy="0%" r="100%"><stop offset="0%" stop-color="#3ddc84" stop-opacity=".35"/><stop offset="100%" stop-color="#176b46" stop-opacity=".18"/></radialGradient>
+        </defs>
+
+        <!-- ════════ PIPE BASE LAYER (track, always visible) ════════ -->
+        <g fill="none" stroke="#1c2e28" stroke-width="10" stroke-linecap="round">
+          <path d="M60 150 L60 196"/>
+          <path d="M180 150 L180 196"/>
+          <path d="M300 150 L300 196"/>
+          <path d="M180 388 L180 432"/>
+          <path d="M180 472 L180 516"/>
+          <path d="M180 540 L96 540 L96 300 L150 300"/>
+          <path d="M180 540 L264 540 L264 600"/>
+        </g>
+
+        <!-- ════════ PIPE FLOW LAYER (colored, animated when active) ════════ -->
+        <path id="pipe-a"    class="pipe" d="M60 150 L60 196"               marker-end="url(#mk)"/>
+        <path id="pipe-b"    class="pipe" d="M180 150 L180 196"             marker-end="url(#mk)"/>
+        <path id="pipe-ph"   class="pipe" d="M300 150 L300 196"             marker-end="url(#mk)"/>
+        <path id="pipe-tp"   class="pipe" d="M180 388 L180 432"             marker-end="url(#mk)"/>
+        <path id="pipe-pv"   class="pipe" d="M180 472 L180 516"             marker-end="url(#mk)"/>
+        <path id="pipe-rec"  class="pipe" d="M180 540 L96 540 L96 300 L150 300" marker-end="url(#mk)"/>
+        <path id="pipe-fld"  class="pipe" d="M180 540 L264 540 L264 600"    marker-end="url(#mk)"/>
+
+        <text x="80" y="425" font-family="IBM Plex Mono" font-size="9" fill="#56685f" letter-spacing="1.5" transform="rotate(-90 80 425)">RICIRCOLO</text>
+        <text x="264" y="618" font-family="IBM Plex Mono" font-size="9" fill="#56685f" letter-spacing="1.5" text-anchor="middle">CAMPO</text>
+
+        <!-- ════════ DOSING PUMPS (peristaltic icon: body + rotor + rollers) ════════ -->
+        <g class="node" id="node-pA" onclick="openActuatorSheet('pA')">
+          <text id="syn-pA-tag" x="60" y="38" font-family="IBM Plex Mono" font-size="8.5" font-weight="600" fill="#56685f" text-anchor="middle" letter-spacing="1.5">AUTO</text>
+          <rect x="20" y="48" width="80" height="84" rx="14" fill="#152420" stroke="#243b33" stroke-width="1.6"/>
+          <circle id="syn-pA-glow" cx="60" cy="90" r="26" fill="none" stroke="#5d7068" stroke-width="2" opacity="0"/>
+          <circle cx="60" cy="90" r="22" fill="#0d1512" stroke="#243b33" stroke-width="1.6"/>
+          <g id="syn-pA-rotor">
+            <circle id="syn-pA-dot" cx="60" cy="90" r="5.5" fill="#5d7068"/>
+            <circle cx="60" cy="73" r="3.6" fill="#3a4d44"/>
+            <circle cx="74.7" cy="98.5" r="3.6" fill="#3a4d44"/>
+            <circle cx="45.3" cy="98.5" r="3.6" fill="#3a4d44"/>
+          </g>
+          <text x="60" y="118" font-family="Inter Tight" font-size="10.5" font-weight="600" fill="#c2d4cc" text-anchor="middle">Pompa A</text>
+        </g>
+
+        <g class="node" id="node-pB" onclick="openActuatorSheet('pB')">
+          <text id="syn-pB-tag" x="180" y="38" font-family="IBM Plex Mono" font-size="8.5" font-weight="600" fill="#56685f" text-anchor="middle" letter-spacing="1.5">AUTO</text>
+          <rect x="140" y="48" width="80" height="84" rx="14" fill="#152420" stroke="#243b33" stroke-width="1.6"/>
+          <circle id="syn-pB-glow" cx="180" cy="90" r="26" fill="none" stroke="#5d7068" stroke-width="2" opacity="0"/>
+          <circle cx="180" cy="90" r="22" fill="#0d1512" stroke="#243b33" stroke-width="1.6"/>
+          <g id="syn-pB-rotor">
+            <circle id="syn-pB-dot" cx="180" cy="90" r="5.5" fill="#5d7068"/>
+            <circle cx="180" cy="73" r="3.6" fill="#3a4d44"/>
+            <circle cx="194.7" cy="98.5" r="3.6" fill="#3a4d44"/>
+            <circle cx="165.3" cy="98.5" r="3.6" fill="#3a4d44"/>
+          </g>
+          <text x="180" y="118" font-family="Inter Tight" font-size="10.5" font-weight="600" fill="#c2d4cc" text-anchor="middle">Pompa B</text>
+        </g>
+
+        <g class="node" id="node-pPH" onclick="openActuatorSheet('pPH')">
+          <text id="syn-pPH-tag" x="300" y="38" font-family="IBM Plex Mono" font-size="8.5" font-weight="600" fill="#56685f" text-anchor="middle" letter-spacing="1.5">AUTO</text>
+          <rect x="260" y="48" width="80" height="84" rx="14" fill="#152420" stroke="#243b33" stroke-width="1.6"/>
+          <circle id="syn-pPH-glow" cx="300" cy="90" r="26" fill="none" stroke="#5d7068" stroke-width="2" opacity="0"/>
+          <circle cx="300" cy="90" r="22" fill="#0d1512" stroke="#243b33" stroke-width="1.6"/>
+          <g id="syn-pPH-rotor">
+            <circle id="syn-pPH-dot" cx="300" cy="90" r="5.5" fill="#5d7068"/>
+            <circle cx="300" cy="73" r="3.6" fill="#3a4d44"/>
+            <circle cx="314.7" cy="98.5" r="3.6" fill="#3a4d44"/>
+            <circle cx="285.3" cy="98.5" r="3.6" fill="#3a4d44"/>
+          </g>
+          <text x="300" y="118" font-family="Inter Tight" font-size="10.5" font-weight="600" fill="#c2d4cc" text-anchor="middle">Pompa pH</text>
+        </g>
+
+        <!-- ════════ TANK ════════ -->
+        <rect x="64" y="196" width="232" height="192" rx="16" fill="#0d1512" stroke="#2f4c42" stroke-width="2"/>
+        <clipPath id="tank-clip"><rect x="67" y="199" width="226" height="186" rx="14"/></clipPath>
+        <g clip-path="url(#tank-clip)">
+          <rect id="tank-liquid" x="67" y="270" width="226" height="115" fill="url(#liquid-grad)"/>
+          <path id="tank-wave" d="M67 270 Q103 262 139 270 T211 270 T283 270 T293 270 L293 385 L67 385 Z" fill="#176b46" opacity=".30"/>
+        </g>
+        <text x="180" y="222" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#7f968c" text-anchor="middle" letter-spacing="2.5">SERBATOIO</text>
+
+        <g>
+          <rect x="86" y="240" width="50" height="58" rx="8" fill="#111c17" stroke="#176b46" stroke-width="1.4"/>
+          <text x="111" y="261" font-family="IBM Plex Mono" font-size="9.5" fill="#2aa866" text-anchor="middle" font-weight="600" letter-spacing="1">EC</text>
+          <text x="111" y="282" font-family="IBM Plex Mono" font-size="14" fill="#3ddc84" text-anchor="middle" font-weight="600" id="syn-ec">2.40</text>
+        </g>
+        <g>
+          <rect x="224" y="240" width="50" height="58" rx="8" fill="#111c17" stroke="#2f5e7a" stroke-width="1.4"/>
+          <text x="249" y="261" font-family="IBM Plex Mono" font-size="9.5" fill="#42b4e6" text-anchor="middle" font-weight="600" letter-spacing="1">pH</text>
+          <text x="249" y="282" font-family="IBM Plex Mono" font-size="14" fill="#6cc8ee" text-anchor="middle" font-weight="600" id="syn-ph">6.21</text>
+        </g>
+
+        <!-- ════════ RECIRC / DISTRIBUTION PUMP ════════ -->
+        <g class="node" id="node-pump" onclick="openActuatorSheet('pump')">
+          <circle id="syn-pump-glow" cx="180" cy="452" r="34" fill="none" stroke="#5d7068" stroke-width="2" opacity="0"/>
+          <circle cx="180" cy="452" r="28" fill="#152420" stroke="#243b33" stroke-width="1.6"/>
+          <circle cx="180" cy="452" r="17" fill="#0d1512" stroke="#243b33" stroke-width="1.3"/>
+          <g id="syn-pump-rotor">
+            <path d="M180 442 L186 451 L180 451 L180 463 L174 454 L180 454 Z" fill="#5d7068" id="syn-pump-dot"/>
+          </g>
+          <text x="222" y="456" font-family="Inter Tight" font-size="10.5" font-weight="600" fill="#c2d4cc" text-anchor="start">Pompa</text>
+          <text id="syn-pump-tag" x="222" y="469" font-family="IBM Plex Mono" font-size="8.5" fill="#56685f" text-anchor="start" letter-spacing="1.5">AUTO</text>
+        </g>
+
+        <!-- ════════ 3-WAY VALVE ════════ -->
+        <g class="node" id="node-valve" onclick="openActuatorSheet('valve')">
+          <circle id="syn-valve-glow" cx="180" cy="540" r="32" fill="none" stroke="#5d7068" stroke-width="2" opacity="0"/>
+          <circle cx="180" cy="540" r="26" fill="#152420" stroke="#243b33" stroke-width="1.6"/>
+          <g id="syn-valve-rotor" style="transform-origin:180px 540px;transition:transform .5s var(--ease, ease)">
+            <path d="M180 540 L180 522 M180 540 L195.6 549 M180 540 L164.4 549" stroke="#5d7068" id="syn-valve-dot" stroke-width="3.4" stroke-linecap="round"/>
+          </g>
+          <circle cx="180" cy="540" r="5" fill="#0d1512" stroke="#3a4d44" stroke-width="1.2"/>
+          <text x="180" y="586" font-family="Inter Tight" font-size="10.5" font-weight="600" fill="#c2d4cc" text-anchor="middle">Valvola 3 vie</text>
+          <text id="syn-valve-tag" x="180" y="600" font-family="IBM Plex Mono" font-size="8.5" fill="#56685f" text-anchor="middle" letter-spacing="1.5">→ SERBATOIO</text>
+        </g>
+
+        <!-- ════════ FIELD OUTPUT MARKER ════════ -->
+        <g>
+          <path d="M240 612 L288 612 L288 636 L240 636 Z" fill="#111c17" stroke="#243b33" stroke-width="1.4" rx="6"/>
+          <path d="M248 628 q4 -14 8 0 M256 628 q4 -14 8 0 M264 628 q4 -14 8 0" fill="none" stroke="#3a4d44" stroke-width="1.6" stroke-linecap="round" id="syn-field-rows"/>
+          <text x="264" y="654" font-family="IBM Plex Mono" font-size="8.5" fill="#56685f" text-anchor="middle" letter-spacing="1.5">CAMPO</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════════ RECIPES ══════════════╗ -->
+<section class="screen" id="s-recipes">
+  <div class="screen-head">
+    <div>
+      <div class="screen-title">Ricette colturali</div>
+      <div class="screen-title-sub" id="recipe-count">3 profili salvati</div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="newRecipe()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      Nuova
+    </button>
+  </div>
+  <div id="recipe-list"></div>
+</section>
+
+<!-- ╔══════════════ CONFIG ══════════════╗ -->
+<section class="screen" id="s-config">
+  <div class="screen-head">
+    <div>
+      <div class="screen-title">Configurazione</div>
+      <div class="screen-title-sub">parametri di processo · EEPROM</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Serbatoio &amp; dosaggio</span></div>
+    <div class="panel-bd">
+      <div class="cfg-row"><span class="cfg-label">Volume serbatoio</span><input class="field" type="number" value="100"><span class="cfg-unit">L</span></div>
+      <div class="cfg-row"><span class="cfg-label">Concentrazione target</span><input class="field" type="number" value="5.0" step="0.5"><span class="cfg-unit">ml/L</span></div>
+      <div class="cfg-row"><span class="cfg-label">Rapporto A : B</span><div class="seg"><button class="on">1:1</button><button>2:1</button><button>1:2</button></div></div>
+      <div class="cfg-row"><span class="cfg-label">Correttore pH</span><div class="seg seg-amber"><button class="on">pH+</button><button>pH−</button></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Finestre sensori</span></div>
+    <div class="panel-bd">
+      <div class="cfg-row"><span class="cfg-label">pH minimo</span><input class="field" type="number" value="5.5" step="0.1"></div>
+      <div class="cfg-row"><span class="cfg-label">pH massimo</span><input class="field" type="number" value="6.5" step="0.1"></div>
+      <div class="cfg-row"><span class="cfg-label">EC minima</span><input class="field" type="number" value="1.0" step="0.1"><span class="cfg-unit">mS</span></div>
+      <div class="cfg-row"><span class="cfg-label">EC massima</span><input class="field" type="number" value="2.0" step="0.1"><span class="cfg-unit">mS</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Miscelazione &amp; correzione pH</span></div>
+    <div class="panel-bd">
+      <div class="cfg-row"><span class="cfg-label">Tempo miscela minimo</span><input class="field" type="number" value="5"><span class="cfg-unit">min</span></div>
+      <div class="cfg-row"><span class="cfg-label">Attesa fra dosi pH</span><input class="field" type="number" value="30"><span class="cfg-unit">s</span></div>
+      <div class="cfg-row"><span class="cfg-label">Dose base pH</span><input class="field" type="number" value="5"><span class="cfg-unit">ml</span></div>
+      <div class="cfg-row"><span class="cfg-label">Max tentativi pH</span><input class="field" type="number" value="5"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Avvio &amp; irrigazione</span></div>
+    <div class="panel-bd">
+      <div class="cfg-row"><span class="cfg-label">Soglia umidità avvio<span class="cfg-hint">media zone sotto la quale parte il ciclo</span></span><input class="field" type="number" value="40"><span class="cfg-unit">%</span></div>
+      <div class="cfg-row"><span class="cfg-label">Intervallo lettura</span><input class="field" type="number" value="30"><span class="cfg-unit">s</span></div>
+      <div class="cfg-row"><span class="cfg-label">Durata irrigazione</span><input class="field" type="number" value="15"><span class="cfg-unit">min</span></div>
+      <div class="cfg-row"><span class="cfg-label">Timeout sicurezza fase</span><input class="field" type="number" value="30"><span class="cfg-unit">min</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Rete · Access Point</span></div>
+    <div class="panel-bd">
+      <div class="cfg-row"><span class="cfg-label">SSID</span><input class="field field-wide" type="text" value="FertiControl_AP" style="max-width:180px"></div>
+      <div class="cfg-row"><span class="cfg-label">Password</span><input class="field field-wide" type="password" value="fertipass" style="max-width:180px"></div>
+      <div class="cfg-row"><span class="cfg-label">Notifiche HTTP</span><div class="seg"><button>On</button><button class="on">Off</button></div></div>
+      <div class="cfg-row"><span class="cfg-label">IP destinazione</span><input class="field field-wide" type="text" value="192.168.4.100" style="max-width:180px"></div>
+    </div>
+  </div>
+
+  <div class="savebar">
+    <button class="btn btn-primary" onclick="saveConfig()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+      Salva in EEPROM
+    </button>
+    <span class="save-ok" id="save-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Salvato</span>
+  </div>
+</section>
+
+<!-- ╔══════════════ MAINTENANCE ══════════════╗ -->
+<section class="screen" id="s-maint">
+  <div class="screen-head">
+    <div>
+      <div class="screen-title">Manutenzione</div>
+      <div class="screen-title-sub">controllo manuale · calibrazione · storico</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Comando manuale attuatori</span></div>
+    <div class="panel-bd">
+      <div class="maint-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>Ogni comando ha spegnimento automatico a 30 s. Disponibile solo a ciclo fermo.</span>
+      </div>
+      <div class="maint-grid">
+        <button class="maint-btn" id="mt-pA" onclick="toggleMaint('pA',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/></svg>
+          <span class="maint-btn-name">Pompa A</span><span class="maint-btn-state">FERMO</span>
+        </button>
+        <button class="maint-btn" id="mt-pB" onclick="toggleMaint('pB',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/></svg>
+          <span class="maint-btn-name">Pompa B</span><span class="maint-btn-state">FERMO</span>
+        </button>
+        <button class="maint-btn" id="mt-pPH" onclick="toggleMaint('pPH',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v4l4 7a4 4 0 0 1-3.5 6h-7A4 4 0 0 1 5 14l4-7Z"/><path d="M9 3h6"/></svg>
+          <span class="maint-btn-name">Pompa pH</span><span class="maint-btn-state">FERMO</span>
+        </button>
+        <button class="maint-btn" id="mt-pump" onclick="toggleMaint('pump',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span class="maint-btn-name">Pompa ricircolo</span><span class="maint-btn-state">FERMO</span>
+        </button>
+        <button class="maint-btn maint-span" id="mt-valve" onclick="toggleMaint('valve',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg>
+          <span class="maint-btn-name">Valvola 3 vie</span><span class="maint-btn-state">→ SERBATOIO</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Calibrazione portate</span></div>
+    <div class="panel-bd">
+      <div class="cal-row"><span class="cal-name">Pompa A</span><input class="field" type="number" value="4.0" step="0.1" style="width:72px"><span class="cfg-unit">ml/s</span><button class="btn btn-ghost btn-sm" onclick="calRun(this)">Test 60s</button></div>
+      <div class="cal-row"><span class="cal-name">Pompa B</span><input class="field" type="number" value="3.8" step="0.1" style="width:72px"><span class="cfg-unit">ml/s</span><button class="btn btn-ghost btn-sm" onclick="calRun(this)">Test 60s</button></div>
+      <div class="cal-row"><span class="cal-name">Pompa pH</span><input class="field" type="number" value="1.2" step="0.1" style="width:72px"><span class="cfg-unit">ml/s</span><button class="btn btn-ghost btn-sm" onclick="calRun(this)">Test 60s</button></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Calibrazione pH · 2 punti</span></div>
+    <div class="panel-bd">
+      <div class="cal-row"><span class="cal-name">Tampone 4.01</span><span class="cal-val" id="cal-ph4">—</span><button class="btn btn-ghost btn-sm" onclick="calPh(4,this)">Calibra</button></div>
+      <div class="cal-row"><span class="cal-name">Tampone 7.00</span><span class="cal-val" id="cal-ph7">—</span><button class="btn btn-ghost btn-sm" onclick="calPh(7,this)">Calibra</button></div>
+      <div class="cal-row"><span class="cal-name">Offset calcolato</span><span class="cal-val" id="cal-off">0.00</span><span class="cfg-unit">pH</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-hd"><span class="eyebrow">Storico cicli</span></div>
+    <div class="panel-bd flush">
+      <div class="tbl-wrap scroll">
+        <table class="tbl">
+          <thead><tr><th>Data</th><th>pH in</th><th>pH out</th><th>EC</th><th>ml A</th><th>ml B</th><th>ml pH</th><th>Esito</th></tr></thead>
+          <tbody>
+            <tr><td>08/06 10:42</td><td>6.10</td><td>6.21</td><td>2.40</td><td>250</td><td>250</td><td>10</td><td><span class="tag tag-ok">OK</span></td></tr>
+            <tr><td>07/06 18:15</td><td>7.20</td><td>6.55</td><td>2.38</td><td>250</td><td>250</td><td>25</td><td><span class="tag tag-warn">Warn</span></td></tr>
+            <tr><td>06/06 17:30</td><td>7.80</td><td>—</td><td>—</td><td>250</td><td>250</td><td>50</td><td><span class="tag tag-err">Errore</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════════════ TAB BAR ════════════════ -->
+<nav class="tabbar">
+  <button class="tab active" data-tab="dashboard" onclick="go('dashboard',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    <span class="tab-label">Quadro</span>
+  </button>
+  <button class="tab" data-tab="synoptic" onclick="go('synoptic',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M6 8.5v3a2 2 0 0 0 2 2h2M18 8.5v3a2 2 0 0 1-2 2h-2"/></svg>
+    <span class="tab-label">Schema</span>
+  </button>
+  <button class="tab" data-tab="recipes" onclick="go('recipes',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-4-2-7-5-11Z"/><path d="M12 22v-6"/></svg>
+    <span class="tab-label">Ricette</span>
+  </button>
+  <button class="tab" data-tab="config" onclick="go('config',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span class="tab-label">Config</span>
+  </button>
+  <button class="tab" data-tab="maint" onclick="go('maint',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.8 2.8-2.4-.6-.6-2.4 2.8-2.8Z"/></svg>
+    <span class="tab-label">Manut.</span>
+  </button>
+</nav>
+
+<!-- ════════════════ MODALS ════════════════ -->
+<div class="scrim" id="scrim" onclick="closeSheets()"></div>
+
+<!-- actuator control sheet -->
+<div class="sheet" id="sheet-act">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hd">
+    <div>
+      <div class="sheet-title" id="act-sheet-title">Pompa A</div>
+      <div class="sheet-sub" id="act-sheet-sub">modalità corrente · auto</div>
+    </div>
+    <button class="sheet-x" onclick="closeSheets()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="mode-opts" id="act-sheet-opts"></div>
+</div>
+
+<!-- recipe editor sheet -->
+<div class="sheet" id="sheet-recipe">
+  <div class="sheet-grip"></div>
+  <div class="sheet-hd">
+    <div>
+      <div class="sheet-title" id="recipe-sheet-title">Nuova ricetta</div>
+      <div class="sheet-sub">profilo colturale completo</div>
+    </div>
+    <button class="sheet-x" onclick="closeSheets()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-field col-2">
+      <label class="form-label">Nome ricetta</label>
+      <input class="form-input" id="rf-name" type="text" placeholder="es. Pomodoro · fioritura">
+    </div>
+    <div class="form-field col-2">
+      <label class="form-label">Coltura / note</label>
+      <input class="form-input" id="rf-note" type="text" placeholder="es. Solanum lycopersicum">
+    </div>
+    <div class="form-field"><label class="form-label">pH min</label><input class="form-input" id="rf-phmin" type="number" step="0.1" value="5.5"></div>
+    <div class="form-field"><label class="form-label">pH max</label><input class="form-input" id="rf-phmax" type="number" step="0.1" value="6.5"></div>
+    <div class="form-field"><label class="form-label">EC min · mS/cm</label><input class="form-input" id="rf-ecmin" type="number" step="0.1" value="1.0"></div>
+    <div class="form-field"><label class="form-label">EC max · mS/cm</label><input class="form-input" id="rf-ecmax" type="number" step="0.1" value="2.0"></div>
+    <div class="form-field"><label class="form-label">Conc. · ml/L</label><input class="form-input" id="rf-conc" type="number" step="0.5" value="5.0"></div>
+    <div class="form-field"><label class="form-label">Rapporto A:B</label>
+      <select class="form-input" id="rf-ratio"><option>1:1</option><option>2:1</option><option>1:2</option><option>3:1</option></select>
+    </div>
+    <div class="form-field"><label class="form-label">Soglia umidità · %</label><input class="form-input" id="rf-moist" type="number" value="40"></div>
+    <div class="form-field"><label class="form-label">Irrigazione · min</label><input class="form-input" id="rf-irr" type="number" value="15"></div>
+    <div class="form-field col-2">
+      <label class="form-label">Correttore pH</label>
+      <div class="seg seg-amber" style="width:fit-content"><button class="on" id="rf-phplus" onclick="rfPh('plus')">pH+</button><button id="rf-phminus" onclick="rfPh('minus')">pH−</button></div>
+    </div>
+    <div class="form-field col-2">
+      <label class="form-label">Icona</label>
+      <div class="emoji-pick" id="emoji-pick"></div>
+    </div>
+  </div>
+
+  <div class="form-foot">
+    <button class="btn btn-ghost" onclick="closeSheets()">Annulla</button>
+    <button class="btn btn-primary btn-full" onclick="saveRecipe()">Salva ricetta</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   FERTICONTROL HMI — application logic
+   ============================================================ */
+
+/* ---------- SVG icon set (used for actuator rows) ---------- */
+const ICONS = {
+  drop:'<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/>',
+  flask:'<path d="M9 3h6v4l4 7a4 4 0 0 1-3.5 6h-7A4 4 0 0 1 5 14l4-7Z"/><path d="M9 3h6"/>',
+  pump:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  valve:'<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
+  auto:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  on:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+  off:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+  tank:'<path d="M5 8h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/><path d="M5 8a7 3 0 0 1 14 0"/>',
+  field:'<path d="M3 20h18M6 20V8l6-4 6 4v12"/>'
+};
+
+/* ---------- actuator state ---------- */
+const ACT = {
+  pA:   {name:'Pompa A',          icon:'drop',  type:'onoff', mode:'auto'},
+  pB:   {name:'Pompa B',          icon:'drop',  type:'onoff', mode:'auto'},
+  pPH:  {name:'Pompa pH',         icon:'flask', type:'onoff', mode:'auto'},
+  pump: {name:'Pompa ricircolo',  icon:'pump',  type:'onoff', mode:'auto'},
+  valve:{name:'Valvola 3 vie',    icon:'valve', type:'valve', mode:'auto'}
+};
+const ACT_ORDER = ['pA','pB','pPH','pump','valve'];
+
+/* ---------- phases ---------- */
+const PHASES = ['Idle','Check','Dosaggio','Miscela','pH','Verifica','Produzione'];
+let currentPhase = 2; // index
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+const SCREENS = ['dashboard','synoptic','recipes','config','maint'];
+function go(name, btn){
+  SCREENS.forEach(s=>{
+    const el = document.getElementById('s-'+s);
+    if(el) el.classList.toggle('active', s===name);
+  });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  const vp = document.getElementById('viewport');
+  vp.scrollTop = 0;
+  // full-height screens (synoptic) manage their own internal scroll;
+  // the viewport itself must not also scroll, or two scroll regions fight.
+  vp.classList.toggle('viewport-locked', name==='synoptic');
+}
+
+/* ============================================================
+   CLOCK
+   ============================================================ */
+function tickClock(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  document.getElementById('sb-clock').textContent = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ============================================================
+   PHASE LADDER RENDER
+   ============================================================ */
+function renderPhases(){
+  const ladder = document.getElementById('phase-ladder');
+  const names = document.getElementById('phase-names');
+  ladder.innerHTML = '';
+  names.innerHTML = '';
+  PHASES.forEach((label,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'ph-step ' + (i<currentPhase?'done':(i===currentPhase?'now':''));
+    ladder.appendChild(seg);
+    const nm = document.createElement('div');
+    nm.className = 'ph-name ' + (i<currentPhase?'done':(i===currentPhase?'now':''));
+    nm.textContent = label;
+    names.appendChild(nm);
+  });
+}
+
+/* ============================================================
+   ACTUATOR RENDERING
+   ============================================================ */
+function actVisual(mode){
+  // returns {state, pillClass, pillText, dotColor, tag}
+  switch(mode){
+    case 'auto':      return {state:'run',    pill:'pill-run',    text:'Auto',       color:'#3ddc84', tag:'AUTO'};
+    case 'on':        return {state:'manual', pill:'pill-manual', text:'Man · On',   color:'#ffb23e', tag:'MAN ON'};
+    case 'off':       return {state:'off',    pill:'pill-off',    text:'Man · Off',  color:'#5d7068', tag:'MAN OFF'};
+    case 'serbatoio': return {state:'manual', pill:'pill-manual', text:'→ Serbat.',  color:'#ffb23e', tag:'SERBAT.'};
+    case 'campo':     return {state:'manual', pill:'pill-manual', text:'→ Campo',    color:'#42b4e6', tag:'CAMPO'};
+    default:          return {state:'off',    pill:'pill-off',    text:'—',          color:'#5d7068', tag:'—'};
+  }
+}
+
+function renderActuators(){
+  const list = document.getElementById('act-list');
+  list.innerHTML = '';
+  ACT_ORDER.forEach(id=>{
+    const a = ACT[id];
+    const v = actVisual(a.mode);
+    const metaTxt = a.type==='valve'
+      ? (a.mode==='auto'?'Posizione automatica':(a.mode==='campo'?'Verso il campo':'Verso il serbatoio'))
+      : (a.mode==='auto'?'Controllo da ciclo':(a.mode==='on'?'Forzata accesa':'Forzata spenta'));
+    const row = document.createElement('div');
+    row.className = 'act-row';
+    row.setAttribute('data-state', v.state);
+    row.onclick = ()=>openActuatorSheet(id);
+    row.innerHTML =
+      '<div class="act-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">'+ICONS[a.icon]+'</svg></div>'+
+      '<div class="act-main"><div class="act-name">'+a.name+'</div><div class="act-meta">'+metaTxt+'</div></div>'+
+      '<div class="act-pill '+v.pill+'"><span class="dot"></span>'+v.text+'</div>';
+    list.appendChild(row);
+  });
+  renderSchematic();
+}
+
+/* ============================================================
+   SCHEMATIC SYNC
+   ============================================================ */
+function renderSchematic(){
+  // ---- per-node visual state: dot color, label, glow/rotor animation class ----
+  ACT_ORDER.forEach(id=>{
+    const mode = ACT[id].mode;
+    const v = actVisual(mode);
+    const dot = document.getElementById('syn-'+id+'-dot');
+    const tag = document.getElementById('syn-'+id+'-tag');
+    const glow = document.getElementById('syn-'+id+'-glow');
+    const node = document.getElementById('node-'+id);
+    if(dot){
+      if(dot.tagName==='path'){ dot.setAttribute('stroke', v.color); }
+      else { dot.setAttribute('fill', v.color); }
+    }
+    if(tag){ tag.textContent = v.tag; tag.setAttribute('fill', v.color); }
+    if(glow){ glow.setAttribute('stroke', v.color); }
+    if(node){
+      node.classList.remove('is-run','is-manual');
+      // a manual-OFF actuator should look fully idle, not "manual active"
+      const isLiveManual = (mode==='on' || mode==='campo' || mode==='serbatoio');
+      if(mode==='auto' && isActuatorEffectivelyRunning(id)) node.classList.add('is-run');
+      else if(isLiveManual) node.classList.add('is-manual');
+    }
+  });
+
+  // ---- dosing pipes: animate only while that pump is actually delivering ----
+  setPipeFlow('pipe-a',  isActuatorEffectivelyRunning('pA'));
+  setPipeFlow('pipe-b',  isActuatorEffectivelyRunning('pB'));
+  setPipeFlow('pipe-ph', isActuatorEffectivelyRunning('pPH'));
+
+  // ---- recirc pump pipes: tank->pump->valve animate while recirc pump runs ----
+  const pumpOn = isActuatorEffectivelyRunning('pump');
+  setPipeFlow('pipe-tp', pumpOn);
+  setPipeFlow('pipe-pv', pumpOn);
+
+  // ---- valve routes flow either to recirculation loop or to the field ----
+  const toField = ACT.valve.mode==='campo';
+  const valveNode = document.getElementById('node-valve');
+  if(valveNode){
+    const rotor = document.getElementById('syn-valve-rotor');
+    if(rotor) rotor.style.transform = toField ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+  setPipeFlow('pipe-rec', pumpOn && !toField);
+  setPipeFlow('pipe-fld', pumpOn && toField, true);
+
+  // ---- tank gets a gentle wave while liquid is actively circulating ----
+  document.getElementById('schematic').classList.toggle('tank-mixing', pumpOn);
+}
+
+function setPipeFlow(id, active, isWater){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('flow-run','flow-manual');
+  el.removeAttribute('marker-end');
+  if(!active) return;
+  const manual = ['pA','pB','pPH','pump','valve'].some(a=>ACT[a].mode!=='auto');
+  // water-route pipes (toward field) use the cyan marker for clarity
+  if(isWater){
+    el.classList.add('flow-run');
+    el.setAttribute('marker-end','url(#mk-w)');
+  } else {
+    el.classList.add(manual ? 'flow-manual' : 'flow-run');
+    el.setAttribute('marker-end', manual ? 'url(#mk)' : 'url(#mk-g)');
+  }
+}
+
+// An actuator is "effectively running" if it's in auto during a cycle phase
+// that uses it, or forced on/positioned manually by the operator.
+function isActuatorEffectivelyRunning(id){
+  const mode = ACT[id].mode;
+  if(mode==='on' || mode==='campo' || mode==='serbatoio') return true;
+  if(mode==='off') return false;
+  // auto: tie to the running cycle + current phase
+  if(!cycleRunning) return false;
+  if(id==='pA' || id==='pB' || id==='pPH') return currentPhase===2; // Dosaggio
+  if(id==='pump') return currentPhase>=3 && currentPhase<=6;        // Miscela..Produzione
+  return false;
+}
+
+/* ============================================================
+   ACTUATOR CONTROL SHEET
+   ============================================================ */
+let activeActId = null;
+function openActuatorSheet(id){
+  activeActId = id;
+  const a = ACT[id];
+  document.getElementById('act-sheet-title').textContent = a.name;
+  document.getElementById('act-sheet-sub').textContent = 'modalità corrente · ' + actVisual(a.mode).text.toLowerCase();
+  const opts = document.getElementById('act-sheet-opts');
+  opts.innerHTML = '';
+
+  const choices = (a.type==='valve')
+    ? [
+        {mode:'auto',      sel:'sel-run',    icon:ICONS.auto,  name:'Automatico',        desc:'Gestita dal ciclo'},
+        {mode:'serbatoio', sel:'sel-manual', icon:ICONS.tank,  name:'Manuale → serbatoio', desc:'Forza il ricircolo'},
+        {mode:'campo',     sel:'sel-water',  icon:ICONS.field, name:'Manuale → campo',     desc:'Forza la produzione'}
+      ]
+    : [
+        {mode:'auto', sel:'sel-run',    icon:ICONS.auto, name:'Automatico',     desc:'Gestita dal ciclo'},
+        {mode:'on',   sel:'sel-manual', icon:ICONS.on,   name:'Manuale accesa', desc:'Forza accensione'},
+        {mode:'off',  sel:'sel-manual', icon:ICONS.off,  name:'Manuale spenta', desc:'Forza spegnimento'}
+      ];
+
+  choices.forEach(c=>{
+    const selected = (a.mode===c.mode);
+    const btn = document.createElement('button');
+    btn.className = 'mode-opt' + (selected ? ' '+c.sel : '');
+    btn.onclick = ()=>{ setActMode(id, c.mode); };
+    btn.innerHTML =
+      '<div class="mode-opt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">'+c.icon+'</svg></div>'+
+      '<div class="mode-opt-tx"><div class="mode-opt-name">'+c.name+'</div><div class="mode-opt-desc">'+c.desc+'</div></div>'+
+      '<div class="mode-opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>';
+    opts.appendChild(btn);
+  });
+
+  openSheet('sheet-act');
+}
+
+function setActMode(id, mode){
+  ACT[id].mode = mode;
+  renderActuators();
+  const a = ACT[id];
+  log(a.name + ' → ' + actVisual(mode).text, mode==='auto'?'ok':'warn');
+  closeSheets();
+}
+
+function allAuto(){
+  ACT_ORDER.forEach(id=>ACT[id].mode='auto');
+  renderActuators();
+  log('Tutti gli attuatori in automatico','ok');
+}
+
+/* ============================================================
+   CYCLE CONTROL
+   ============================================================ */
+let cycleRunning = true;
+let phaseSeconds = 262;
+let phaseTimer = null;
+
+function fmtTime(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+function tickPhase(){
+  if(phaseSeconds>0) phaseSeconds--;
+  document.getElementById('proc-timer').textContent = fmtTime(phaseSeconds);
+}
+function startPhaseTimer(){
+  clearInterval(phaseTimer);
+  phaseTimer = setInterval(tickPhase, 1000);
+}
+
+function toggleCycle(){
+  cycleRunning = !cycleRunning;
+  const label = document.getElementById('cycle-label');
+  const icon  = document.getElementById('cycle-icon');
+  if(cycleRunning){
+    label.textContent = 'Arresta ciclo';
+    icon.innerHTML = '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>';
+    setMachineState('Dosaggio nutrienti','DOSAGGIO','live');
+    currentPhase = 2; renderPhases(); renderSchematic();
+    startPhaseTimer();
+    log('Ciclo avviato','ok');
+  } else {
+    label.textContent = 'Avvia ciclo';
+    icon.innerHTML = '<path d="M7 4v16l13-8Z"/>';
+    setMachineState('In attesa','IDLE','idle');
+    currentPhase = 0; renderPhases(); renderSchematic();
+    clearInterval(phaseTimer);
+    document.getElementById('proc-timer').textContent = '--:--';
+    log('Ciclo fermato','warn');
+  }
+}
+
+function setMachineState(longName, shortName, kind){
+  document.getElementById('proc-state').textContent = longName;
+  document.getElementById('sb-state').textContent = shortName;
+  const procTag = document.getElementById('proc-tag');
+  const procDot = procTag.querySelector('.sb-dot');
+  const sbDot = document.getElementById('sb-dot');
+  const colorMap = {live:'var(--s-run)', idle:'var(--s-idle)', warn:'var(--s-manual)', fault:'var(--s-fault)'};
+  const bgMap = {live:'var(--s-run-bg)', idle:'var(--s-idle-bg)', warn:'var(--s-manual-bg)', fault:'var(--s-fault-bg)'};
+  procDot.className = 'sb-dot ' + (kind==='live'?'live':(kind==='fault'?'fault':(kind==='warn'?'warn':'')));
+  sbDot.className   = 'sb-dot ' + (kind==='live'?'live':(kind==='fault'?'fault':(kind==='warn'?'warn':'')));
+  procTag.style.background = bgMap[kind];
+  procTag.style.boxShadow = 'inset 0 0 0 1px ' + colorMap[kind].replace('var(','').replace(')','');
+  document.getElementById('proc-state').style.color = colorMap[kind];
+}
+
+/* ============================================================
+   EMERGENCY STOP + ALARM
+   ============================================================ */
+function emergencyStop(){
+  cycleRunning = false;
+  clearInterval(phaseTimer);
+  ACT_ORDER.forEach(id=>ACT[id].mode='off');
+  renderActuators();
+  document.getElementById('cycle-label').textContent = 'Avvia ciclo';
+  document.getElementById('cycle-icon').innerHTML = '<path d="M7 4v16l13-8Z"/>';
+  document.getElementById('proc-timer').textContent = '--:--';
+  setMachineState('Arresto di emergenza','STOP','fault');
+  currentPhase = 0; renderPhases();
+  showAlarm('Arresto di emergenza attivato manualmente');
+  log('ARRESTO DI EMERGENZA','err');
+}
+function showAlarm(desc){
+  document.getElementById('alarm-desc').textContent = desc;
+  document.getElementById('alarm').classList.add('show');
+}
+function clearAlarm(){
+  document.getElementById('alarm').classList.remove('show');
+  setMachineState('In attesa','IDLE','idle');
+  log('Allarme resettato','ok');
+}
+
+/* ============================================================
+   EVENT LOG
+   ============================================================ */
+function log(msg, kind, value){
+  const feed = document.getElementById('log-feed');
+  const d = new Date();
+  const p = n=>String(n).padStart(2,'0');
+  const t = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  const line = document.createElement('div');
+  line.className = 'log-line ' + (kind||'');
+  line.innerHTML = '<span class="log-t">'+t+'</span><span class="log-m">'+msg+'</span>'+(value?'<span class="log-v">'+value+'</span>':'');
+  feed.insertBefore(line, feed.firstChild);
+  while(feed.children.length>7) feed.removeChild(feed.lastChild);
+}
+
+/* ============================================================
+   MAINTENANCE — manual control with 30s countdown
+   ============================================================ */
+const maintState = {};
+const maintTick = {};
+const maintEnd = {};
+function maintLabel(id, secs){
+  if(id==='valve') return secs==null ? '→ SERBATOIO' : ('→ CAMPO · '+secs+'s');
+  return secs==null ? 'FERMO' : ('ATTIVO · '+secs+'s');
+}
+function toggleMaint(id, btn){
+  const stateEl = btn.querySelector('.maint-btn-state');
+  if(maintState[id]){
+    maintState[id] = false;
+    btn.classList.remove('live');
+    clearInterval(maintTick[id]);
+    stateEl.textContent = maintLabel(id, null);
+  } else {
+    maintState[id] = true;
+    btn.classList.add('live');
+    let left = 30;
+    stateEl.textContent = maintLabel(id, left);
+    maintTick[id] = setInterval(()=>{
+      left--;
+      if(left<=0){
+        clearInterval(maintTick[id]);
+        maintState[id] = false;
+        btn.classList.remove('live');
+        stateEl.textContent = maintLabel(id, null);
+      } else {
+        stateEl.textContent = maintLabel(id, left);
+      }
+    }, 1000);
+  }
+}
+
+/* ============================================================
+   CALIBRATION (simulated)
+   ============================================================ */
+function calRun(btn){
+  let t = 60;
+  const orig = btn.textContent;
+  btn.textContent = t+'s';
+  btn.style.color = 'var(--c-grow)';
+  const iv = setInterval(()=>{
+    t--;
+    btn.textContent = t+'s';
+    if(t<=0){ clearInterval(iv); btn.textContent='✓'; setTimeout(()=>{btn.textContent=orig;btn.style.color='';},1400); }
+  }, 1000);
+}
+function calPh(point, btn){
+  const reading = (point===4 ? 4.0+(Math.random()-0.5)*0.3 : 7.0+(Math.random()-0.5)*0.3);
+  document.getElementById('cal-ph'+point).textContent = reading.toFixed(2);
+  const offset = (point===4 ? 4.01-reading : 7.00-reading);
+  document.getElementById('cal-off').textContent = offset.toFixed(2);
+  btn.textContent = '✓'; btn.style.color='var(--c-grow)';
+  setTimeout(()=>{btn.textContent='Calibra';btn.style.color='';},1400);
+}
+
+/* ============================================================
+   CONFIG SAVE
+   ============================================================ */
+function saveConfig(){
+  const ok = document.getElementById('save-ok');
+  ok.classList.add('show');
+  setTimeout(()=>ok.classList.remove('show'), 2400);
+  log('Configurazione salvata in EEPROM','ok');
+}
+
+/* ============================================================
+   SHEET OPEN / CLOSE
+   ============================================================ */
+function openSheet(id){
+  document.getElementById('scrim').classList.add('open');
+  document.getElementById(id).classList.add('open');
+}
+function closeSheets(){
+  document.getElementById('scrim').classList.remove('open');
+  document.getElementById('sheet-act').classList.remove('open');
+  document.getElementById('sheet-recipe').classList.remove('open');
+}
+
+/* ============================================================
+   SENSOR SIMULATION
+   ============================================================ */
+const PH_WINDOW = {min:5.5, max:6.5};
+const EC_WINDOW = {min:1.0, max:2.0};
+const MOIST_THRESHOLD = 40;
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+function simulateSensors(){
+  // pH around 6.2 with drift
+  const ph = clamp(6.2 + (Math.random()-0.5)*0.7, 4.5, 7.8);
+  const ec = clamp(1.5 + (Math.random()-0.5)*1.0, 0.5, 3.2);
+  const phOk = ph>=PH_WINDOW.min && ph<=PH_WINDOW.max;
+  const ecOk = ec>=EC_WINDOW.min && ec<=EC_WINDOW.max;
+
+  // pH gauge
+  document.getElementById('ph-val').textContent = ph.toFixed(2);
+  document.getElementById('ph-val').style.color = phOk?'var(--t-data)':'var(--s-manual)';
+  document.getElementById('ph-dot').className = 'gauge-state-dot'+(phOk?'':' warn');
+  const phPos = clamp((ph-3)/(9-3)*100, 0, 100);
+  const phNeedle = document.getElementById('ph-needle');
+  phNeedle.style.left = phPos+'%';
+  phNeedle.className = 'gauge-needle'+(phOk?'':' warn');
+  document.getElementById('syn-ph').textContent = ph.toFixed(2);
+
+  // EC gauge
+  document.getElementById('ec-val').textContent = ec.toFixed(2);
+  document.getElementById('ec-val').style.color = ecOk?'var(--s-water)':'var(--s-manual)';
+  document.getElementById('ec-dot').style.background = ecOk?'var(--s-water)':'var(--s-manual)';
+  document.getElementById('ec-dot').style.boxShadow = '0 0 8px '+(ecOk?'var(--s-water)':'var(--s-manual)');
+  const ecPos = clamp(ec/5*100, 0, 100);
+  document.getElementById('ec-needle').style.left = ecPos+'%';
+  document.getElementById('syn-ec').textContent = ec.toFixed(2);
+
+  // moisture
+  const zones = [0,1,2,3].map(()=>Math.round(34+Math.random()*14));
+  const cells = document.querySelectorAll('#moist-grid .moist-cell');
+  zones.forEach((z,i)=>{
+    if(cells[i]){
+      cells[i].querySelector('.moist-v').textContent = z;
+      cells[i].querySelector('.moist-fill').style.height = z+'%';
+    }
+  });
+  const avg = zones.reduce((a,b)=>a+b,0)/zones.length;
+  document.getElementById('moist-avg').textContent = avg.toFixed(1);
+}
+
+function renderMoistureGrid(){
+  const grid = document.getElementById('moist-grid');
+  grid.innerHTML = '';
+  ['Z1','Z2','Z3','Z4'].forEach((z,i)=>{
+    const cell = document.createElement('div');
+    cell.className = 'moist-cell';
+    cell.innerHTML = '<div class="moist-fill" style="height:38%"></div><div class="moist-z">'+z+'</div><div class="moist-v mono">38</div><div class="moist-pct">%</div>';
+    grid.appendChild(cell);
+  });
+}
+
+/* ============================================================
+   RECIPES — CRUD with localStorage persistence
+   ============================================================ */
+const EMOJIS = ['🌱','🍅','🥬','🌿','🫑','🌸','🍓','🌶️'];
+let recipes = [];
+let nextRecipeId = 1;
+let rfEmoji = '🌱';
+let rfPhMode = 'plus';
+let editingId = null;
+
+const DEFAULT_RECIPES = [
+  {id:1,name:'Pomodoro · vegetativa',note:'Solanum lycopersicum',emoji:'🍅',phMin:5.8,phMax:6.2,ecMin:2.0,ecMax:3.0,conc:6.0,ratio:'1:1',moist:40,irr:15,phMode:'plus',active:false},
+  {id:2,name:'Lattuga idroponica',note:'Lactuca sativa',emoji:'🥬',phMin:5.5,phMax:6.0,ecMin:0.8,ecMax:1.6,conc:3.0,ratio:'1:1',moist:50,irr:10,phMode:'minus',active:false},
+  {id:3,name:'Basilico aromatico',note:'Ocimum basilicum',emoji:'🌿',phMin:5.5,phMax:6.5,ecMin:1.0,ecMax:2.0,conc:4.0,ratio:'1:1',moist:45,irr:12,phMode:'plus',active:true}
+];
+
+function loadRecipes(){
+  try{
+    const saved = localStorage.getItem('ferti.recipes');
+    if(saved){
+      recipes = JSON.parse(saved);
+    } else {
+      recipes = DEFAULT_RECIPES.slice();
+    }
+  }catch(e){ recipes = DEFAULT_RECIPES.slice(); }
+  if(recipes.length) nextRecipeId = Math.max.apply(null, recipes.map(r=>r.id)) + 1;
+}
+function persistRecipes(){
+  try{ localStorage.setItem('ferti.recipes', JSON.stringify(recipes)); }catch(e){}
+}
+
+function renderRecipes(){
+  const list = document.getElementById('recipe-list');
+  document.getElementById('recipe-count').textContent = recipes.length + (recipes.length===1?' profilo salvato':' profili salvati');
+  // update active recipe name in status bar
+  const act = recipes.find(r=>r.active);
+  document.getElementById('sb-recipe').textContent = act ? act.name.split(' ')[0] : '—';
+
+  if(recipes.length===0){
+    list.innerHTML =
+      '<div class="empty"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-4-2-7-5-11Z"/><path d="M12 22v-6"/></svg></div>'+
+      '<div class="empty-title">Nessuna ricetta</div><div class="empty-text">Crea il primo profilo colturale con le finestre di pH, EC e dosaggio per la tua coltura.</div>'+
+      '<button class="btn btn-primary btn-sm" onclick="newRecipe()" style="margin:0 auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Nuova ricetta</button></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  recipes.forEach(r=>{
+    const card = document.createElement('div');
+    card.className = 'recipe' + (r.active?' active':'');
+    card.innerHTML =
+      '<div class="recipe-top">'+
+        '<div class="recipe-emoji">'+r.emoji+'</div>'+
+        '<div class="recipe-id"><div class="recipe-name">'+r.name+'</div><div class="recipe-sci">'+(r.note||'—')+'</div></div>'+
+        (r.active?'<span class="recipe-live"><span class="dot"></span>Attiva</span>':'')+
+      '</div>'+
+      '<div class="recipe-specs">'+
+        '<div class="spec"><div class="spec-k">pH</div><div class="spec-v">'+r.phMin+'–'+r.phMax+'</div></div>'+
+        '<div class="spec"><div class="spec-k">EC</div><div class="spec-v">'+r.ecMin+'–'+r.ecMax+'</div><div class="spec-u">mS/cm</div></div>'+
+        '<div class="spec"><div class="spec-k">Conc.</div><div class="spec-v">'+r.conc+'</div><div class="spec-u">ml/L</div></div>'+
+        '<div class="spec"><div class="spec-k">A:B</div><div class="spec-v">'+r.ratio+'</div></div>'+
+      '</div>'+
+      '<div class="recipe-acts">'+
+        '<button class="btn btn-ghost btn-sm" onclick="editRecipe('+r.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>Modifica</button>'+
+        (r.active?'':'<button class="btn btn-primary btn-sm" onclick="applyRecipe('+r.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Applica</button>')+
+        '<button class="btn btn-ghost btn-sm" onclick="deleteRecipe('+r.id+')" style="flex:0 0 auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>'+
+      '</div>';
+    list.appendChild(card);
+  });
+}
+
+function applyRecipe(id){
+  const r = recipes.find(x=>x.id===id);
+  if(!r) return;
+  recipes.forEach(x=>x.active=false);
+  r.active = true;
+  persistRecipes();
+  renderRecipes();
+  log('Ricetta attiva: '+r.name, 'ok');
+}
+function deleteRecipe(id){
+  if(!confirm('Eliminare questa ricetta?')) return;
+  recipes = recipes.filter(r=>r.id!==id);
+  persistRecipes();
+  renderRecipes();
+  log('Ricetta eliminata','warn');
+}
+
+/* ---------- recipe form ---------- */
+function renderEmojiPicker(){
+  const wrap = document.getElementById('emoji-pick');
+  wrap.innerHTML = '';
+  EMOJIS.forEach(e=>{
+    const b = document.createElement('button');
+    b.className = 'emoji-opt' + (e===rfEmoji?' on':'');
+    b.textContent = e;
+    b.onclick = ()=>{ rfEmoji=e; renderEmojiPicker(); };
+    wrap.appendChild(b);
+  });
+}
+function rfPh(mode){
+  rfPhMode = mode;
+  document.getElementById('rf-phplus').classList.toggle('on', mode==='plus');
+  document.getElementById('rf-phminus').classList.toggle('on', mode==='minus');
+}
+function setField(id,val){ document.getElementById(id).value = val; }
+
+function newRecipe(){
+  editingId = null; rfEmoji='🌱'; rfPhMode='plus';
+  document.getElementById('recipe-sheet-title').textContent = 'Nuova ricetta';
+  setField('rf-name',''); setField('rf-note','');
+  setField('rf-phmin','5.5'); setField('rf-phmax','6.5');
+  setField('rf-ecmin','1.0'); setField('rf-ecmax','2.0');
+  setField('rf-conc','5.0'); document.getElementById('rf-ratio').value='1:1';
+  setField('rf-moist','40'); setField('rf-irr','15');
+  rfPh('plus'); renderEmojiPicker();
+  openSheet('sheet-recipe');
+}
+function editRecipe(id){
+  const r = recipes.find(x=>x.id===id);
+  if(!r) return;
+  editingId = id; rfEmoji=r.emoji; rfPhMode=r.phMode;
+  document.getElementById('recipe-sheet-title').textContent = 'Modifica ricetta';
+  setField('rf-name',r.name); setField('rf-note',r.note);
+  setField('rf-phmin',r.phMin); setField('rf-phmax',r.phMax);
+  setField('rf-ecmin',r.ecMin); setField('rf-ecmax',r.ecMax);
+  setField('rf-conc',r.conc); document.getElementById('rf-ratio').value=r.ratio;
+  setField('rf-moist',r.moist); setField('rf-irr',r.irr);
+  rfPh(r.phMode); renderEmojiPicker();
+  openSheet('sheet-recipe');
+}
+function saveRecipe(){
+  const name = document.getElementById('rf-name').value.trim();
+  if(!name){ alert('Inserisci un nome per la ricetta'); return; }
+  const data = {
+    id: editingId || nextRecipeId++,
+    name: name,
+    note: document.getElementById('rf-note').value.trim(),
+    emoji: rfEmoji,
+    phMin: parseFloat(document.getElementById('rf-phmin').value),
+    phMax: parseFloat(document.getElementById('rf-phmax').value),
+    ecMin: parseFloat(document.getElementById('rf-ecmin').value),
+    ecMax: parseFloat(document.getElementById('rf-ecmax').value),
+    conc: parseFloat(document.getElementById('rf-conc').value),
+    ratio: document.getElementById('rf-ratio').value,
+    moist: parseInt(document.getElementById('rf-moist').value,10),
+    irr: parseInt(document.getElementById('rf-irr').value,10),
+    phMode: rfPhMode,
+    active: editingId ? (recipes.find(x=>x.id===editingId)||{}).active||false : false
+  };
+  if(editingId){
+    const i = recipes.findIndex(x=>x.id===editingId);
+    if(i>=0) recipes[i] = data;
+    log('Ricetta aggiornata: '+name,'ok');
+  } else {
+    recipes.push(data);
+    log('Ricetta creata: '+name,'ok');
+  }
+  persistRecipes();
+  renderRecipes();
+  closeSheets();
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function boot(){
+  renderPhases();
+  renderMoistureGrid();
+  renderActuators();
+  loadRecipes();
+  renderRecipes();
+  simulateSensors();
+  setInterval(simulateSensors, 3000);
+  startPhaseTimer();
+  // seed a couple of log lines
+  log('Pre-check completato','ok');
+  log('Dosaggio nutrienti avviato','ok','A+B');
+}
+boot();
+</script>
+</body>
+</html>
