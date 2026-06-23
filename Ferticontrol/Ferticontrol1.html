@@ -3703,30 +3703,35 @@ li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
 
 </body></html>`;
 
-  const vecchio = document.getElementById('print-frame');
-  if(vecchio) vecchio.remove();
-  const iframe = document.createElement('iframe');
-  iframe.id='print-frame';
-  iframe.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';
-  document.body.appendChild(iframe);
-
-  let stampato=false;
-  const lancia=()=>{
-    if(stampato) return; stampato=true;
-    try{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }
-    catch(e){ window.print(); }
-  };
-
-  // Stampa quando l'iframe ha finito di renderizzare; fallback su timeout di sicurezza.
-  iframe.addEventListener('load', ()=>{ setTimeout(lancia, 200); });
-  const idoc = iframe.contentDocument || iframe.contentWindow.document;
-  idoc.open(); idoc.write(htmlStampa); idoc.close();
-  setTimeout(lancia, 1500); // fallback se l'evento load non scatta
+  lanciaStampa(htmlStampa);
 }
 
-// Invia un documento HTML completo alla stampa tramite iframe nascosto.
-// Stesso meccanismo collaudato di stampaMiscela (load + fallback timeout).
-function lanciaStampaIframe(htmlStampa){
+// ── INVIO ALLA STAMPA — robusto anche dentro Google Sites ──
+// Google Sites incapsula la pagina in un <iframe sandbox> SENZA il permesso
+// "allow-modals": in quel contesto window.print() (e iframe.print()) vengono
+// ignorati silenziosamente, quindi la stampa "non parte" online.
+// Una nuova finestra aperta con window.open() è un contesto top-level che
+// ESCE dal sandbox (gli embed di Google Sites concedono allow-popups e
+// allow-popups-to-escape-sandbox), perciò lì print() funziona normalmente.
+// Fallback all'iframe nascosto se i popup sono bloccati (es. uso offline).
+function lanciaStampa(htmlStampa){
+  // Bootstrap di auto-stampa iniettato nel documento: stampa appena pronto.
+  const bootstrap = `<script>(function(){function p(){try{window.focus();window.print();}catch(e){}}if(document.readyState==='complete'){setTimeout(p,200);}else{window.addEventListener('load',function(){setTimeout(p,200);});}})();<\/script>`;
+  const doc = htmlStampa.includes('</body>')
+    ? htmlStampa.replace('</body>', bootstrap + '</body>')
+    : htmlStampa + bootstrap;
+
+  // 1) Tentativo principale: nuova finestra/scheda (esce dal sandbox di Sites).
+  let w = null;
+  try{ w = window.open('', '_blank'); }catch(e){ w = null; }
+  if(w && w.document){
+    w.document.open();
+    w.document.write(doc);
+    w.document.close();
+    return;
+  }
+
+  // 2) Fallback: iframe nascosto (funziona in locale / fuori da sandbox).
   const vecchio = document.getElementById('print-frame');
   if(vecchio) vecchio.remove();
   const iframe = document.createElement('iframe');
@@ -3744,6 +3749,9 @@ function lanciaStampaIframe(htmlStampa){
   idoc.open(); idoc.write(htmlStampa); idoc.close();
   setTimeout(lancia, 1500);
 }
+
+// Alias retro-compatibile.
+function lanciaStampaIframe(htmlStampa){ lanciaStampa(htmlStampa); }
 
 // Stampa l'inventario: ingredienti PRESENTI e NON PRESENTI in magazzino,
 // raggruppati per categoria.
