@@ -125,7 +125,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde-ch
   .modal-b{padding:16px}
   .modal-f{padding:12px 16px;border-radius:0 0 8px 8px}
   .pianta-grid{gap:8px;padding:10px}
-  .fase-row{gap:6px;padding:0 10px 10px}
+  .fase-row{gap:6px;padding:10px}
   .serb-grid{gap:10px}
   .ri-grid{gap:8px}
   .target-grid{gap:8px}
@@ -162,7 +162,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde-ch
 .pianta-btn{background:var(--cs);border:2px solid transparent;border-radius:var(--r);padding:12px 8px;text-align:center;cursor:pointer;transition:var(--transition);font-size:.75rem;font-weight:600;color:var(--tx);line-height:1.3;box-shadow:0 2px 6px rgba(0,0,0,.05);font-family:'Source Sans 3',system-ui,sans-serif}
 .pianta-btn:hover,.pianta-btn.active{border-color:var(--verde-chiaro);background:#fff;color:var(--verde-medio);box-shadow:0 4px 16px rgba(74,104,48,.15);transform:translateY(-2px)}
 .pianta-btn .em{font-size:1.5rem;display:block;margin-bottom:4px}
-.fase-row{display:flex;gap:8px;padding:0 14px 14px;flex-wrap:wrap}
+.fase-row{display:flex;gap:8px;padding:14px;flex-wrap:wrap}
 .fase-btn{flex:1;min-width:110px;background:var(--cs);border:2px solid transparent;border-radius:var(--r);padding:10px 8px;text-align:center;cursor:pointer;font-size:.72rem;font-weight:600;color:var(--ts);transition:var(--transition);line-height:1.4;box-shadow:0 2px 6px rgba(0,0,0,.05);font-family:'Source Sans 3',system-ui,sans-serif}
 .fase-btn:hover,.fase-btn.active{border-color:var(--ocra-chiaro);background:#fff;color:var(--ocra);box-shadow:0 4px 16px rgba(200,146,14,.15);transform:translateY(-2px)}
 
@@ -253,6 +253,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde-ch
 .tg-box:hover{background:var(--bo)}
 .tg-lbl{font-size:.62rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;font-family:'Source Sans 3',system-ui,sans-serif}
 .tg-unit{font-weight:400;font-size:.58rem;color:var(--ts);opacity:.7}
+.tg-name{font-weight:500;font-size:.56rem;color:var(--ts);opacity:.85;text-transform:none;letter-spacing:0;margin-left:4px}
 .tg-box input{padding:6px 8px;font-size:.82rem;text-align:right;background:#fff;border-radius:6px}
 
 /* ── SECTION HEADER ── */
@@ -347,7 +348,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde-ch
 <body>
 <header>
   <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><rect x="2" y="9" width="9" height="14" rx="2" fill="#4a8c5e" stroke="#fff" stroke-width="1"/><rect x="15" y="9" width="9" height="14" rx="2" fill="#2471a3" stroke="#fff" stroke-width="1.2"/><path d="M7 9V6a2 2 0 0 1 4 0v3M20 9V6a2 2 0 0 1 8 0v3" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/><circle cx="13" cy="4" r="2.5" fill="#d4660a"/></svg>
-  <div><h1>Ferti<span class="accent">Control</span> <span class="header-tagline">— Ricette pensate per sub Coco </span></h1></div>
+  <div><h1>Ferti<span class="accent">Control</span> <span class="header-tagline">— Calcolatore soluzioni madri per fertirrigazione </span></h1></div>
   <div class="hbadge">v2.0</div>
 </header>
 
@@ -379,15 +380,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde-ch
       </div>
       <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Ioni presenti (mg/L)</div>
       <div class="row3">
-        <div class="tg-box"><div class="tg-lbl">Ca²⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Mg²⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">K⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Na⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">SO₄²⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Cl⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">HCO₃⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃"></div>
-        <div class="tg-box"><div class="tg-lbl">NO₃⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Fe <span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Ca²⁺<span class="tg-name">Calcio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Mg²⁺<span class="tg-name">Magnesio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>K⁺<span class="tg-name">Potassio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Na⁺<span class="tg-name">Sodio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>SO₄²⁻<span class="tg-name">Solfati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Cl⁻<span class="tg-name">Cloruri</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>HCO₃⁻<span class="tg-name">Bicarbonati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>NO₃⁻<span class="tg-name">Nitrati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Fe<span class="tg-name">Ferro</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
         <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')">💧 Ottima (EC 0.1)</button>
