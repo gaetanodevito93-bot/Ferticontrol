@@ -1,0 +1,340 @@
+/* ════════════════════════════════════════════════════════════════════════
+   FERTICONTROL — DESIGN SYSTEM  ·  "Lab / Technical-Monospace"
+   v1.0 — Foglio di stile riutilizzabile per tutte le pagine del sito
+   ════════════════════════════════════════════════════════════════════════
+
+   COME USARLO
+   -----------
+   1. Copia questo file nella cartella del sito (es. /assets/css/).
+   2. In OGNI pagina HTML, dentro <head>, aggiungi i font e poi questo CSS:
+
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="assets/css/ferticontrol-style.css">
+
+   3. Usa le classi documentate qui sotto. Tutti i colori, raggi e ombre
+      derivano dalle variabili in :root — per ri-tematizzare basta cambiare
+      quelle, senza toccare i componenti.
+
+   ────────────────────────────────────────────────────────────────────────
+   FILOSOFIA DELLO STILE
+   ────────────────────────────────────────────────────────────────────────
+   • Identità: strumento agronomico professionale — "pannello da laboratorio".
+   • Tono: tecnico, preciso, leggibile. Niente decorazione fine a sé stessa.
+   • Tipografia DOPPIA:
+       - Inter        → testo corrente, paragrafi, descrizioni.
+       - JetBrains Mono → tutto ciò che è "strumentale": titoli, etichette,
+                          tab, bottoni, valori numerici, badge, codici.
+     La monospace comunica "dato misurabile / valore di controllo".
+   • Forme: angoli netti (6px), bordi sottili, ombre stratificate ma sobrie.
+   • Colore: identità botanica (verdi profondi) + accento terracotta/ambra
+     usato con parsimonia per call-to-action e stati attivi.
+   • Sfondo: griglia tecnica leggera (28px) + alone verde → "carta millimetrata".
+   • Movimento: micro-interazioni brevi (translateY in hover), mai invasive.
+
+   ────────────────────────────────────────────────────────────────────────
+   PALETTE (semantica)
+   ────────────────────────────────────────────────────────────────────────
+   --vs  verde scuro     #0f3528   superfici scure, header, tab attiva
+   --vm  verde medio     #1c5740   gradienti, accenti verdi
+   --vc  verde chiaro    #3f9268   bordi attivi, focus, bottoni secondari
+   --cr  crema           #f7f4ec   sfondo pagina
+   --cs  crema scura     #ece4d5   superfici tenui, separatori
+   --bl  bianco          #ffffff   card, input
+   --ar  terracotta      #d96a2b   ACCENTO primario (CTA, barre accento)
+   --as  ambra           #f3a35e   accento chiaro, testo su fondo scuro
+   --tx  testo           #16201a   testo principale
+   --ts  testo tenue     #5c6657   label, testo secondario
+   --bo  bordo           #e2dac9   bordi neutri
+   --ro  rosso           #c0392b   errori / mancante
+   --sa  blu serbatoio A #2471a3   codifica serbatoio A
+   --sb  verde serb. B   #1e8449   codifica serbatoio B
+   --vi  viola           #7b3f9e   elementi/formule chimiche
+
+   ════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── DESIGN TOKENS ──────────────────────────────────────────────────────── */
+:root{
+  /* colori */
+  --vs:#0f3528; --vm:#1c5740; --vc:#3f9268;
+  --cr:#f7f4ec; --cs:#ece4d5; --bl:#ffffff;
+  --ar:#d96a2b; --as:#f3a35e;
+  --tx:#16201a; --ts:#5c6657; --bo:#e2dac9;
+  --ro:#c0392b; --az:#2471a3; --vi:#7b3f9e;
+  --sa:#2471a3; --sb:#1e8449;
+
+  /* forma e profondità */
+  --r:6px;                                   /* raggio standard (netto) */
+  --r-lg:10px;                               /* raggio per modali/contenitori grandi */
+  --sh:0 6px 24px rgba(15,53,40,.07);        /* ombra card a riposo */
+  --sh-hover:0 14px 40px rgba(15,53,40,.12); /* ombra card in hover */
+  --transition:all .22s cubic-bezier(.22,1,.36,1);
+
+  /* tipografia */
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --disp:var(--mono); /* font dei titoli = monospace (carattere tecnico) */
+}
+
+
+/* ── RESET & BASE ───────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+
+body{
+  font-family:var(--sans);
+  color:var(--tx);
+  min-height:100vh;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  /* sfondo: griglia tecnica 28px + alone verde + gradiente carta */
+  background:
+    linear-gradient(rgba(15,53,40,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(15,53,40,.035) 1px,transparent 1px),
+    radial-gradient(1200px 600px at 100% -10%,rgba(63,146,104,.10),transparent 60%),
+    linear-gradient(180deg,var(--cr) 0%,#ece5d6 100%);
+  background-size:28px 28px,28px 28px,100% 100%,100% 100%;
+  background-attachment:fixed;
+}
+
+::selection{background:rgba(63,146,104,.2);color:var(--tx)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--cs);border-radius:4px}
+::-webkit-scrollbar-thumb{background:var(--bo);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--ts)}
+
+
+/* ── HEADER ─────────────────────────────────────────────────────────────────
+   <header>
+     <svg>…logo…</svg>
+     <div><h1>FertiControl <span>— sottotitolo</span></h1></div>
+     <div class="hbadge">v2.0</div>
+   </header>
+   ──────────────────────────────────────────────────────────────────────── */
+header{
+  position:relative;overflow:hidden;width:100%;
+  display:flex;align-items:center;gap:14px;padding:18px 22px;
+  color:var(--cr);
+  background:linear-gradient(120deg,var(--vs) 0%,var(--vm) 75%,#247052 100%);
+  box-shadow:0 8px 28px rgba(15,53,40,.28);
+}
+header::after{ /* linea-accento ambra in basso */
+  content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--ar) 50%,transparent);opacity:.85;
+}
+header::before{ /* glow ambientale */
+  content:"";position:absolute;top:-60%;right:-5%;width:280px;height:280px;
+  background:radial-gradient(circle,rgba(243,163,94,.18),transparent 65%);pointer-events:none;
+}
+header h1{font-family:var(--mono);font-size:1rem;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+header h1::before{content:"› ";color:var(--as);font-weight:700} /* prefisso da prompt */
+header span{font-family:var(--mono);font-size:.66rem;opacity:.6;font-weight:400;text-transform:none}
+.hbadge{
+  margin-left:auto;flex-shrink:0;
+  font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--as);background:rgba(255,255,255,.1);border:1px solid rgba(243,163,94,.5);
+  padding:5px 11px;border-radius:8px;backdrop-filter:blur(6px);
+}
+
+
+/* ── TABS / NAV ─────────────────────────────────────────────────────────────
+   <div class="tabs"><div class="tab active">…</div><div class="tab">…</div></div>
+   ──────────────────────────────────────────────────────────────────────── */
+.tabs{
+  display:flex;gap:6px;width:100%;padding:8px 10px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);
+  background:rgba(15,53,40,.04);border-bottom:1px solid var(--bo);
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;white-space:nowrap;cursor:pointer;
+  font-family:var(--mono);font-size:.7rem;font-weight:600;text-transform:lowercase;
+  color:var(--ts);background:rgba(255,255,255,.5);
+  padding:9px 14px;border:1px solid var(--bo);border-radius:var(--r);
+  transition:var(--transition);
+}
+.tab:hover{color:var(--vm);background:rgba(63,146,104,.1);border-color:var(--vc)}
+.tab.active{
+  color:var(--as);border-color:var(--vs);
+  background:linear-gradient(135deg,var(--vm) 0%,var(--vs) 100%);
+  box-shadow:0 4px 14px rgba(15,53,40,.25);
+}
+
+
+/* ── LAYOUT: PANNELLI ───────────────────────────────────────────────────── */
+.panel{display:none;width:100%;max-width:900px;margin:0 auto;padding:14px 12px 40px}
+.panel.active{display:block}
+
+
+/* ── CARD ───────────────────────────────────────────────────────────────────
+   <div class="card">
+     <div class="ch">🌿 Titolo card</div>
+     <div class="cb">…contenuto…</div>
+   </div>
+   ──────────────────────────────────────────────────────────────────────── */
+.card{
+  width:100%;margin-bottom:16px;overflow:hidden;
+  background:var(--bl);border:1px solid var(--bo);border-radius:var(--r);
+  box-shadow:var(--sh);transition:var(--transition);
+}
+.card:hover{box-shadow:var(--sh-hover);transform:translateY(-1px)}
+.ch{ /* card header */
+  position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:13px 16px 13px 18px;color:var(--cr);
+  font-family:var(--disp);font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--vs) 0%,var(--vm) 100%);
+}
+.ch::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ar)} /* barra accento */
+.cb{padding:18px} /* card body */
+
+
+/* ── FORM ───────────────────────────────────────────────────────────────── */
+label{
+  display:block;margin-bottom:6px;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--ts);
+}
+input[type="number"],input[type="text"],select,textarea{
+  width:100%;padding:10px 12px;
+  font-family:var(--mono);font-size:.82rem;color:var(--tx);
+  background:var(--bl);border:1.5px solid var(--bo);border-radius:var(--r);
+  box-shadow:0 1px 0 rgba(15,53,40,.04);transition:var(--transition);
+  -moz-appearance:textfield;-webkit-appearance:none;
+}
+input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--vc);background:#fff;
+  box-shadow:0 0 0 4px rgba(63,146,104,.18);
+}
+.field{margin-bottom:14px}
+.sep{height:1px;background:var(--cs);margin:12px 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+/* input con unità: <div class="urow"><input><span class="utag">L</span></div> */
+.urow{display:flex;gap:6px;align-items:flex-end}
+.urow>*:first-child{flex:1}
+.utag{
+  flex-shrink:0;white-space:nowrap;padding:8px 11px;border-radius:var(--r);
+  font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--cr);
+  background:linear-gradient(135deg,var(--vm),var(--vs));
+}
+
+
+/* ── BOTTONI ────────────────────────────────────────────────────────────────
+   .btn          base (sempre presente)
+   .btn-pr       primario (terracotta, full-width) — azione principale
+   .btn-se       secondario (outline verde)
+   .btn-del      distruttivo (outline rosso)
+   .btn-sm       variante piccola
+   ──────────────────────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 18px;cursor:pointer;border:none;border-radius:var(--r);
+  font-family:var(--mono);font-size:.76rem;font-weight:600;letter-spacing:.01em;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);transition:var(--transition);
+}
+.btn:active{transform:scale(.97);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.btn:focus-visible{outline:2px solid var(--ar);outline-offset:2px}
+.btn-pr{width:100%;color:#fff;background:linear-gradient(135deg,var(--ar) 0%,#bf551f 100%);box-shadow:0 6px 18px rgba(217,106,43,.32)}
+.btn-pr:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(217,106,43,.42)}
+.btn-se{background:transparent;border:1.5px solid var(--vc);color:var(--vm)}
+.btn-se:hover{background:var(--vc);color:#fff;transform:translateY(-1px);box-shadow:0 6px 16px rgba(63,146,104,.3)}
+.btn-del{background:transparent;border:1.5px solid var(--bo);color:var(--ro);padding:6px 12px}
+.btn-del:hover{background:var(--ro);color:#fff;border-color:var(--ro);box-shadow:0 4px 12px rgba(192,57,43,.3)}
+.btn-sm{padding:6px 12px;font-size:.72rem}
+
+
+/* ── BADGE & TAG ────────────────────────────────────────────────────────────
+   .ba serbatoio A · .bb serbatoio B · .badge-ok / .badge-no stati scorta
+   ──────────────────────────────────────────────────────────────────────── */
+.ba{background:linear-gradient(135deg,var(--sa),#1a5a8a);color:#fff;border-radius:var(--r);padding:3px 8px;font-family:var(--mono);font-size:.65rem;font-weight:700;box-shadow:0 2px 6px rgba(36,113,163,.2)}
+.bb{background:linear-gradient(135deg,var(--sb),#145a32);color:#fff;border-radius:var(--r);padding:3px 8px;font-family:var(--mono);font-size:.65rem;font-weight:700;box-shadow:0 2px 6px rgba(30,132,73,.2)}
+.badge-ok{background:linear-gradient(135deg,var(--vc),#3a7a4e);color:#fff;border-radius:var(--r);padding:2px 8px;font-family:var(--mono);font-size:.62rem;font-weight:700}
+.badge-no{background:linear-gradient(135deg,var(--ro),#a52818);color:#fff;border-radius:var(--r);padding:2px 8px;font-family:var(--mono);font-size:.62rem;font-weight:700}
+
+
+/* ── ALERT ──────────────────────────────────────────────────────────────────
+   <div class="alert al-ok|al-err|al-inf|al-blu">…</div>
+   ──────────────────────────────────────────────────────────────────────── */
+.alert{display:flex;gap:10px;align-items:flex-start;width:100%;margin-bottom:10px;padding:12px 14px;border-radius:var(--r);font-size:.78rem;line-height:1.6;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.al-err{background:#f8d7da;border-left:4px solid var(--ro);color:#721c24}
+.al-ok {background:#d4edda;border-left:4px solid var(--vc);color:#155724}
+.al-inf{background:#fff3cd;border-left:4px solid #f0a500;color:#856404}
+.al-blu{background:#d1ecf1;border-left:4px solid #0c7b8e;color:#0c5460}
+
+
+/* ── TABELLE ────────────────────────────────────────────────────────────────
+   <div class="tbl-wrap"><table class="tbl">…</table></div>
+   ──────────────────────────────────────────────────────────────────────── */
+.tbl-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
+.tbl{width:100%;border-collapse:collapse;font-size:.78rem;min-width:480px}
+.tbl th{background:linear-gradient(135deg,var(--cs),#e0d9cc);padding:10px 12px;text-align:left;font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ts);white-space:nowrap;border-bottom:2px solid var(--bo)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--cs);vertical-align:top;transition:background .15s ease}
+.tbl tr:hover td{background:rgba(63,146,104,.03)}
+.tbl tr:last-child td{border-bottom:none}
+/* valori numerici nelle tabelle: aggiungi class="mono" o usa <code> */
+.mono,code,.num{font-family:var(--mono)}
+
+
+/* ── SECTION HEADER ─────────────────────────────────────────────────────────
+   <div class="sec-h"><h4>Titolo</h4><button class="btn btn-se btn-sm">+ Nuovo</button></div>
+   ──────────────────────────────────────────────────────────────────────── */
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.sec-h h4{font-family:var(--disp);font-size:.92rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--vs)}
+
+
+/* ── MODALE ─────────────────────────────────────────────────────────────────
+   <div class="modal-bg open"><div class="modal">
+     <div class="modal-h"><h3>Titolo</h3><button class="modal-close">×</button></div>
+     <div class="modal-b">…</div>
+     <div class="modal-f"><button class="btn …">…</button></div>
+   </div></div>
+   ──────────────────────────────────────────────────────────────────────── */
+.modal-bg{display:none;position:fixed;inset:0;z-index:100;padding:20px 12px;overflow-y:auto;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal{width:100%;max-width:520px;margin:auto;background:#fff;border-radius:var(--r-lg);box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fcModalIn .3s ease-out}
+@keyframes fcModalIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;color:var(--cr);background:linear-gradient(135deg,var(--vs),var(--vm));border-radius:var(--r-lg) var(--r-lg) 0 0}
+.modal-h h3{font-family:var(--disp);font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.modal-close{background:rgba(255,255,255,.15);border:none;color:var(--cr);font-size:1.2rem;line-height:1;cursor:pointer;padding:6px 10px;border-radius:8px;transition:var(--transition)}
+.modal-close:hover{background:rgba(255,255,255,.25)}
+.modal-b{padding:20px}
+.modal-f{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:14px 20px;background:linear-gradient(135deg,var(--cs),#e8e1d4);border-radius:0 0 var(--r-lg) var(--r-lg)}
+
+
+/* ── UTILITY ────────────────────────────────────────────────────────────── */
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px;padding:48px 24px;text-align:center;color:var(--ts)}
+.ph p{max-width:280px;font-size:.82rem;line-height:1.7}
+
+
+/* ── PRINT ──────────────────────────────────────────────────────────────── */
+@media print{
+  .no-print,.tabbar,.topbar,header,.tabs{display:none!important}
+  body{background:#fff!important}
+  .card{break-inside:avoid;box-shadow:none!important;border-color:#ccc}
+}
+
+
+/* ── RESPONSIVE (mobile) ────────────────────────────────────────────────── */
+@media(max-width:600px){
+  header{padding:14px 16px}
+  header h1{font-size:.9rem}
+  .tab{padding:8px 12px;font-size:.68rem}
+  .panel{padding:12px 10px 40px}
+  .cb{padding:14px}
+  .btn{padding:12px 16px;font-size:.78rem}
+  .row2,.row3{gap:8px}
+}
+
+
+/* ── TOUCH (target minimi 44px) ─────────────────────────────────────────── */
+@media(hover:none)and(pointer:coarse){
+  .btn{min-height:44px;min-width:44px}
+  .tab{min-height:44px}
+  input[type="number"],input[type="text"],select,textarea{min-height:44px}
+}
