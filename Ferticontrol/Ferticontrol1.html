@@ -247,6 +247,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .tg-box:hover{background:#e8e1d4}
 .tg-lbl{font-size:.62rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
 .tg-unit{font-weight:400;font-size:.58rem;color:var(--ts);opacity:.7}
+.tg-name{font-weight:500;font-size:.56rem;color:var(--ts);opacity:.85;text-transform:none;letter-spacing:0;margin-left:4px}
 .tg-box input{padding:6px 8px;font-size:.82rem;text-align:right;background:#fff;border-radius:6px}
 
 /* ── SECTION HEADER ── */
@@ -540,15 +541,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
       </div>
       <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Ioni presenti (mg/L)</div>
       <div class="row3">
-        <div class="tg-box"><div class="tg-lbl">Ca²⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Mg²⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">K⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Na⁺ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">SO₄²⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Cl⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">HCO₃⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃"></div>
-        <div class="tg-box"><div class="tg-lbl">NO₃⁻ <span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl">Fe <span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Ca²⁺<span class="tg-name">Calcio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Mg²⁺<span class="tg-name">Magnesio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>K⁺<span class="tg-name">Potassio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Na⁺<span class="tg-name">Sodio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>SO₄²⁻<span class="tg-name">Solfati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Cl⁻<span class="tg-name">Cloruri</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>HCO₃⁻<span class="tg-name">Bicarbonati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>NO₃⁻<span class="tg-name">Nitrati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Fe<span class="tg-name">Ferro</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
         <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')">💧 Ottima (EC 0.1)</button>
@@ -3864,30 +3865,35 @@ li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
 
 </body></html>`;
 
-  const vecchio = document.getElementById('print-frame');
-  if(vecchio) vecchio.remove();
-  const iframe = document.createElement('iframe');
-  iframe.id='print-frame';
-  iframe.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';
-  document.body.appendChild(iframe);
-
-  let stampato=false;
-  const lancia=()=>{
-    if(stampato) return; stampato=true;
-    try{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }
-    catch(e){ window.print(); }
-  };
-
-  // Stampa quando l'iframe ha finito di renderizzare; fallback su timeout di sicurezza.
-  iframe.addEventListener('load', ()=>{ setTimeout(lancia, 200); });
-  const idoc = iframe.contentDocument || iframe.contentWindow.document;
-  idoc.open(); idoc.write(htmlStampa); idoc.close();
-  setTimeout(lancia, 1500); // fallback se l'evento load non scatta
+  lanciaStampa(htmlStampa);
 }
 
-// Invia un documento HTML completo alla stampa tramite iframe nascosto.
-// Stesso meccanismo collaudato di stampaMiscela (load + fallback timeout).
-function lanciaStampaIframe(htmlStampa){
+// ── INVIO ALLA STAMPA — robusto anche dentro Google Sites ──
+// Google Sites incapsula la pagina in un <iframe sandbox> SENZA il permesso
+// "allow-modals": in quel contesto window.print() (e iframe.print()) vengono
+// ignorati silenziosamente, quindi la stampa "non parte" online.
+// Una nuova finestra aperta con window.open() è un contesto top-level che
+// ESCE dal sandbox (gli embed di Google Sites concedono allow-popups e
+// allow-popups-to-escape-sandbox), perciò lì print() funziona normalmente.
+// Fallback all'iframe nascosto se i popup sono bloccati (es. uso offline).
+function lanciaStampa(htmlStampa){
+  // Bootstrap di auto-stampa iniettato nel documento: stampa appena pronto.
+  const bootstrap = `<script>(function(){function p(){try{window.focus();window.print();}catch(e){}}if(document.readyState==='complete'){setTimeout(p,200);}else{window.addEventListener('load',function(){setTimeout(p,200);});}})();<\/script>`;
+  const doc = htmlStampa.includes('</body>')
+    ? htmlStampa.replace('</body>', bootstrap + '</body>')
+    : htmlStampa + bootstrap;
+
+  // 1) Tentativo principale: nuova finestra/scheda (esce dal sandbox di Sites).
+  let w = null;
+  try{ w = window.open('', '_blank'); }catch(e){ w = null; }
+  if(w && w.document){
+    w.document.open();
+    w.document.write(doc);
+    w.document.close();
+    return;
+  }
+
+  // 2) Fallback: iframe nascosto (funziona in locale / fuori da sandbox).
   const vecchio = document.getElementById('print-frame');
   if(vecchio) vecchio.remove();
   const iframe = document.createElement('iframe');
@@ -3905,6 +3911,9 @@ function lanciaStampaIframe(htmlStampa){
   idoc.open(); idoc.write(htmlStampa); idoc.close();
   setTimeout(lancia, 1500);
 }
+
+// Alias retro-compatibile.
+function lanciaStampaIframe(htmlStampa){ lanciaStampa(htmlStampa); }
 
 // Stampa l'inventario: ingredienti PRESENTI e NON PRESENTI in magazzino,
 // raggruppati per categoria.
