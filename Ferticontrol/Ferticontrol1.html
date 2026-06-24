@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" id="html-root">
 <head><!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YZF8S37JKX"></script>
 <script>
@@ -504,48 +504,58 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
   .tab{min-height:44px}
   input[type="number"],input[type="text"],select,textarea{min-height:44px}
 }
+
+/* ── LANGUAGE SELECTOR ── */
+.lang-selector{display:flex;gap:0;border-radius:7px;overflow:hidden;border:1.5px solid rgba(255,255,255,.25);flex-shrink:0;margin-right:2px}
+.lang-btn{background:transparent;border:none;color:rgba(255,255,255,.55);font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.07em;padding:5px 10px;cursor:pointer;transition:var(--transition);text-transform:uppercase}
+.lang-btn.active{background:rgba(255,255,255,.18);color:#fff}
+.lang-btn:hover:not(.active){background:rgba(255,255,255,.1);color:rgba(255,255,255,.85)}
 </style>
 </head>
 <body>
 <header>
   <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><rect x="2" y="9" width="9" height="14" rx="2" fill="#4a8c5e" stroke="#fff" stroke-width="1"/><rect x="15" y="9" width="9" height="14" rx="2" fill="#2471a3" stroke="#fff" stroke-width="1.2"/><path d="M7 9V6a2 2 0 0 1 4 0v3M20 9V6a2 2 0 0 1 8 0v3" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/><circle cx="13" cy="4" r="2.5" fill="#d4660a"/></svg>
-  <div><h1>FertiControl <span>— Calcolatore soluzioni madri per fertirrigazione </span></h1></div>
+  <div><h1>FertiControl <span data-i18n="header.subtitle">— Calcolatore soluzioni madri per fertirrigazione </span></h1></div>
+  <div class="lang-selector" id="lang-selector">
+    <button class="lang-btn active" data-lang="it" onclick="setLang('it')">IT</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
   <div class="hbadge">v2.0</div>
 </header>
 
 <div class="alert al-blu" style="margin:12px;width:auto">
   <span>📖</span>
-  <span><b>Come si usa.</b> FertiControl calcola le soluzioni madri concentrate (Serbatoi A/B/C) per la fertirrigazione partendo dalla tua acqua e dalla ricetta nutritiva.
+  <span data-i18n-html="howto.text"><b>Come si usa.</b> FertiControl calcola le soluzioni madri concentrate (Serbatoi A/B/C) per la fertirrigazione partendo dalla tua acqua e dalla ricetta nutritiva.
   <b>① Acqua</b> — inserisci l'analisi dell'acqua di partenza. <b>② Ricette</b> — scegli o crea la ricetta e la fase di crescita. <b>③ Calcola</b> — ottieni dosi dei sali, EC/pH attesi e avvisi di precipitazione. <b>④ Catalogo</b> gestisci i fertilizzanti, <b>⑤ Dati</b> salva/esporta tutto.</span>
 </div>
 
 <div class="tabs" role="tablist" aria-label="Menu principale">
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-acqua" tabindex="0" onclick="showTab('acqua')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('acqua');event.preventDefault()}">💧 Acqua</div>
-  <div class="tab active" role="tab" aria-selected="true" aria-controls="tab-ricette" tabindex="0" onclick="showTab('ricette')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('ricette');event.preventDefault()}">🌿 Ricette</div>
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-calcola" tabindex="0" onclick="showTab('calcola')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('calcola');event.preventDefault()}">⚗️ Calcola</div>
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-catalogo" tabindex="0" onclick="showTab('catalogo')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('catalogo');event.preventDefault()}">📦 Catalogo</div>
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-dati" tabindex="0" onclick="showTab('dati')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('dati');event.preventDefault()}">💾 Dati</div>
+  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-acqua" tabindex="0" onclick="showTab('acqua')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('acqua');event.preventDefault()}" data-i18n="tab.acqua">💧 Acqua</div>
+  <div class="tab active" role="tab" aria-selected="true" aria-controls="tab-ricette" tabindex="0" onclick="showTab('ricette')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('ricette');event.preventDefault()}" data-i18n="tab.ricette">🌿 Ricette</div>
+  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-calcola" tabindex="0" onclick="showTab('calcola')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('calcola');event.preventDefault()}" data-i18n="tab.calcola">⚗️ Calcola</div>
+  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-catalogo" tabindex="0" onclick="showTab('catalogo')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('catalogo');event.preventDefault()}" data-i18n="tab.catalogo">📦 Catalogo</div>
+  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-dati" tabindex="0" onclick="showTab('dati')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('dati');event.preventDefault()}" data-i18n="tab.dati">💾 Dati</div>
 </div>
 
 <!-- ═══ TAB ACQUA ═══ -->
 <div class="panel" id="tab-acqua" role="tabpanel" aria-labelledby="tab-acqua">
   <div class="card">
-    <div class="ch">💧 Acqua di Partenza <span style="font-size:.65rem;font-weight:400;opacity:.75">(acquedotto / pozzo / osmosi)</span></div>
+    <div class="ch"><span data-i18n="acqua.title">💧 Acqua di Partenza</span> <span style="font-size:.65rem;font-weight:400;opacity:.75" data-i18n="acqua.subtitle">(acquedotto / pozzo / osmosi)</span></div>
     <div class="cb">
       <div class="alert al-blu" style="margin-bottom:12px">
-        <span>ℹ️</span><span>Inserisci l'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.</span>
+        <span>ℹ️</span><span data-i18n="acqua.info">Inserisci l'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.</span>
       </div>
       <div class="row2" style="margin-bottom:8px">
         <div class="tg-box">
-          <div class="tg-lbl">EC acqua <span class="tg-unit">mS/cm</span></div>
+          <div class="tg-lbl"><span data-i18n="acqua.ec">EC acqua</span> <span class="tg-unit">mS/cm</span></div>
           <input type="number" id="aq-ec" value="0.3" min="0" step="0.01">
         </div>
         <div class="tg-box">
-          <div class="tg-lbl">pH acqua</div>
+          <div class="tg-lbl" data-i18n="acqua.ph">pH acqua</div>
           <input type="number" id="aq-ph" value="7.2" min="0" max="14" step="0.1">
         </div>
       </div>
-      <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Ioni presenti (mg/L)</div>
+      <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" data-i18n="acqua.ions">Ioni presenti (mg/L)</div>
       <div class="row3">
         <div class="tg-box"><div class="tg-lbl"><span>Ca²⁺<span class="tg-name">Calcio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
         <div class="tg-box"><div class="tg-lbl"><span>Mg²⁺<span class="tg-name">Magnesio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
@@ -558,12 +568,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <div class="tg-box"><div class="tg-lbl"><span>Fe<span class="tg-name">Ferro</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')">💧 Ottima (EC 0.1)</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('media')">🚰 Acquedotto medio</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('dura')">🪨 Acqua dura</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('osmosi')">🔬 Osmosi inversa</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')">🌧️ Piovana</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')">💎 Distillata</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')" data-i18n="preset.ottima">💧 Ottima (EC 0.1)</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('media')" data-i18n="preset.media">🚰 Acquedotto medio</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('dura')" data-i18n="preset.dura">🪨 Acqua dura</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('osmosi')" data-i18n="preset.osmosi">🔬 Osmosi inversa</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')" data-i18n="preset.piovana">🌧️ Piovana</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')" data-i18n="preset.distillata">💎 Distillata</button>
       </div>
     </div>
   </div>
@@ -574,17 +584,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 
   <!-- HEADER sezione con tasto nuova ricetta -->
   <div class="sec-h">
-    <h4>🌿 Le tue Ricette</h4>
-    <button class="btn btn-se btn-sm" onclick="openNuovaRicetta()" aria-label="Crea una nuova ricetta">+ Nuova Ricetta</button>
+    <h4 data-i18n="ricette.title">🌿 Le tue Ricette</h4>
+    <button class="btn btn-se btn-sm" onclick="openNuovaRicetta()" aria-label="Crea una nuova ricetta" data-i18n="ricette.nuova">+ Nuova Ricetta</button>
   </div>
 
   <!-- GRIGLIA UNIFICATA: tutte le ricette (predefinite + custom) -->
   <div class="card">
-    <div class="ch">🌱 Ricette — Coco Coir</div>
+    <div class="ch" data-i18n="ricette.cocoHeader">🌱 Ricette — Coco Coir</div>
     <div class="pianta-grid" id="pianta-grid"></div>
     <div id="card-fasi-wrap" style="display:none">
       <div class="sep" style="margin:0"></div>
-      <div class="ch" style="background:var(--vm);font-size:.68rem">📅 Fase di Crescita</div>
+      <div class="ch" style="background:var(--vm);font-size:.68rem" data-i18n="ricette.fasi">📅 Fase di Crescita</div>
       <div class="fase-row" id="fase-row"></div>
     </div>
   </div>
@@ -593,16 +603,16 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
   <div id="ricetta-out-wrap" style="display:none">
     <div class="card">
       <div class="ch" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
-        <span id="ricetta-out-title">🔬 Composizione</span>
+        <span id="ricetta-out-title" data-i18n="ricette.composizione">🔬 Composizione</span>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-sm" id="btn-modifica-ricetta" onclick="editCurrentRicetta()" style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.55);color:#fff">✏️ Modifica</button>
-          <button class="btn btn-pr btn-sm" style="width:auto" onclick="caricaRicettaCorrente()">→ Calcola</button>
+          <button class="btn btn-sm" id="btn-modifica-ricetta" onclick="editCurrentRicetta()" style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.55);color:#fff" data-i18n="ricette.modifica">✏️ Modifica</button>
+          <button class="btn btn-pr btn-sm" style="width:auto" onclick="caricaRicettaCorrente()" data-i18n="ricette.calcola">→ Calcola</button>
         </div>
       </div>
       <div id="ricetta-out" class="cb"></div>
     </div>
     <div class="card">
-      <div class="ch" style="background:var(--vm)">📋 Note Agronomiche</div>
+      <div class="ch" style="background:var(--vm)" data-i18n="ricette.noteTitle">📋 Note Agronomiche</div>
       <div class="cb" id="note-agronomiche" style="font-size:.8rem;line-height:1.7;color:var(--ts)"></div>
     </div>
   </div>
@@ -612,29 +622,29 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 <!-- ═══ TAB CALCOLA ═══ -->
 <div class="panel" id="tab-calcola" role="tabpanel" aria-labelledby="tab-calcola">
   <div class="card">
-    <div class="ch">⚙️ Parametri Impianto</div>
+    <div class="ch" data-i18n="calcola.params">⚙️ Parametri Impianto</div>
     <div class="cb">
       <div class="row2">
-        <div class="field"><label>Serbatoio A (L)</label>
+        <div class="field"><label data-i18n="calcola.serbA">Serbatoio A (L)</label>
           <div class="urow"><input type="number" id="volA" value="100" min="1"><span class="utag">L</span></div>
         </div>
-        <div class="field"><label>Serbatoio B (L)</label>
+        <div class="field"><label data-i18n="calcola.serbB">Serbatoio B (L)</label>
           <div class="urow"><input type="number" id="volB" value="100" min="1"><span class="utag">L</span></div>
         </div>
       </div>
-      <div class="field"><label>Fattore diluizione 1 : X <span class="tw"><span class="ii">i</span><span class="tip">1 L concentrato produce X L soluzione finale. ⚠️ Più X è grande, più la soluzione madre è concentrata e maggiore il rischio precipitazioni. Es: 1:200 = madre 200× concentrata (rischio alto). 1:50 = madre 50× concentrata (più sicuro). Il motore suggerirà il fattore ottimale in base alle dosi inserite.</span></span></label>
+      <div class="field"><label><span data-i18n="calcola.diluzione">Fattore diluizione 1 : X</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.dil.tip">1 L concentrato produce X L soluzione finale. ⚠️ Più X è grande, più la soluzione madre è concentrata e maggiore il rischio precipitazioni. Es: 1:200 = madre 200× concentrata (rischio alto). 1:50 = madre 50× concentrata (più sicuro). Il motore suggerirà il fattore ottimale in base alle dosi inserite.</span></span></label>
         <div class="urow"><span class="utag">1 :</span><input type="number" id="diluizione" value="100" min="1" onchange="aggiornaDiluizioneWarning()"></div>
       </div>
       <div id="diluizione-warning" class="alert al-err" style="display:none;margin-top:6px">
         <span>⚠️</span><span id="diluizione-warning-txt"></span>
       </div>
 
-      <div class="field" style="margin-top:14px"><label>pH soluzione finale <span class="tw"><span class="ii">i</span><span class="tip">pH a cui la soluzione finale viene mantenuta in coltura (correzione con acido/base). Determina il rischio di precipitazione del fosfato di calcio: a pH ≤ 6 il fosfato resta in soluzione, sopra 6.3 tende a precipitare. Il motore usa questo valore per la verifica anti-precipitazione e può suggerirti il pH ottimale.</span></span></label>
+      <div class="field" style="margin-top:14px"><label><span data-i18n="calcola.phFinale">pH soluzione finale</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.ph.tip">pH a cui la soluzione finale viene mantenuta in coltura (correzione con acido/base). Determina il rischio di precipitazione del fosfato di calcio: a pH ≤ 6 il fosfato resta in soluzione, sopra 6.3 tende a precipitare. Il motore usa questo valore per la verifica anti-precipitazione e può suggerirti il pH ottimale.</span></span></label>
         <div class="urow"><span class="utag">pH</span><input type="number" id="ph-finale" value="6.0" min="4.5" max="7.5" step="0.1" onchange="if(document.getElementById('calc-out').innerHTML.trim())calcola()"></div>
       </div>
 
       <div style="background:var(--cs);border-radius:4px;padding:9px 11px;font-size:.75rem;color:var(--ts)">
-        <strong>Ricetta caricata:</strong> <span id="lbl-ricetta-caricata" style="color:var(--vm)">Nessuna — inserisci manualmente o carica da Ricette</span>
+        <strong data-i18n="calcola.ricettaCaricata">Ricetta caricata:</strong> <span id="lbl-ricetta-caricata" style="color:var(--vm)" data-i18n="calcola.nessuna">Nessuna — inserisci manualmente o carica da Ricette</span>
         <span id="lbl-modo-caricato" style="display:none;margin-left:6px"></span>
       </div>
     </div>
@@ -642,13 +652,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 
   <!-- ═══ SALI DA PREPARARE ═══ -->
   <div class="card">
-    <div class="ch" id="ch-sali-calc">🧂 Sali da Preparare</div>
+    <div class="ch" id="ch-sali-calc" data-i18n="calcola.sali">🧂 Sali da Preparare</div>
     <div class="cb" style="padding:0">
       <div class="tbl-wrap">
         <table class="tbl" id="calc-table">
           <thead><tr>
-            <th>Sale / Fertilizzante</th>
-            <th style="text-align:right">g/1000L fin.</th>
+            <th data-i18n="tbl.sale">Sale / Fertilizzante</th>
+            <th style="text-align:right" data-i18n="tbl.dose">g/1000L fin.</th>
             <th>€/kg</th>
             <th></th>
           </tr></thead>
@@ -656,7 +666,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         </table>
       </div>
       <div style="padding:10px 14px">
-        <button class="btn btn-se btn-sm" onclick="aggiungiRigaCalc()" style="width:100%">+ Aggiungi sale</button>
+        <button class="btn btn-se btn-sm" onclick="aggiungiRigaCalc()" style="width:100%" data-i18n="calcola.aggiungiSale">+ Aggiungi sale</button>
       </div>
     </div>
   </div>
@@ -668,16 +678,16 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <span style="font-size:1.1rem">⚠️</span>
         <div style="flex:1;min-width:200px">
           <div style="font-size:.82rem;font-weight:700;color:var(--ro);margin-bottom:4px">
-            <span id="ricalcola-count">0</span> ingrediente/i non disponibile/i in scorta
+            <span id="ricalcola-count">0</span><span data-i18n="calcola.mancanti"> ingrediente/i non disponibile/i in scorta</span>
           </div>
-          <div style="font-size:.76rem;color:var(--ts);line-height:1.5;margin-bottom:10px">
+          <div style="font-size:.76rem;color:var(--ts);line-height:1.5;margin-bottom:10px" data-i18n="calcola.mancantiDesc">
             Gli ingredienti evidenziati in rosso non sono presenti nel tuo magazzino. Puoi ricalcolare la ricetta usando solo gli ingredienti disponibili: il sistema tenterà di sostituirli con alternative presenti in catalogo oppure segnalerà cosa manca.
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-pr btn-sm" style="width:auto;background:var(--ro)" onclick="ricalcolaConDisponibili()">
+            <button class="btn btn-pr btn-sm" style="width:auto;background:var(--ro)" onclick="ricalcolaConDisponibili()" data-i18n="calcola.ricalcolaBtn">
               🔄 Ricalcola con gli ingredienti disponibili
             </button>
-            <button class="btn btn-se btn-sm" onclick="showTab('catalogo')" style="font-size:.72rem">
+            <button class="btn btn-se btn-sm" onclick="showTab('catalogo')" style="font-size:.72rem" data-i18n="calcola.vaiCatalogo">
               📦 Vai al Catalogo → aggiorna scorta
             </button>
           </div>
@@ -686,81 +696,81 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
     </div>
   </div>
 
-  <button class="btn btn-pr" onclick="calcola()" style="margin-bottom:14px" aria-label="Calcola i dosaggi dei sali">⚗️ Calcola Dosaggi</button>
+  <button class="btn btn-pr" onclick="calcola()" style="margin-bottom:14px" aria-label="Calcola i dosaggi dei sali" data-i18n="calcola.calcola">⚗️ Calcola Dosaggi</button>
 
   <div id="calc-out">
-    <div class="ph"><p>Inserisci i parametri e premi <strong>Calcola Dosaggi</strong> oppure carica una ricetta dalla scheda Ricette.</p></div>
+    <div class="ph"><p data-i18n-html="calcola.placeholder">Inserisci i parametri e premi <strong>Calcola Dosaggi</strong> oppure carica una ricetta dalla scheda Ricette.</p></div>
   </div>
 </div>
 
 <!-- ═══ TAB CATALOGO ═══ -->
 <div class="panel" id="tab-catalogo" role="tabpanel" aria-labelledby="tab-catalogo">
   <div class="sec-h">
-    <h4>📦 Catalogo Ingredienti</h4>
+    <h4 data-i18n="catalogo.title">📦 Catalogo Ingredienti</h4>
     <div style="display:flex;gap:6px">
-      <button class="btn btn-se btn-sm" onclick="stampaCatalogo()" aria-label="Stampa l'elenco degli ingredienti presenti e non presenti in magazzino">🖨️ Stampa</button>
-      <button class="btn btn-se btn-sm" onclick="openNuovoIngrediente()">+ Nuovo</button>
+      <button class="btn btn-se btn-sm" onclick="stampaCatalogo()" aria-label="Stampa l'elenco degli ingredienti" data-i18n="catalogo.stampa">🖨️ Stampa</button>
+      <button class="btn btn-se btn-sm" onclick="openNuovoIngrediente()" data-i18n="catalogo.nuovo">+ Nuovo</button>
     </div>
   </div>
   <div class="alert al-blu" style="margin-bottom:12px">
-    <span>ℹ️</span><span>Il serbatoio (A/B/C) viene assegnato <strong>automaticamente dal calcolatore</strong> in base alle regole di compatibilità chimica. Non è necessario indicarlo manualmente.</span>
+    <span>ℹ️</span><span data-i18n-html="catalogo.info">Il serbatoio (A/B/C) viene assegnato <strong>automaticamente dal calcolatore</strong> in base alle regole di compatibilità chimica. Non è necessario indicarlo manualmente.</span>
   </div>
   <div id="catalogo-list"></div>
 </div>
 
 <!-- ═══ TAB DATI ═══ -->
 <div class="panel" id="tab-dati" role="tabpanel" aria-labelledby="tab-dati">
-  <div class="sec-h"><h4>💾 Gestione Dati</h4></div>
+  <div class="sec-h"><h4 data-i18n="dati.title">💾 Gestione Dati</h4></div>
 
   <div class="card">
-    <div class="ch" style="background:var(--vc)">⬇ Esporta</div>
+    <div class="ch" style="background:var(--vc)" data-i18n="dati.esporta">⬇ Esporta</div>
     <div class="cb">
-      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:12px">
+      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:12px" data-i18n-html="dati.esportaDesc">
         Scarica un file JSON con <strong>catalogo ingredienti</strong>, <strong>scorta magazzino</strong> e <strong>ricette personalizzate</strong>. Usalo per backup o per condividere la configurazione.
       </p>
-      <button class="btn btn-pr" style="background:var(--vc)" onclick="esportaDati()" aria-label="Scarica un file JSON di backup con catalogo, scorta e ricette">⬇ Scarica backup JSON</button>
+      <button class="btn btn-pr" style="background:var(--vc)" onclick="esportaDati()" data-i18n="dati.esportaBtn">⬇ Scarica backup JSON</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="ch" style="background:var(--as)">⬆ Importa</div>
+    <div class="ch" style="background:var(--as)" data-i18n="dati.importa">⬆ Importa</div>
     <div class="cb">
-      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:12px">
+      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:12px" data-i18n="dati.importaDesc">
         Carica un file JSON precedentemente esportato da FertiControl. Le ricette e gli ingredienti personalizzati vengono uniti a quelli esistenti. I prezzi degli ingredienti del catalogo vengono aggiornati.
       </p>
-      <button class="btn btn-pr" style="background:var(--as)" onclick="document.getElementById('ie-file-input').click()" aria-label="Carica un file JSON di backup precedentemente esportato">⬆ Carica file JSON</button>
+      <button class="btn btn-pr" style="background:var(--as)" onclick="document.getElementById('ie-file-input').click()" data-i18n="dati.importaBtn">⬆ Carica file JSON</button>
       <input type="file" id="ie-file-input" accept=".json,application/json" style="display:none" onchange="importaDati(this)">
     </div>
   </div>
 
   <div class="card">
-    <div class="ch" style="background:var(--ro)">↺ Reset</div>
+    <div class="ch" style="background:var(--ro)" data-i18n="dati.reset">↺ Reset</div>
     <div class="cb">
-      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:12px">
+      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:12px" data-i18n-html="dati.resetDesc">
         Ripristina il catalogo ai valori predefiniti ed elimina tutte le ricette personalizzate e la scorta salvata. <strong>Questa azione non è reversibile</strong> — esporta un backup prima di procedere.
       </p>
-      <button class="btn btn-pr" style="background:var(--ro)" onclick="resetDati()" aria-label="Ripristina il catalogo ai valori predefiniti ed elimina tutte le ricette personalizzate">↺ Ripristina valori di fabbrica</button>
+      <button class="btn btn-pr" style="background:var(--ro)" onclick="resetDati()" data-i18n="dati.resetBtn">↺ Ripristina valori di fabbrica</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="ch">📊 Stato attuale</div>
+    <div class="ch" data-i18n="dati.stato">📊 Stato attuale</div>
     <div class="cb">
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--cs)">
-          <span style="font-size:.82rem">Ingredienti nel catalogo</span>
+          <span style="font-size:.82rem" data-i18n="dati.ingredienti">Ingredienti nel catalogo</span>
           <strong id="stat-cat" style="font-family:'JetBrains Mono',monospace;color:var(--vm)">—</strong>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--cs)">
-          <span style="font-size:.82rem">In scorta (disponibili)</span>
+          <span style="font-size:.82rem" data-i18n="dati.inscorta">In scorta (disponibili)</span>
           <strong id="stat-scorta" style="font-family:'JetBrains Mono',monospace;color:var(--vc)">—</strong>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--cs)">
-          <span style="font-size:.82rem">Ricette personalizzate</span>
+          <span style="font-size:.82rem" data-i18n="dati.ricettePers">Ricette personalizzate</span>
           <strong id="stat-ric" style="font-family:'JetBrains Mono',monospace;color:var(--ar)">—</strong>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
-          <span style="font-size:.82rem">Ricette predefinite</span>
+          <span style="font-size:.82rem" data-i18n="dati.ricettePred">Ricette predefinite</span>
           <strong id="stat-pred" style="font-family:'JetBrains Mono',monospace;color:var(--ts)">—</strong>
         </div>
       </div>
@@ -774,13 +784,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 
   <!-- Donazione PayPal -->
   <div class="card" style="margin-top:8px;border-color:#0070ba">
-    <div class="ch" style="background:#0070ba">💙 Supporta FertiControl</div>
+    <div class="ch" style="background:#0070ba" data-i18n="dati.supporta">💙 Supporta FertiControl</div>
     <div class="cb" style="text-align:center">
-      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:14px">
+      <p style="font-size:.8rem;color:var(--ts);line-height:1.6;margin-bottom:14px" data-i18n="dati.supportaDesc">
         FertiControl è gratuito e senza pubblicità. Se ti è utile, puoi offrire un contributo per sostenerne lo sviluppo. Grazie!
       </p>
       <a href="https://www.paypal.com/pool/9qahEDqMn4?sr=accr" target="_blank" rel="noopener noreferrer"
-         style="display:inline-flex;align-items:center;gap:8px;background:#0070ba;color:#fff;text-decoration:none;padding:11px 22px;border-radius:8px;font-weight:700;font-size:.9rem;box-shadow:0 2px 6px rgba(0,112,186,.3)">
+         style="display:inline-flex;align-items:center;gap:8px;background:#0070ba;color:#fff;text-decoration:none;padding:11px 22px;border-radius:8px;font-weight:700;font-size:.9rem;box-shadow:0 2px 6px rgba(0,112,186,.3)" data-i18n="dati.dona">
         ☕ Dona con PayPal
       </a>
     </div>
@@ -800,7 +810,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         </div>
       </div>
       <div class="sep"></div>
-      <div class="sec-h"><h4>Composizione chimica (%)</h4></div>
+      <div class="sec-h"><h4 data-i18n="modal.ing.compo">Composizione chimica (%)</h4></div>
       <div class="row3">
         <div class="field"><label>% N (Azoto)</label><input type="number" id="ing-N" value="0" min="0" max="100" step="0.1"></div>
         <div class="field"><label>% P (Fosforo)</label><input type="number" id="ing-P" value="0" min="0" max="100" step="0.1"></div>
@@ -813,14 +823,14 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <div class="field"><label>% Zn</label><input type="number" id="ing-Zn" value="0" min="0" max="100" step="0.01"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Prezzo €/kg</label><input type="number" id="ing-prezzo" value="0" min="0" step="0.01" placeholder="0.00"></div>
-        <div class="field"><label>g/1000L tipico</label><input type="number" id="ing-dose" value="0" min="0" step="0.1"></div>
+        <div class="field"><label data-i18n="modal.ing.prezzo">Prezzo €/kg</label><input type="number" id="ing-prezzo" value="0" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label data-i18n="modal.ing.dose">g/1000L tipico</label><input type="number" id="ing-dose" value="0" min="0" step="0.1"></div>
       </div>
-      <div class="field"><label>Note</label><textarea id="ing-note" rows="2" style="resize:vertical"></textarea></div>
+      <div class="field"><label data-i18n="modal.ing.note">Note</label><textarea id="ing-note" rows="2" style="resize:vertical"></textarea></div>
     </div>
     <div class="modal-f">
-      <button class="btn btn-se" onclick="closeModal('modal-ing')">Annulla</button>
-      <button class="btn btn-pr" style="width:auto" onclick="salvaIngrediente()">💾 Salva</button>
+      <button class="btn btn-se" onclick="closeModal('modal-ing')" data-i18n="btn.annulla">Annulla</button>
+      <button class="btn btn-pr" style="width:auto" onclick="salvaIngrediente()" data-i18n="modal.ing.salva">💾 Salva</button>
     </div>
   </div>
 </div>
@@ -828,26 +838,394 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 <!-- ═══ MODAL: Nuova Ricetta ═══ -->
 <div class="modal-bg" id="modal-ricetta" role="dialog" aria-modal="true" aria-labelledby="modal-ric-title">
   <div class="modal">
-    <div class="modal-h"><h3 id="modal-ric-title">🌱 Nuova Ricetta</h3><button class="modal-close" onclick="closeModal('modal-ricetta')" aria-label="Chiudi finestra">✕</button></div>
+    <div class="modal-h"><h3 id="modal-ric-title" data-i18n="modal.ricetta.title">🌱 Nuova Ricetta</h3><button class="modal-close" onclick="closeModal('modal-ricetta')" aria-label="Chiudi finestra">✕</button></div>
     <div class="modal-b">
       <input type="hidden" id="ric-edit-id">
       <div class="row2">
-        <div class="field"><label>Nome pianta / ricetta</label><input type="text" id="ric-nome" placeholder="Es. Pomodoro Cherry"></div>
-        <div class="field"><label>Emoji 🌿</label><input type="text" id="ric-emoji" value="🌱" maxlength="4"></div>
+        <div class="field"><label data-i18n="modal.ricetta.nome">Nome pianta / ricetta</label><input type="text" id="ric-nome" placeholder="Es. Pomodoro Cherry"></div>
+        <div class="field"><label data-i18n="modal.ricetta.emoji">Emoji 🌿</label><input type="text" id="ric-emoji" value="🌱" maxlength="4"></div>
       </div>
-      <div class="field"><label>Note generali</label><textarea id="ric-note" rows="2" style="resize:vertical" placeholder="Indica substrato, ph target, avvertenze…"></textarea></div>
+      <div class="field"><label data-i18n="modal.ricetta.note">Note generali</label><textarea id="ric-note" rows="2" style="resize:vertical" placeholder="Indica substrato, ph target, avvertenze…"></textarea></div>
       <div class="sep"></div>
-      <div class="sec-h"><h4>Fasi di crescita</h4><button class="btn btn-se btn-sm" onclick="aggiungiFase()">+ Fase</button></div>
+      <div class="sec-h"><h4 data-i18n="modal.ricetta.fasi">Fasi di crescita</h4><button class="btn btn-se btn-sm" onclick="aggiungiFase()" data-i18n="modal.ricetta.addFase">+ Fase</button></div>
       <div id="fasi-editor"></div>
     </div>
     <div class="modal-f">
-      <button class="btn btn-se" onclick="closeModal('modal-ricetta')">Annulla</button>
-      <button class="btn btn-pr" style="width:auto" onclick="salvaRicetta()">💾 Salva Ricetta</button>
+      <button class="btn btn-se" onclick="closeModal('modal-ricetta')" data-i18n="btn.annulla">Annulla</button>
+      <button class="btn btn-pr" style="width:auto" onclick="salvaRicetta()" data-i18n="modal.ricetta.salva">💾 Salva Ricetta</button>
     </div>
   </div>
 </div>
 
 <script>
+// ════════════════════════════════════════════════════
+// SISTEMA I18N — Italiano / English
+// ════════════════════════════════════════════════════
+const TRANSLATIONS = {
+  it: {
+    'header.subtitle': '— Calcolatore soluzioni madri per fertirrigazione ',
+    'howto.text': '<b>Come si usa.</b> FertiControl calcola le soluzioni madri concentrate (Serbatoi A/B/C) per la fertirrigazione partendo dalla tua acqua e dalla ricetta nutritiva. <b>① Acqua</b> — inserisci l\'analisi dell\'acqua di partenza. <b>② Ricette</b> — scegli o crea la ricetta e la fase di crescita. <b>③ Calcola</b> — ottieni dosi dei sali, EC/pH attesi e avvisi di precipitazione. <b>④ Catalogo</b> gestisci i fertilizzanti, <b>⑤ Dati</b> salva/esporta tutto.',
+    'tab.acqua': '💧 Acqua',
+    'tab.ricette': '🌿 Ricette',
+    'tab.calcola': '⚗️ Calcola',
+    'tab.catalogo': '📦 Catalogo',
+    'tab.dati': '💾 Dati',
+    'acqua.title': '💧 Acqua di Partenza',
+    'acqua.subtitle': '(acquedotto / pozzo / osmosi)',
+    'acqua.info': 'Inserisci l\'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.',
+    'acqua.ec': 'EC acqua',
+    'acqua.ph': 'pH acqua',
+    'acqua.ions': 'Ioni presenti (mg/L)',
+    'preset.ottima': '💧 Ottima (EC 0.1)',
+    'preset.media': '🚰 Acquedotto medio',
+    'preset.dura': '🪨 Acqua dura',
+    'preset.osmosi': '🔬 Osmosi inversa',
+    'preset.piovana': '🌧️ Piovana',
+    'preset.distillata': '💎 Distillata',
+    'ricette.title': '🌿 Le tue Ricette',
+    'ricette.nuova': '+ Nuova Ricetta',
+    'ricette.cocoHeader': '🌱 Ricette — Coco Coir',
+    'ricette.fasi': '📅 Fase di Crescita',
+    'ricette.composizione': '🔬 Composizione',
+    'ricette.modifica': '✏️ Modifica',
+    'ricette.clona': '✏️ Clona e modifica',
+    'ricette.calcola': '→ Calcola',
+    'ricette.noteTitle': '📋 Note Agronomiche',
+    'calcola.params': '⚙️ Parametri Impianto',
+    'calcola.serbA': 'Serbatoio A (L)',
+    'calcola.serbB': 'Serbatoio B (L)',
+    'calcola.diluzione': 'Fattore diluizione 1 : X',
+    'calcola.dil.tip': '1 L concentrato produce X L soluzione finale. ⚠️ Più X è grande, più la soluzione madre è concentrata e maggiore il rischio precipitazioni.',
+    'calcola.phFinale': 'pH soluzione finale',
+    'calcola.ph.tip': 'pH a cui la soluzione finale viene mantenuta in coltura. Determina il rischio di precipitazione del fosfato di calcio.',
+    'calcola.ricettaCaricata': 'Ricetta caricata:',
+    'calcola.nessuna': 'Nessuna — inserisci manualmente o carica da Ricette',
+    'calcola.sali': '🧂 Sali da Preparare',
+    'calcola.aggiungiSale': '+ Aggiungi sale',
+    'calcola.calcola': '⚗️ Calcola Dosaggi',
+    'calcola.placeholder': 'Inserisci i parametri e premi <strong>Calcola Dosaggi</strong> oppure carica una ricetta dalla scheda Ricette.',
+    'calcola.mancanti': ' ingrediente/i non disponibile/i in scorta',
+    'calcola.mancantiDesc': 'Gli ingredienti evidenziati in rosso non sono presenti nel tuo magazzino. Puoi ricalcolare la ricetta usando solo gli ingredienti disponibili.',
+    'calcola.ricalcolaBtn': '🔄 Ricalcola con gli ingredienti disponibili',
+    'calcola.vaiCatalogo': '📦 Vai al Catalogo → aggiorna scorta',
+    'tbl.sale': 'Sale / Fertilizzante',
+    'tbl.dose': 'g/1000L fin.',
+    'catalogo.title': '📦 Catalogo Ingredienti',
+    'catalogo.stampa': '🖨️ Stampa',
+    'catalogo.nuovo': '+ Nuovo',
+    'catalogo.info': 'Il serbatoio (A/B/C) viene assegnato <strong>automaticamente dal calcolatore</strong> in base alle regole di compatibilità chimica. Non è necessario indicarlo manualmente.',
+    'catalogo.legenda': '<span>☑️</span><span><strong>Scorta disponibile:</strong> spunta gli ingredienti che hai in magazzino. Quando carichi una ricetta nel calcolatore, gli ingredienti mancanti vengono evidenziati in rosso.</span>',
+    'catalogo.macro': '🌱 MACRONUTRIENTI',
+    'catalogo.micro': '🔬 MICRONUTRIENTI',
+    'catalogo.ph': '⚗️ CORRETTORI pH / ADDITIVI',
+    'catalogo.nessuno': 'Nessun ingrediente nel catalogo.',
+    'dati.title': '💾 Gestione Dati',
+    'dati.esporta': '⬇ Esporta',
+    'dati.esportaDesc': 'Scarica un file JSON con <strong>catalogo ingredienti</strong>, <strong>scorta magazzino</strong> e <strong>ricette personalizzate</strong>. Usalo per backup o per condividere la configurazione.',
+    'dati.esportaBtn': '⬇ Scarica backup JSON',
+    'dati.importa': '⬆ Importa',
+    'dati.importaDesc': 'Carica un file JSON precedentemente esportato da FertiControl. Le ricette e gli ingredienti personalizzati vengono uniti a quelli esistenti.',
+    'dati.importaBtn': '⬆ Carica file JSON',
+    'dati.reset': '↺ Reset',
+    'dati.resetDesc': 'Ripristina il catalogo ai valori predefiniti ed elimina tutte le ricette personalizzate e la scorta salvata. <strong>Questa azione non è reversibile</strong> — esporta un backup prima di procedere.',
+    'dati.resetBtn': '↺ Ripristina valori di fabbrica',
+    'dati.stato': '📊 Stato attuale',
+    'dati.ingredienti': 'Ingredienti nel catalogo',
+    'dati.inscorta': 'In scorta (disponibili)',
+    'dati.ricettePers': 'Ricette personalizzate',
+    'dati.ricettePred': 'Ricette predefinite',
+    'dati.supporta': '💙 Supporta FertiControl',
+    'dati.supportaDesc': 'FertiControl è gratuito e senza pubblicità. Se ti è utile, puoi offrire un contributo per sostenerne lo sviluppo. Grazie!',
+    'dati.dona': '☕ Dona con PayPal',
+    'modal.ing.title': '✏️ Nuovo Ingrediente',
+    'modal.ing.nome': 'Nome prodotto',
+    'modal.ing.cat': 'Categoria',
+    'modal.ing.compo': 'Composizione chimica (%)',
+    'modal.ing.prezzo': 'Prezzo €/kg',
+    'modal.ing.dose': 'g/1000L tipico',
+    'modal.ing.note': 'Note',
+    'modal.ing.salva': '💾 Salva',
+    'modal.ing.editTitle': '✏️ Modifica Ingrediente',
+    'modal.ricetta.title': '🌱 Nuova Ricetta',
+    'modal.ricetta.nome': 'Nome pianta / ricetta',
+    'modal.ricetta.emoji': 'Emoji 🌿',
+    'modal.ricetta.note': 'Note generali',
+    'modal.ricetta.fasi': 'Fasi di crescita',
+    'modal.ricetta.addFase': '+ Fase',
+    'modal.ricetta.salva': '💾 Salva Ricetta',
+    'modal.del.title': '🗑️ Conferma eliminazione',
+    'modal.del.warn': 'Questa azione non è reversibile.',
+    'modal.del.btn': '🗑️ Elimina',
+    'modal.reset.title': '↺ Ripristina valori di fabbrica',
+    'modal.reset.warn': '<strong>Attenzione:</strong> questa operazione cancellerà tutte le ricette personalizzate, ripristinerà il catalogo ai valori originali e azzererà la scorta. L\'operazione non è reversibile.',
+    'modal.reset.desc': 'Esporta un backup dalla sezione <strong>💾 Dati → Scarica JSON</strong> prima di procedere se vuoi conservare i dati attuali.',
+    'modal.reset.btn': '↺ Sì, ripristina tutto',
+    'btn.annulla': 'Annulla',
+    'cat.macro': 'Macronutriente',
+    'cat.micro': 'Micronutriente',
+    'cat.ph': 'Correttore pH',
+    // Dynamic strings used in JS
+    'js.nonDisp': '✗ NON disponibile',
+    'js.nessunSale': 'Nessun sale — aggiungi o carica una ricetta.',
+    'js.totale': 'TOTALE',
+    'js.serbatorio': 'Serbatoio',
+    'js.componenti': 'Componenti',
+    'js.sali': 'sali',
+    'js.voto.ok': 'Soluzione sicura e ottimale',
+    'js.voto.corretto': 'Soluzione corretta automaticamente',
+    'js.voto.nonsicura': 'SOLUZIONE NON SICURA',
+    'js.verificaDosi': 'Verificare sempre le dosi calcolate',
+    'js.verificaDosiDesc': 'prima della preparazione. La verifica anti-precipitazione usa indici di saturazione (SI) calcolati con Ksp e attività di Davies. Misura sempre EC e pH della soluzione finale.',
+    'js.interventiAuto': '🤖 Interventi Automatici del Sistema',
+    'js.avvisiManuali': 'Da verificare manualmente:',
+    'js.serbCtitle': 'Serbatoio C consigliato',
+    'js.serbCdesc': 'Con questa ricetta e diluizione non è possibile risolvere completamente tutte le incompatibilità con solo 2 serbatoi.',
+    'js.abilitaSerbC': 'Abilita Serbatoio C — il sistema ridistribuirà automaticamente i sali',
+    'js.solFin': '💧 Soluzione Finale — Apporti Totali',
+    'js.procedura': '📋 Procedura',
+    'js.audit': '🔍 Audit — Controlli di Sicurezza Eseguiti',
+    'js.stampa': '🖨️ Stampa la miscela',
+    'js.costoPer1000': '💰 Costo totale per 1000 L finali:',
+    'js.prezziDa': '(prezzi da Catalogo)',
+    'js.modifica': '✏️ Modifica',
+    'js.clona': '✏️ Clona e modifica',
+    'js.ripristinaOriginali': '↺ Ripristina dosi originali',
+    'js.doseModificate': 'Dosi modificate',
+    'js.eliminaRicetta': 'Eliminare la ricetta e tutte le sue fasi?',
+    'js.eliminaFase': 'Eliminare questa fase di crescita?',
+    'js.eliminaIngrediente': 'Eliminare questo ingrediente dal catalogo?',
+    'js.nuovaRicetta': 'Nuova Ricetta',
+    'js.modificaRicetta': 'Modifica Ricetta',
+    'js.catalogoVuoto': 'Catalogo vuoto: aggiungi prima un ingrediente',
+    'js.nomeRicetta': 'Inserisci il nome della ricetta',
+    'js.nomeFase': 'Aggiungi almeno una fase',
+    'js.aggiungiCrescita': 'Aggiungi almeno una fase di crescita.',
+    'js.targetMode': '🎯 Modalità Target mg/L',
+    'js.targetDesc': '— premi <em>→ Calcola</em> per risolvere i dosaggi automaticamente.',
+    'js.elemento': 'Elemento',
+    'js.targetMgL': 'Target mg/L',
+    'js.personalizzato': '✏️ Personalizzato',
+    'js.nomeIngrediente': 'Inserisci il nome',
+    'js.nessunaRicetta': 'Nessuna ricetta disponibile. Premi <strong>+ Nuova Ricetta</strong> per crearne una.',
+    'js.nessunSaleAssegnato': 'Nessun sale assegnato',
+    'js.ricettaEliminata': 'Ricetta eliminata',
+    'js.ricettaCopiata': 'copiata nelle Ricette',
+    'js.toastReset': 'Dati ripristinati ai valori di fabbrica',
+    'js.toastDosi': 'Dosi originali ripristinate',
+    'js.toastBilanciate': 'Dosi bilanciate applicate alla ricetta',
+    'js.ratioAgro': '📐 Rapporti Agronomici',
+    'js.noteOper': '📝 Note Operative',
+    'js.correzionePH': '🧪 Correzione pH / Bicarbonati',
+    'js.contribPerSost': '🧪 Contributo per Sostanza (mg/L)',
+    'js.apporti': 'Apporti in mg/L della soluzione finale dai soli sali (esclude acqua di partenza).',
+    'js.sale': 'Sale',
+    'js.serb': 'Serb.',
+    'js.totSali': 'Totale sali',
+  },
+  en: {
+    'header.subtitle': '— Mother solution calculator for fertigation ',
+    'howto.text': '<b>How to use.</b> FertiControl calculates concentrated mother solutions (Tanks A/B/C) for fertigation based on your water and nutrient recipe. <b>① Water</b> — enter your water analysis. <b>② Recipes</b> — choose or create a recipe and growth stage. <b>③ Calculate</b> — get salt doses, expected EC/pH and precipitation warnings. <b>④ Catalog</b> manages fertilizers, <b>⑤ Data</b> saves/exports everything.',
+    'tab.acqua': '💧 Water',
+    'tab.ricette': '🌿 Recipes',
+    'tab.calcola': '⚗️ Calculate',
+    'tab.catalogo': '📦 Catalog',
+    'tab.dati': '💾 Data',
+    'acqua.title': '💧 Source Water',
+    'acqua.subtitle': '(tap / well / reverse osmosis)',
+    'acqua.info': 'Enter your water analysis. FertiControl will automatically subtract minerals already present and flag precipitation risks in the concentrate.',
+    'acqua.ec': 'Water EC',
+    'acqua.ph': 'Water pH',
+    'acqua.ions': 'Ions present (mg/L)',
+    'preset.ottima': '💧 Excellent (EC 0.1)',
+    'preset.media': '🚰 Average tap water',
+    'preset.dura': '🪨 Hard water',
+    'preset.osmosi': '🔬 Reverse osmosis',
+    'preset.piovana': '🌧️ Rainwater',
+    'preset.distillata': '💎 Distilled',
+    'ricette.title': '🌿 Your Recipes',
+    'ricette.nuova': '+ New Recipe',
+    'ricette.cocoHeader': '🌱 Recipes — Coco Coir',
+    'ricette.fasi': '📅 Growth Stage',
+    'ricette.composizione': '🔬 Composition',
+    'ricette.modifica': '✏️ Edit',
+    'ricette.clona': '✏️ Clone & edit',
+    'ricette.calcola': '→ Calculate',
+    'ricette.noteTitle': '📋 Agronomic Notes',
+    'calcola.params': '⚙️ System Parameters',
+    'calcola.serbA': 'Tank A (L)',
+    'calcola.serbB': 'Tank B (L)',
+    'calcola.diluzione': 'Dilution factor 1 : X',
+    'calcola.dil.tip': '1 L concentrate yields X L final solution. ⚠️ Higher X = more concentrated mother solution = higher precipitation risk.',
+    'calcola.phFinale': 'Final solution pH',
+    'calcola.ph.tip': 'pH at which the final solution is maintained in the system. Determines calcium phosphate precipitation risk.',
+    'calcola.ricettaCaricata': 'Loaded recipe:',
+    'calcola.nessuna': 'None — enter manually or load from Recipes',
+    'calcola.sali': '🧂 Salts to Prepare',
+    'calcola.aggiungiSale': '+ Add salt',
+    'calcola.calcola': '⚗️ Calculate Doses',
+    'calcola.placeholder': 'Enter parameters and press <strong>Calculate Doses</strong> or load a recipe from the Recipes tab.',
+    'calcola.mancanti': ' ingredient(s) not available in stock',
+    'calcola.mancantiDesc': 'Ingredients highlighted in red are not in your warehouse. You can recalculate using only available ingredients.',
+    'calcola.ricalcolaBtn': '🔄 Recalculate with available ingredients',
+    'calcola.vaiCatalogo': '📦 Go to Catalog → update stock',
+    'tbl.sale': 'Salt / Fertilizer',
+    'tbl.dose': 'g/1000L fin.',
+    'catalogo.title': '📦 Ingredient Catalog',
+    'catalogo.stampa': '🖨️ Print',
+    'catalogo.nuovo': '+ New',
+    'catalogo.info': 'The tank (A/B/C) is assigned <strong>automatically by the calculator</strong> based on chemical compatibility rules. No need to specify it manually.',
+    'catalogo.legenda': '<span>☑️</span><span><strong>Available stock:</strong> check the ingredients you have in stock. When you load a recipe into the calculator, missing ingredients are highlighted in red.</span>',
+    'catalogo.macro': '🌱 MACRONUTRIENTS',
+    'catalogo.micro': '🔬 MICRONUTRIENTS',
+    'catalogo.ph': '⚗️ pH CORRECTORS / ADDITIVES',
+    'catalogo.nessuno': 'No ingredients in catalog.',
+    'dati.title': '💾 Data Management',
+    'dati.esporta': '⬇ Export',
+    'dati.esportaDesc': 'Download a JSON file with <strong>ingredient catalog</strong>, <strong>warehouse stock</strong> and <strong>custom recipes</strong>. Use it for backup or to share the configuration.',
+    'dati.esportaBtn': '⬇ Download JSON backup',
+    'dati.importa': '⬆ Import',
+    'dati.importaDesc': 'Load a JSON file previously exported from FertiControl. Custom recipes and ingredients are merged with existing ones.',
+    'dati.importaBtn': '⬆ Load JSON file',
+    'dati.reset': '↺ Reset',
+    'dati.resetDesc': 'Restore the catalog to default values and delete all custom recipes and saved stock. <strong>This action is irreversible</strong> — export a backup before proceeding.',
+    'dati.resetBtn': '↺ Restore factory defaults',
+    'dati.stato': '📊 Current status',
+    'dati.ingredienti': 'Ingredients in catalog',
+    'dati.inscorta': 'In stock (available)',
+    'dati.ricettePers': 'Custom recipes',
+    'dati.ricettePred': 'Built-in recipes',
+    'dati.supporta': '💙 Support FertiControl',
+    'dati.supportaDesc': 'FertiControl is free and ad-free. If you find it useful, you can contribute to support its development. Thank you!',
+    'dati.dona': '☕ Donate via PayPal',
+    'modal.ing.title': '✏️ New Ingredient',
+    'modal.ing.nome': 'Product name',
+    'modal.ing.cat': 'Category',
+    'modal.ing.compo': 'Chemical composition (%)',
+    'modal.ing.prezzo': 'Price €/kg',
+    'modal.ing.dose': 'Typical g/1000L',
+    'modal.ing.note': 'Notes',
+    'modal.ing.salva': '💾 Save',
+    'modal.ing.editTitle': '✏️ Edit Ingredient',
+    'modal.ricetta.title': '🌱 New Recipe',
+    'modal.ricetta.nome': 'Plant / recipe name',
+    'modal.ricetta.emoji': 'Emoji 🌿',
+    'modal.ricetta.note': 'General notes',
+    'modal.ricetta.fasi': 'Growth stages',
+    'modal.ricetta.addFase': '+ Stage',
+    'modal.ricetta.salva': '💾 Save Recipe',
+    'modal.del.title': '🗑️ Confirm deletion',
+    'modal.del.warn': 'This action cannot be undone.',
+    'modal.del.btn': '🗑️ Delete',
+    'modal.reset.title': '↺ Restore factory defaults',
+    'modal.reset.warn': '<strong>Warning:</strong> this will delete all custom recipes, restore the catalog to original values and clear stock. This action is irreversible.',
+    'modal.reset.desc': 'Export a backup from <strong>💾 Data → Download JSON</strong> before proceeding if you want to keep current data.',
+    'modal.reset.btn': '↺ Yes, reset everything',
+    'btn.annulla': 'Cancel',
+    'cat.macro': 'Macronutrient',
+    'cat.micro': 'Micronutrient',
+    'cat.ph': 'pH corrector',
+    // Dynamic strings used in JS
+    'js.nonDisp': '✗ NOT available',
+    'js.nessunSale': 'No salt — add one or load a recipe.',
+    'js.totale': 'TOTAL',
+    'js.serbatorio': 'Tank',
+    'js.componenti': 'Components',
+    'js.sali': 'salts',
+    'js.voto.ok': 'Safe and optimal solution',
+    'js.voto.corretto': 'Automatically corrected solution',
+    'js.voto.nonsicura': 'UNSAFE SOLUTION',
+    'js.verificaDosi': 'Always verify the calculated doses',
+    'js.verificaDosiDesc': 'before preparation. Precipitation check uses saturation indices (SI) calculated with Ksp and Davies activity. Always measure EC and pH of the final solution.',
+    'js.interventiAuto': '🤖 Automatic System Interventions',
+    'js.avvisiManuali': 'Check manually:',
+    'js.serbCtitle': 'Tank C recommended',
+    'js.serbCdesc': 'With this recipe and dilution, it is not possible to fully resolve all incompatibilities with only 2 tanks.',
+    'js.abilitaSerbC': 'Enable Tank C — the system will automatically redistribute the salts',
+    'js.solFin': '💧 Final Solution — Total Inputs',
+    'js.procedura': '📋 Procedure',
+    'js.audit': '🔍 Audit — Safety Checks Performed',
+    'js.stampa': '🖨️ Print mixture',
+    'js.costoPer1000': '💰 Total cost per 1000 L final:',
+    'js.prezziDa': '(prices from Catalog)',
+    'js.modifica': '✏️ Edit',
+    'js.clona': '✏️ Clone & edit',
+    'js.ripristinaOriginali': '↺ Restore original doses',
+    'js.doseModificate': 'Modified doses',
+    'js.eliminaRicetta': 'Delete this recipe and all its stages?',
+    'js.eliminaFase': 'Delete this growth stage?',
+    'js.eliminaIngrediente': 'Delete this ingredient from the catalog?',
+    'js.nuovaRicetta': 'New Recipe',
+    'js.modificaRicetta': 'Edit Recipe',
+    'js.catalogoVuoto': 'Catalog empty: add an ingredient first',
+    'js.nomeRicetta': 'Enter the recipe name',
+    'js.nomeFase': 'Add at least one stage',
+    'js.aggiungiCrescita': 'Add at least one growth stage.',
+    'js.targetMode': '🎯 Target Mode mg/L',
+    'js.targetDesc': '— press <em>→ Calculate</em> to automatically solve the doses.',
+    'js.elemento': 'Element',
+    'js.targetMgL': 'Target mg/L',
+    'js.personalizzato': '✏️ Custom',
+    'js.nomeIngrediente': 'Enter the ingredient name',
+    'js.nessunaRicetta': 'No recipes available. Press <strong>+ New Recipe</strong> to create one.',
+    'js.nessunSaleAssegnato': 'No salt assigned',
+    'js.ricettaEliminata': 'Recipe deleted',
+    'js.ricettaCopiata': 'copied to Recipes',
+    'js.toastReset': 'Data restored to factory defaults',
+    'js.toastDosi': 'Original doses restored',
+    'js.toastBilanciate': 'Balanced doses applied to recipe',
+    'js.ratioAgro': '📐 Agronomic Ratios',
+    'js.noteOper': '📝 Operating Notes',
+    'js.correzionePH': '🧪 pH / Bicarbonate Correction',
+    'js.contribPerSost': '🧪 Contribution per Substance (mg/L)',
+    'js.apporti': 'Inputs in mg/L of final solution from salts only (excludes source water).',
+    'js.sale': 'Salt',
+    'js.serb': 'Tank',
+    'js.totSali': 'Total salts',
+  }
+};
+
+let currentLang = localStorage.getItem('fc_lang') || 'it';
+
+function t(key) {
+  return (TRANSLATIONS[currentLang] || TRANSLATIONS.it)[key] || (TRANSLATIONS.it[key] || key);
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('fc_lang', lang);
+  document.getElementById('html-root').lang = lang;
+  applyLang();
+  // Re-render dynamic content with new language
+  renderCatalogo();
+  renderRicetteCustom();
+  if(calcRighe.length) renderCalcTabella();
+  if(document.getElementById('calc-out').querySelector('#risultato-stampa')) calcola();
+  aggiornaStat();
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    el.innerHTML = t(el.dataset.i18nHtml);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  // Update language selector buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+  });
+  // Update select options in modal
+  const ingCat = document.getElementById('ing-cat');
+  if(ingCat) {
+    ingCat.options[0].textContent = t('cat.macro');
+    ingCat.options[1].textContent = t('cat.micro');
+    ingCat.options[2].textContent = t('cat.ph');
+  }
+}
+
 // ════════════════════════════════════════════════════
 // DATABASE SALI — A/B fissi per chimica
 // el: {N,P,K,Ca,Mg,S,Fe,B,Mn,Zn,Cu,Mo} in %
@@ -1350,7 +1728,7 @@ function initPiante(){
 
   // Se nessuna ricetta, mostra placeholder
   if(!PIANTE_BUILTIN.length && !ricetteCustom.length){
-    grid.innerHTML=`<div class="ph" style="grid-column:1/-1"><p>Nessuna ricetta disponibile. Premi <strong>+ Nuova Ricetta</strong> per crearne una.</p></div>`;
+    grid.innerHTML=`<div class="ph" style="grid-column:1/-1"><p>${t('js.nessunaRicetta')}</p></div>`;
   }
 }
 
@@ -1359,7 +1737,7 @@ function eliminaRicettaCustom(ri){
   ricetteCustom.splice(ri, 1);
   saveRicette();
   renderRicetteCustom();
-  showToast('Ricetta eliminata');
+  showToast(t('js.ricettaEliminata'));
 }
 
 function selPianta(id, tipo){
@@ -1405,10 +1783,10 @@ function selFase(i){
   // Aggiorna i pulsanti in base al tipo di ricetta
   const btnModifica = document.getElementById('btn-modifica-ricetta');
   if(tipoRicettaSel === 'builtin'){
-    btnModifica.textContent = '✏️ Clona e modifica';
+    btnModifica.textContent = t('js.clona');
     btnModifica.onclick = ()=>clonaPiantaInCustom();
   } else {
-    btnModifica.textContent = '✏️ Modifica';
+    btnModifica.textContent = t('js.modifica');
     btnModifica.onclick = ()=>editCurrentCustom();
   }
 
@@ -1427,13 +1805,13 @@ function renderRicettaOut(pianta, fase, tipo){
   // Modalità target per ricette custom
   if(fase.modo==='target'){
     const t=fase.targets||{};
-    let html=`<div class="alert al-inf" style="margin-bottom:10px">🎯 <strong>Modalità Target mg/L</strong> — premi <em>→ Calcola</em> per risolvere i dosaggi automaticamente.</div>`;
+    let html=`<div class="alert al-inf" style="margin-bottom:10px">🎯 <strong>${t('js.targetMode')}</strong> ${t('js.targetDesc')}</div>`;
     html+=`<div class="ri-grid">
       <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
       <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">unità pH</div></div>
       <div class="ri-box"><div class="ri-lbl">Modalità</div><div class="ri-val" style="font-size:.7rem">Target</div><div class="ri-sub">mg/L</div></div>
     </div>`;
-    html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Elemento</th><th style="text-align:right">Target mg/L</th></tr></thead><tbody>`;
+    html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th></tr></thead><tbody>`;
     Object.entries(t).filter(([,v])=>v>0).forEach(([el,v])=>{
       html+=`<tr><td>${el}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td></tr>`;
     });
@@ -1450,31 +1828,31 @@ function renderRicettaOut(pianta, fase, tipo){
   let html=`<div class="ri-grid">
     <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
     <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">unità pH</div></div>
-    <div class="ri-box"><div class="ri-lbl">Componenti</div><div class="ri-val">${(fase.sali||[]).length}</div><div class="ri-sub">sali</div></div>
+    <div class="ri-box"><div class="ri-lbl">${t('js.componenti')}</div><div class="ri-val">${(fase.sali||[]).length}</div><div class="ri-sub">${t('js.sali')}</div></div>
   </div>`;
 
   html+=`<div class="serb-grid">`;
   // A
-  html+=`<div class="serb-card a"><div class="serb-title"><span class="ba">A</span> Serbatoio A</div>`;
+  html+=`<div class="serb-card a"><div class="serb-title"><span class="ba">A</span> ${t('js.serbatorio')} A</div>`;
   perA.forEach(s=>{ const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'}; const pz=info.prezzo?(info.prezzo*(s.g/1000)):0;
     html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${info.nome}</span><span class="gr-a">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
   });
   const tA=perA.reduce((s,r)=>s+r.g,0);
   const cA=perA.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
-  html+=`<div class="sale-row tot-row"><span>TOTALE</span><span class="gr-a">${fmtGram(tA)}<br><span class="costo-txt">${fmtEuro(cA)}</span></span></div></div>`;
+  html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span class="gr-a">${fmtGram(tA)}<br><span class="costo-txt">${fmtEuro(cA)}</span></span></div></div>`;
 
   // B
-  html+=`<div class="serb-card b"><div class="serb-title"><span class="bb">B</span> Serbatoio B</div>`;
+  html+=`<div class="serb-card b"><div class="serb-title"><span class="bb">B</span> ${t('js.serbatorio')} B</div>`;
   perB.forEach(s=>{ const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'}; const pz=info.prezzo?(info.prezzo*(s.g/1000)):0;
     html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${info.nome}</span><span class="gr-b">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
   });
   const tB=perB.reduce((s,r)=>s+r.g,0);
   const cB=perB.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
-  html+=`<div class="sale-row tot-row"><span>TOTALE</span><span class="gr-b">${fmtGram(tB)}<br><span class="costo-txt">${fmtEuro(cB)}</span></span></div></div>`;
+  html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span class="gr-b">${fmtGram(tB)}<br><span class="costo-txt">${fmtEuro(cB)}</span></span></div></div>`;
   html+=`</div>`;
 
   const totCosto=cA+cB;
-  if(totCosto>0) html+=`<div class="alert al-inf">💰 <strong>Costo totale per 1000 L finali:</strong> ${fmtEuro(totCosto)} (prezzi da Catalogo)</div>`;
+  if(totCosto>0) html+=`<div class="alert al-inf">💰 <strong>${t('js.costoPer1000')}</strong> ${fmtEuro(totCosto)} ${t('js.prezziDa')}</div>`;
   if((fase.sali||[]).some(s=>s.id==='K2SiO3'))
     html+=`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span><strong>Silicato di Potassio (K₂SiO₃):</strong> questa anteprima lo mostra in Serbatoio B per riferimento, ma è <strong>incompatibile con CaN e chelati</strong>. In fase di calcolo il motore lo sposta automaticamente in Serbatoio C. Non mescolarlo mai manualmente con Ca, fosfati o Fe-chelati.</span></div>`;
 
@@ -1561,7 +1939,7 @@ function clonaPiantaInCustom(){
   renderRicetteCustom();
   // apre subito la ricetta appena clonata per editarla
   editRicetta(ricetteCustom.length-1);
-  showToast(`"${piantaSel.nome}" copiata nelle Ricette`);
+  showToast(`"${piantaSel.nome}" ${t('js.ricettaCopiata')}`);
 }
 
 function editCurrentCustom(){
@@ -1598,12 +1976,12 @@ function caricaCustomInCalcola(ri,fi){
 
 function eliminaRicetta(ri){
   window._pendingDelete={tipo:'ricetta',ri};
-  document.getElementById('modal-del-msg').textContent='Eliminare la ricetta e tutte le sue fasi?';
+  document.getElementById('modal-del-msg').textContent=t('js.eliminaRicetta');
   openModal('modal-del');
 }
 function eliminaFaseCustom(ri,fi){
   window._pendingDelete={tipo:'fase',ri,fi};
-  document.getElementById('modal-del-msg').textContent='Eliminare questa fase di crescita?';
+  document.getElementById('modal-del-msg').textContent=t('js.eliminaFase');
   openModal('modal-del');
 }
 function eseguiElimina(){
@@ -1629,7 +2007,7 @@ function openNuovaRicetta(){
   document.getElementById('ric-nome').value='';
   document.getElementById('ric-emoji').value='🌱';
   document.getElementById('ric-note').value='';
-  document.getElementById('modal-ric-title').textContent='Nuova Ricetta';
+  document.getElementById('modal-ric-title').textContent=t('js.nuovaRicetta');
   renderFasiEditor();
   openModal('modal-ricetta');
 }
@@ -1640,7 +2018,7 @@ function editRicetta(ri){
   document.getElementById('ric-emoji').value=ric.emoji||'🌱';
   document.getElementById('ric-note').value=ric.note||'';
   fasiBozza=JSON.parse(JSON.stringify(ric.fasi));
-  document.getElementById('modal-ric-title').textContent='Modifica Ricetta';
+  document.getElementById('modal-ric-title').textContent=t('js.modificaRicetta');
   renderFasiEditor();
   openModal('modal-ricetta');
 }
@@ -1708,7 +2086,7 @@ function renderFasiEditor(){
       </div>`;
     wrap.appendChild(card);
   });
-  if(!fasiBozza.length) wrap.innerHTML=`<div class="ph" style="min-height:80px"><p>Aggiungi almeno una fase di crescita.</p></div>`;
+  if(!fasiBozza.length) wrap.innerHTML=`<div class="ph" style="min-height:80px"><p>${t('js.aggiungiCrescita')}</p></div>`;
 }
 
 function buildSelectOpts(selId){
@@ -1728,8 +2106,8 @@ function buildSelectOpts(selId){
 
 function salvaRicetta(){
   const nome=document.getElementById('ric-nome').value.trim();
-  if(!nome){ alert('Inserisci il nome della ricetta'); return; }
-  if(!fasiBozza.length){ alert('Aggiungi almeno una fase'); return; }
+  if(!nome){ alert(t('js.nomeRicetta')); return; }
+  if(!fasiBozza.length){ alert(t('js.nomeFase')); return; }
   const ric={nome, emoji:document.getElementById('ric-emoji').value, note:document.getElementById('ric-note').value.trim(), fasi:JSON.parse(JSON.stringify(fasiBozza))};
   let savedRi;
   if(editRicId!==null){ ricetteCustom[editRicId]=ric; savedRi=editRicId; } else { ricetteCustom.push(ric); savedRi=ricetteCustom.length-1; }
@@ -1742,14 +2120,14 @@ function salvaRicetta(){
 // TAB CALCOLA
 // ════════════════════════════════════════════════
 function buildSelectCalc(selId){
-  return buildSelectOpts(selId)+`<option value="__custom"${selId==='__custom'?' selected':''}>✏️ Personalizzato</option>`;
+  return buildSelectOpts(selId)+`<option value="__custom"${selId==='__custom'?' selected':''}>${t('js.personalizzato')}</option>`;
 }
 
 function renderCalcTabella(){
   const tb=document.getElementById('calc-tbody');
   tb.innerHTML='';
   if(!calcRighe.length){
-    tb.innerHTML='<tr><td colspan="4" style="padding:12px;text-align:center;color:var(--ts);font-size:.78rem">Nessun sale — aggiungi o carica una ricetta.</td></tr>';
+    tb.innerHTML=`<tr><td colspan="4" style="padding:12px;text-align:center;color:var(--ts);font-size:.78rem">${t('js.nessunSale')}</td></tr>`;
     updateRicalcolaBar();
     return;
   }
@@ -1762,7 +2140,7 @@ function renderCalcTabella(){
     tr.innerHTML=`<td style="min-width:180px">
         <div style="margin-bottom:3px">
           <span class="bcat" style="background:${cat.bg}">${cat.label}</span>
-          ${!disp?`<span class="miss-tag">✗ NON disponibile</span>`:''}
+          ${!disp?`<span class="miss-tag">${t('js.nonDisp')}</span>`:''}
         </div>
         <select onchange="cambioSaleCalc(${i},this.value)" style="width:100%;font-size:.75rem;padding:5px 6px;background:#fff">
           ${buildSelectCalc(r.id||'__custom')}
@@ -1799,7 +2177,7 @@ function updateRicalcolaBar(){
 }
 
 function aggiungiRigaCalc(){
-  if(!catalogo.length){ showToast('Catalogo vuoto: aggiungi prima un ingrediente', false); return; }
+  if(!catalogo.length){ showToast(t('js.catalogoVuoto'), false); return; }
   const info=catalogo[0];
   calcRighe.push({id:info.id,nome:info.nome,dose:info.dose,prezzo:info.prezzo||0,fixed:true});
   renderCalcTabella();
@@ -3142,9 +3520,9 @@ function calcola(){
     // Auto-bilanciamento ha risolto i conflitti → VERDE con tabella confronto
     const dev = bilanciaReportData ? bilanciaReportData.deviations.filter(d=>Math.abs(d.pctChange)>0.5) : [];
     html+=`<div class="alert al-ok" style="margin-bottom:10px"><span style="font-size:1.2rem">✅</span><div>
-      <strong>Soluzione corretta automaticamente.</strong> Il sistema ha ridotto le dosi di alcuni sali per evitare precipitazioni nella soluzione madre.
+      <strong>${t('js.voto.corretto')}.</strong> Il sistema ha ridotto le dosi di alcuni sali per evitare precipitazioni nella soluzione madre.
       ${dev.length?`<div style="margin-top:8px;padding:8px 10px;background:#fff;border-radius:4px">
-        <div style="font-size:.72rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Dosi modificate</div>
+        <div style="font-size:.72rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${t('js.doseModificate')}</div>
         <table style="width:100%;font-size:.78rem;border-collapse:collapse">
           ${dev.map(d=>`<tr style="border-bottom:1px solid var(--cs)">
             <td style="padding:4px 0;font-weight:600">${d.nome}</td>
@@ -3157,13 +3535,13 @@ function calcola(){
         <div style="font-size:.7rem;color:var(--ts);margin-top:6px">Riducendo queste dosi, la soluzione non precipiterà nei serbatoi. La EC finale resta nella stessa fascia.</div>
       </div>`:''}
       <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-se btn-sm" onclick="ripristinaDosiOriginali()" style="border-color:var(--ro);color:var(--ro)">↺ Ripristina dosi originali</button>
+        <button class="btn btn-se btn-sm" onclick="ripristinaDosiOriginali()" style="border-color:var(--ro);color:var(--ro)">${t('js.ripristinaOriginali')}</button>
       </div>
     </div>`;
   } else if(!sicurezza.sicuro){
     // Conflitti critici NON risolti → ROSSO esplicito
     html+=`<div class="alert al-err" style="margin-bottom:10px"><span style="font-size:1.2rem">🛑</span><div>
-      <strong>SOLUZIONE NON SICURA — ${sicurezza.critici.length} conflitto/i critico/i non risolto/i:</strong>
+      <strong>${t('js.voto.nonsicura')} — ${sicurezza.critici.length} conflitto/i critico/i non risolto/i:</strong>
       <ul style="margin:8px 0 0 14px;line-height:1.9;font-size:.78rem">`;
     sicurezza.critici.forEach(c=>html+=`<li><strong>${c.titolo}</strong> — ${c.dettaglio}</li>`);
     html+=`</ul>
@@ -3172,15 +3550,15 @@ function calcola(){
       </div>
     </div>`;
   } else if(interventi.length>0 || correzioniAcqua.length>0){
-    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>Soluzione sicura — corretta automaticamente.</strong> Tutti i ${sicurezza.audit.length} controlli superati. Nessuna precipitazione attesa una volta miscelati i sali nei serbatoi indicati. Vedi log interventi e audit qui sotto.</span></div>`;
+    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.corretto')}.</strong> Tutti i ${sicurezza.audit.length} controlli superati. Nessuna precipitazione attesa una volta miscelati i sali nei serbatoi indicati. Vedi log interventi e audit qui sotto.</span></div>`;
   } else {
-    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>Soluzione sicura e ottimale.</strong> Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.</span></div>`;
+    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.ok')}.</strong> Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.</span></div>`;
   }
 
   // ── DICITURA VERIFICA DOSI (sempre presente) ──
   html+=`<div style="background:#fff8e1;border:1.5px solid #e0a800;border-radius:var(--r);padding:9px 12px;margin-bottom:12px;display:flex;gap:8px;align-items:center;font-size:.78rem;color:#7a5c00">
     <span style="font-size:1rem">⚠️</span>
-    <span><strong>Verificare sempre le dosi calcolate</strong> prima della preparazione. La verifica anti-precipitazione usa indici di saturazione (SI) calcolati con Ksp e attività di Davies — più sicuro di una soglia EC fissa. Misura sempre EC e pH della soluzione finale.</span>
+    <span><strong>${t('js.verificaDosi')}</strong> ${t('js.verificaDosiDesc')}</span>
   </div>`;
 
   // ── BANNER DILUIZIONE SUGGERITA (solo per EC concentrato estremamente alta) ──
@@ -3213,7 +3591,7 @@ function calcola(){
   const interventiVisibili = interventi.filter(iv=>iv.tipo!=='dil_suggerito');
   if(correzioniAcqua.length>0 || interventiVisibili.length>0){
     html+=`<div class="card" style="margin-bottom:12px;border-color:var(--vc)">
-      <div class="ch" style="background:var(--vm)">🤖 Interventi Automatici del Sistema</div>
+      <div class="ch" style="background:var(--vm)">${t('js.interventiAuto')}</div>
       <div class="cb" style="padding:0">`;
     // Acqua di partenza
     correzioniAcqua.forEach(co=>{
@@ -3233,7 +3611,7 @@ function calcola(){
 
   // ── AVVISI RESIDUI (non risolvibili automaticamente) ──
   if(sicurezza.avvisi.length>0){
-    html+=`<div class="alert al-inf" style="margin-bottom:10px"><span>⚠️</span><div><strong>Da verificare manualmente:</strong><ul style="margin:5px 0 0 14px;line-height:1.8;font-size:.76rem">`;
+    html+=`<div class="alert al-inf" style="margin-bottom:10px"><span>⚠️</span><div><strong>${t('js.avvisiManuali')}</strong><ul style="margin:5px 0 0 14px;line-height:1.8;font-size:.76rem">`;
     sicurezza.avvisi.forEach(a=>html+=`<li><strong>${a.titolo}:</strong> ${a.dettaglio}</li>`);
     html+=`</ul></div></div>`;
   }
@@ -3244,16 +3622,16 @@ function calcola(){
       <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
         <span style="font-size:1.2rem">🪣</span>
         <div style="flex:1;min-width:200px">
-          <div style="font-weight:700;color:#7b3f9e;font-size:.82rem;margin-bottom:5px">Serbatoio C consigliato</div>
+          <div style="font-weight:700;color:#7b3f9e;font-size:.82rem;margin-bottom:5px">${t('js.serbCtitle')}</div>
           <div style="font-size:.76rem;color:#4a2070;line-height:1.6;margin-bottom:10px">
-            Con questa ricetta e diluizione non è possibile risolvere completamente tutte le incompatibilità con solo 2 serbatoi:<br>
+            ${t('js.serbCdesc')}<br>
             <ul style="margin:5px 0 0 14px">
               ${needsSerbC.map(m=>`<li>${m}</li>`).join('')}
             </ul>
           </div>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;font-size:.82rem;font-weight:600;color:#7b3f9e;letter-spacing:0">
             <input type="checkbox" ${usaSerbC?'checked':''} onchange="toggleSerbC(this.checked)" style="width:18px;height:18px;accent-color:#7b3f9e;flex-shrink:0">
-            Abilita Serbatoio C — il sistema ridistribuirà automaticamente i sali
+            ${t('js.abilitaSerbC')}
           </label>
           ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">Volume Serb. C (L)</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
         </div>
@@ -3265,7 +3643,7 @@ function calcola(){
   if(aq){
     const ioni2=calcolaIoniDaSali(wRighe);
     html+=`<div class="card" style="margin-bottom:12px">
-      <div class="ch" style="background:var(--az)">💧 Soluzione Finale — Apporti Totali</div>
+      <div class="ch" style="background:var(--az)">${t('js.solFin')}</div>
       <div class="cb" style="padding-bottom:6px">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
           <div class="ri-box"><div class="ri-lbl">N tot.</div><div class="ri-val">${(ioni2.N_total).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
@@ -3297,14 +3675,14 @@ function calcola(){
       </div>`;
     let costoSerb=0;
     if(!righeSerb.length){
-      html+=`<div style="padding:12px;color:var(--ts);font-size:.78rem">Nessun sale assegnato</div>`;
+      html+=`<div style="padding:12px;color:var(--ts);font-size:.78rem">${t('js.nessunSaleAssegnato')}</div>`;
     } else {
       righeSerb.forEach(r=>{
         const g=grConc(r.dose,vol); const pz=(r.prezzo||0)*(g/1000); costoSerb+=pz; costoTot+=pz;
         const infoR=getSale(r.id);
         html+=`<div class="sale-row"><span class="sale-nome">${esc(r.nome||r.nomeCustom||r.id)}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtDose(infoR,g)}</span>${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</div></div>`;
       });
-      html+=`<div class="sale-row tot-row"><span>TOTALE</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtGram(righeSerb.reduce((s,r)=>s+grConc(r.dose,vol),0))}</span></div>`;
+      html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtGram(righeSerb.reduce((s,r)=>s+grConc(r.dose,vol),0))}</span></div>`;
     }
     html+=`</div>`;
   });
@@ -3466,7 +3844,7 @@ function calcola(){
                 La soluzione ora è stabile e non precipiterà nei serbatoi.
                 <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
                   <button class="btn btn-se btn-sm" onclick="ripristinaDosiOriginali()" style="border-color:var(--ro);color:var(--ro)">
-                    ↺ Ripristina dosi originali
+                    ${t('js.ripristinaOriginali')}
                   </button>
                 </div>
               </div>
@@ -3600,7 +3978,7 @@ function calcola(){
     if(caMg>4.5) ratioWarn.push(`Ca/Mg meq ${caMg.toFixed(2)} > 4.5: Ca dominante può inibire Mg²⁺.`);
     if(feMn!==null&&(feMn<2||feMn>6)) ratioWarn.push(`Fe/Mn ${feMn.toFixed(1)} fuori range 2–6: rapporto micro sbilanciato.`);
     html+=`<div class="card" style="margin-top:12px">
-      <div class="ch" style="background:var(--vm)">📐 Rapporti Agronomici</div>
+      <div class="ch" style="background:var(--vm)">${t('js.ratioAgro')}</div>
       <div class="cb">
         <div class="ratio-grid">
           <div class="ratio-box"><div class="rl">NH₄ / N totale</div><div class="rv" style="color:${nh4frac>0.10?'var(--ar)':'var(--vc)'}">${Math.round(nh4frac*100)}%</div><div class="rn">${nh4frac>0.10?'alta — vedi note':'in range'}</div></div>
@@ -3621,7 +3999,7 @@ function calcola(){
       const acido = calcAcidVolume(aq, volFinale1000L);
       if(acido.meq > 0.01){
         html+=`<div class="card" style="margin-top:12px">
-          <div class="ch" style="background:var(--ar)">🧪 Correzione pH / Bicarbonati</div>
+          <div class="ch" style="background:var(--ar)">${t('js.correzionePH')}</div>
           <div class="cb">
             <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>Neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻ con acido nitrico 38%.</span></div>
             <div class="ri-grid" style="grid-template-columns:repeat(3,1fr)">
@@ -3642,7 +4020,7 @@ function calcola(){
     if(si.CaHPO4>-0.5&&si.CaHPO4<=0) operNotes.push('CaHPO₄ prossimo a saturazione: mantenere pH < 6.2.');
     if(operNotes.length){
       html+=`<div class="card" style="margin-top:12px">
-        <div class="ch" style="background:var(--ar)">📝 Note Operative</div>
+        <div class="ch" style="background:var(--ar)">${t('js.noteOper')}</div>
         <div class="cb">`;
       operNotes.forEach(n=>html+=`<div class="alert al-inf" style="margin-bottom:6px"><span>📋</span><span>${n}</span></div>`);
       html+=`</div></div>`;
@@ -3659,13 +4037,13 @@ function calcola(){
     const EL_C = ['N','P','K','Ca','Mg','S','Fe'];
     html+=`<div class="card" style="margin-top:12px">
       <div class="ch" style="cursor:pointer;justify-content:space-between;user-select:none" onclick="const b=document.getElementById('contrib-body');b.style.display=b.style.display==='none'?'block':'none'">
-        <span>🧪 Contributo per Sostanza (mg/L)</span><span style="font-size:.8rem">▼</span>
+        <span>${t('js.contribPerSost')}</span><span style="font-size:.8rem">▼</span>
       </div>
       <div class="cb" id="contrib-body" style="display:none;overflow-x:auto;padding:0">
         <table style="width:100%;border-collapse:collapse;font-size:.72rem;min-width:520px">
           <thead><tr style="background:var(--cs)">
-            <th style="text-align:left;padding:5px 8px">Sale</th>
-            <th style="padding:5px 4px;text-align:center">Serb.</th>
+            <th style="text-align:left;padding:5px 8px">${t('js.sale')}</th>
+            <th style="padding:5px 4px;text-align:center">${t('js.serb')}</th>
             ${EL_C.map(e=>`<th style="padding:5px 6px;text-align:right">${e}</th>`).join('')}
           </tr></thead>
           <tbody>
@@ -3675,12 +4053,12 @@ function calcola(){
               ${EL_C.map(e=>{const v=c.contributi[e]||0;return`<td style="text-align:right;padding:5px 6px;font-family:'JetBrains Mono',monospace;color:${v>0.01?'inherit':'var(--ts)'}">${v>0.01?v.toFixed(1):'—'}</td>`;}).join('')}
             </tr>`).join('')}
             <tr style="background:var(--cs);font-weight:700">
-              <td style="padding:5px 8px" colspan="2">Totale sali</td>
+              <td style="padding:5px 8px" colspan="2">${t('js.totSali')}</td>
               ${EL_C.map(e=>`<td style="text-align:right;padding:5px 6px;font-family:'JetBrains Mono',monospace">${contrib.reduce((s,c)=>s+(c.contributi[e]||0),0).toFixed(1)}</td>`).join('')}
             </tr>
           </tbody>
         </table>
-        <div style="font-size:.68rem;color:var(--ts);padding:6px 10px">Apporti in mg/L della soluzione finale dai soli sali (esclude acqua di partenza).</div>
+        <div style="font-size:.68rem;color:var(--ts);padding:6px 10px">${t('js.apporti')}</div>
       </div>
     </div>`;
   }
@@ -3689,7 +4067,7 @@ function calcola(){
   const hco3Note = aq&&aq.hco3>50?`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄) all'acqua di miscelazione fino a pH 5.8–6.0 <em>prima</em> di aggiungere qualsiasi sale.</li>`:'';
   const serbCNote = usaSerbC?`<li>Prepara <strong>Serb. C</strong> (${volC||100} L) seguendo lo stesso protocollo: prima i sali da soli, poi porta al volume finale.</li>`:'';
   html+=`<div class="card" style="margin-top:12px">
-    <div class="ch">📋 Procedura</div>
+    <div class="ch">${t('js.procedura')}</div>
     <div class="cb"><ol class="steps">
       ${hco3Note}
       <li>Riempi <strong>Serb. A</strong> a ${Math.round(volA*0.8)} L. Aggiungi sali A <strong>uno alla volta</strong>: chelati → nitrati → fosfati. Attendi dissoluzione completa.</li>
@@ -3705,7 +4083,7 @@ function calcola(){
   // ── AUDIT TRAIL (punto 9) — registro controlli eseguiti ──
   html+=`<div class="card" style="margin-top:12px">
     <div class="ch" style="cursor:pointer;justify-content:space-between" onclick="document.getElementById('audit-body').style.display=document.getElementById('audit-body').style.display==='none'?'block':'none'">
-      <span>🔍 Audit — Controlli di Sicurezza Eseguiti (${sicurezza.audit.length})</span>
+      <span>${t('js.audit')} (${sicurezza.audit.length})</span>
       <span style="font-size:.8rem">▼</span>
     </div>
     <div class="cb" id="audit-body" style="padding:0">`;
@@ -3726,7 +4104,7 @@ function calcola(){
 
   // ── PULSANTE STAMPA ──
   html+=`<div class="no-print" style="display:flex;gap:8px;margin:16px 0 24px">
-    <button class="btn btn-pr" onclick="stampaMiscela()" style="flex:1">🖨️ Stampa la miscela</button>
+    <button class="btn btn-pr" onclick="stampaMiscela()" style="flex:1">${t('js.stampa')}</button>
   </div>`;
 
   document.getElementById('calc-out').innerHTML=html;
@@ -4140,7 +4518,7 @@ function renderBilanciaReport(report, autoApplied){
       ✅ Applica bilanciamento alla ricetta
     </button>` : ''}
     <button class="btn btn-se btn-sm" onclick="${autoApplied ? 'ripristinaDosiOriginali()' : 'ripristinaEricalcola()'}">
-      ↺ Ripristina dosi originali
+      ${t('js.ripristinaOriginali')}
     </button>
   </div>`;
 
@@ -4159,7 +4537,7 @@ function applicaBilanciamento(){
   window._bilanciaReport = null;
   window._bilanciaOrigSnapshot = null;
   calcola();
-  showToast('Dosi bilanciate applicate alla ricetta');
+  showToast(t('js.toastBilanciate'));
 }
 
 function ripristinaEricalcola(){
@@ -4184,7 +4562,7 @@ function ripristinaDosiOriginali(){
   origDosiSnapshot = null;
   bilanciaReportData = null;
   calcola();
-  showToast('Dosi originali ripristinate');
+  showToast(t('js.toastDosi'));
 }
 
 // ════════════════════════════════════════════════
@@ -4204,7 +4582,7 @@ function renderCatalogo(){
   const legendDiv=document.createElement('div');
   legendDiv.className='alert al-blu';
   legendDiv.style.marginBottom='10px';
-  legendDiv.innerHTML='<span>☑️</span><span><strong>Scorta disponibile:</strong> spunta gli ingredienti che hai in magazzino. Quando carichi una ricetta nel calcolatore, gli ingredienti mancanti vengono evidenziati in rosso e puoi ricalcolare con i soli ingredienti disponibili.</span>';
+  legendDiv.innerHTML=t('catalogo.legenda');
   wrap.appendChild(legendDiv);
 
   let lastCat='';
@@ -4216,7 +4594,7 @@ function renderCatalogo(){
       const chEl=document.createElement('div');
       chEl.className='ch';
       chEl.style.cssText='font-size:.65rem';
-      chEl.textContent={macro:'🌱 MACRONUTRIENTI',micro:'🔬 MICRONUTRIENTI',ph:'⚗️ CORRETTORI pH / ADDITIVI'}[s.cat]||s.cat.toUpperCase();
+      chEl.textContent={macro:t('catalogo.macro'),micro:t('catalogo.micro'),ph:t('catalogo.ph')}[s.cat]||s.cat.toUpperCase();
       cardEl.appendChild(chEl);
       currentGroup=document.createElement('div');
       cardEl.appendChild(currentGroup);
@@ -4271,7 +4649,7 @@ function openNuovoIngrediente(){
   document.getElementById('ing-cat').value='macro';
   document.getElementById('ing-prezzo').value=0;
   document.getElementById('ing-dose').value=0;
-  document.getElementById('modal-ing-title').textContent='Nuovo Ingrediente';
+  document.getElementById('modal-ing-title').textContent=t('modal.ing.title');
   openModal('modal-ing');
 }
 
@@ -4284,13 +4662,13 @@ function editIngrediente(id){
   document.getElementById('ing-dose').value=s.dose||0;
   document.getElementById('ing-note').value=s.note||'';
   ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(f=>{ document.getElementById('ing-'+f).value=(s.el&&s.el[f])||0; });
-  document.getElementById('modal-ing-title').textContent='Modifica Ingrediente';
+  document.getElementById('modal-ing-title').textContent=t('modal.ing.editTitle');
   openModal('modal-ing');
 }
 
 function salvaIngrediente(){
   const nome=document.getElementById('ing-nome').value.trim();
-  if(!nome){ alert('Inserisci il nome'); return; }
+  if(!nome){ alert(t('js.nomeIngrediente')); return; }
   const el={};
   ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(f=>{ const v=parseFloat(document.getElementById('ing-'+f).value)||0; if(v>0)el[f]=v; });
   // Serbatoio assegnato automaticamente dal motore in base alla composizione
@@ -4310,7 +4688,7 @@ function salvaIngrediente(){
 
 function eliminaIngrediente(id){
   window._pendingDelete={tipo:'ingrediente',id};
-  document.getElementById('modal-del-msg').textContent='Eliminare questo ingrediente dal catalogo?';
+  document.getElementById('modal-del-msg').textContent=t('js.eliminaIngrediente');
   openModal('modal-del');
 }
 
@@ -4444,7 +4822,7 @@ function eseguiReset(){
   renderRicetteCustom();
   calcRighe = [];
   renderCalcTabella();
-  showToast('Dati ripristinati ai valori di fabbrica');
+  showToast(t('js.toastReset'));
 }
 
 // ─ INIT ─────────────────────────────────────────
@@ -4454,22 +4832,24 @@ renderRicetteCustom();
 renderCalcTabella();
 // Statistiche iniziali (DOM pronto)
 setTimeout(aggiornaStat, 0);
+// Applica la lingua salvata (o italiano di default)
+applyLang();
 </script>
 
 <!-- ═══ MODAL: Conferma Eliminazione generica ═══ -->
 <div class="modal-bg" id="modal-del">
   <div class="modal">
     <div class="modal-h" style="background:var(--ro)">
-      <h3>🗑️ Conferma eliminazione</h3>
+      <h3 data-i18n="modal.del.title">🗑️ Conferma eliminazione</h3>
       <button class="modal-close" onclick="closeModal('modal-del')">✕</button>
     </div>
     <div class="modal-b">
       <p id="modal-del-msg" style="font-size:.85rem;line-height:1.6;color:var(--tx)"></p>
-      <p style="font-size:.75rem;color:var(--ts);margin-top:8px">Questa azione non è reversibile.</p>
+      <p style="font-size:.75rem;color:var(--ts);margin-top:8px" data-i18n="modal.del.warn">Questa azione non è reversibile.</p>
     </div>
     <div class="modal-f">
-      <button class="btn btn-se" onclick="closeModal('modal-del')">Annulla</button>
-      <button class="btn btn-pr" style="width:auto;background:var(--ro)" onclick="eseguiElimina()">🗑️ Elimina</button>
+      <button class="btn btn-se" onclick="closeModal('modal-del')" data-i18n="btn.annulla">Annulla</button>
+      <button class="btn btn-pr" style="width:auto;background:var(--ro)" onclick="eseguiElimina()" data-i18n="modal.del.btn">🗑️ Elimina</button>
     </div>
   </div>
 </div>
@@ -4478,21 +4858,21 @@ setTimeout(aggiornaStat, 0);
 <div class="modal-bg" id="modal-reset">
   <div class="modal">
     <div class="modal-h" style="background:var(--ro)">
-      <h3>↺ Ripristina valori di fabbrica</h3>
+      <h3 data-i18n="modal.reset.title">↺ Ripristina valori di fabbrica</h3>
       <button class="modal-close" onclick="closeModal('modal-reset')">✕</button>
     </div>
     <div class="modal-b">
       <div class="alert al-err" style="margin-bottom:12px">
         <span>⚠️</span>
-        <span><strong>Attenzione:</strong> questa operazione cancellerà tutte le ricette personalizzate, ripristinerà il catalogo ai valori originali e azzererà la scorta. L'operazione non è reversibile.</span>
+        <span data-i18n-html="modal.reset.warn"><strong>Attenzione:</strong> questa operazione cancellerà tutte le ricette personalizzate, ripristinerà il catalogo ai valori originali e azzererà la scorta. L'operazione non è reversibile.</span>
       </div>
-      <p style="font-size:.82rem;color:var(--ts);line-height:1.6">
+      <p style="font-size:.82rem;color:var(--ts);line-height:1.6" data-i18n-html="modal.reset.desc">
         Esporta un backup dalla sezione <strong>💾 Dati → Scarica JSON</strong> prima di procedere se vuoi conservare i dati attuali.
       </p>
     </div>
     <div class="modal-f">
-      <button class="btn btn-se" onclick="closeModal('modal-reset')">Annulla</button>
-      <button class="btn btn-pr" style="width:auto;background:var(--ro)" onclick="eseguiReset()">↺ Sì, ripristina tutto</button>
+      <button class="btn btn-se" onclick="closeModal('modal-reset')" data-i18n="btn.annulla">Annulla</button>
+      <button class="btn btn-pr" style="width:auto;background:var(--ro)" onclick="eseguiReset()" data-i18n="modal.reset.btn">↺ Sì, ripristina tutto</button>
     </div>
   </div>
 </div>
