@@ -4781,13 +4781,21 @@ function importaDati(input){
       }
 
       if(Array.isArray(data.ricetteCustom)){
-        ricetteCustom = data.ricetteCustom;
+        // Merge: keep existing recipes, add from JSON only those with a new name
+        const existingNames = new Set(ricetteCustom.map(r => r.nome));
+        const nuove = data.ricetteCustom.filter(r => !existingNames.has(r.nome));
+        const giàPresenti = data.ricetteCustom.length - nuove.length;
+        ricetteCustom = [...ricetteCustom, ...nuove];
         saveRicette();
-        msg.push(`Ricette: ${ricetteCustom.length} caricate`);
+        const rParts = [];
+        if(nuove.length) rParts.push(`${nuove.length} aggiunte`);
+        if(giàPresenti) rParts.push(`${giàPresenti} già presenti`);
+        msg.push(`Ricette: ${rParts.join(', ') || 'nessuna novità'}`);
       }
 
       if(Array.isArray(data.scorta)){
-        scorta = new Set(data.scorta);
+        // Union: keep all currently checked + those from backup
+        data.scorta.forEach(id => scorta.add(id));
         saveScorta();
         msg.push(`Scorta: ${scorta.size} ingredienti`);
       }
