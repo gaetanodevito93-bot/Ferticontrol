@@ -1197,7 +1197,30 @@ function setLang(lang) {
   applyLang();
   // Re-render dynamic content with new language
   renderCatalogo();
+  // Preserve current recipe selection across language switch
+  const _pianta = piantaSel, _fase = faseSel, _tipo = tipoRicettaSel;
   renderRicetteCustom();
+  if(_pianta && _fase) {
+    piantaSel = _pianta; faseSel = _fase; tipoRicettaSel = _tipo;
+    renderRicettaOut(_pianta, _fase, _tipo);
+    document.getElementById('ricetta-out-wrap').style.display='block';
+    // Restore active state on plant and fase buttons
+    document.querySelectorAll('.pianta-btn').forEach(b=>b.classList.toggle('active',
+      _tipo==='builtin' ? b.dataset.id===_pianta.id && b.dataset.tipo==='builtin' : false));
+    if(_tipo==='builtin') {
+      const fr = document.getElementById('fase-row');
+      fr.innerHTML='';
+      _pianta.fasi.forEach((f,i)=>{
+        const d=document.createElement('div');
+        d.className='fase-btn'; d.dataset.i=i;
+        if(f===_fase) d.classList.add('active');
+        d.innerHTML=`${f.icon}<br>${faseNome(f)}`;
+        d.onclick=()=>selFase(i);
+        fr.appendChild(d);
+      });
+      document.getElementById('card-fasi-wrap').style.display='block';
+    }
+  }
   if(calcRighe.length) renderCalcTabella();
   if(document.getElementById('calc-out').querySelector('#risultato-stampa')) calcola();
   aggiornaStat();
@@ -1225,6 +1248,44 @@ function applyLang() {
     ingCat.options[2].textContent = t('cat.ph');
   }
 }
+
+const PLANT_NAMES_EN = {
+  'Pomodoro':'Tomato','Lattuga':'Lettuce','Basilico':'Basil',
+  'Peperone':'Bell Pepper','Cetriolo':'Cucumber','Fragola':'Strawberry',
+  'Cannabis / Canapa':'Cannabis / Hemp','Melanzana':'Aubergine',
+  'Zucchina':'Courgette','Spinacio':'Spinach','Rucola':'Rocket'
+};
+const FASE_NAMES_EN = {
+  'Trapianto / Radicamento':'Transplant / Rooting',
+  'Vegetativo (1°-3° truss)':'Vegetative (1st–3rd truss)',
+  'Fruttificazione (4°+ truss)':'Fruiting (4th+ truss)',
+  'Fine ciclo / Lavaggio':'End of cycle / Flushing',
+  'Germinazione / Plantula':'Germination / Seedling',
+  'Crescita vegetativa':'Vegetative growth',
+  'Pre-raccolta (7 gg)':'Pre-harvest (7 days)',
+  'Germinazione':'Germination',
+  'Pre-bolting / Raccolta':'Pre-bolting / Harvest',
+  'Trapianto':'Transplant',
+  'Vegetativo':'Vegetative',
+  'Fioritura e Fruttificazione':'Flowering and Fruiting',
+  'Giovane':'Young',
+  'Vegetativo / Fioritura':'Vegetative / Flowering',
+  'Produzione piena':'Full production',
+  'Radicamento':'Rooting',
+  'Fioritura e Frutto':'Flowering and Fruiting',
+  'Germinazione / Cloni':'Germination / Clones',
+  'Vegetativo (sett. 2-5)':'Vegetative (weeks 2–5)',
+  'Fioritura piena (sett. 4-7)':'Full Flowering (weeks 4–7)',
+  'Fruttificazione':'Fruiting',
+  'Produzione':'Production',
+  'Fine stagione':'End of season',
+  'Germoglio / Plantula':'Sprout / Seedling',
+  'Crescita':'Growth',
+  'Pre-raccolta':'Pre-harvest',
+  'Pre-raccolta (5 gg)':'Pre-harvest (5 days)'
+};
+function piantaNome(p){ return currentLang==='en'?(PLANT_NAMES_EN[p.nome]||p.nome):p.nome; }
+function faseNome(f){ return currentLang==='en'?(FASE_NAMES_EN[f.nome]||f.nome):f.nome; }
 
 // ════════════════════════════════════════════════════
 // DATABASE SALI — A/B fissi per chimica
@@ -1711,7 +1772,7 @@ function initPiante(){
   PIANTE_BUILTIN.forEach(p=>{
     const d = document.createElement('div');
     d.className='pianta-btn'; d.dataset.id=p.id; d.dataset.tipo='builtin';
-    d.innerHTML=`<span class="em">${p.emoji}</span>${p.nome}`;
+    d.innerHTML=`<span class="em">${p.emoji}</span>${piantaNome(p)}`;
     d.onclick=()=>selPianta(p.id, 'builtin');
     grid.appendChild(d);
   });
@@ -1752,7 +1813,7 @@ function selPianta(id, tipo){
     piantaSel.fasi.forEach((f,i)=>{
       const d=document.createElement('div');
       d.className='fase-btn'; d.dataset.i=i;
-      d.innerHTML=`${f.icon}<br>${f.nome}`;
+      d.innerHTML=`${f.icon}<br>${faseNome(f)}`;
       d.onclick=()=>selFase(i);
       fr.appendChild(d);
     });
@@ -1798,9 +1859,9 @@ function selFase(i){
 }
 
 function renderRicettaOut(pianta, fase, tipo){
-  document.getElementById('ricetta-out-title').textContent=`🔬 ${pianta.nome} — ${fase.nome}`;
+  document.getElementById('ricetta-out-title').textContent=`🔬 ${piantaNome(pianta)} — ${faseNome(fase)}`;
   document.getElementById('note-agronomiche').innerHTML=
-    `<strong>${pianta.nome}:</strong> ${pianta.note||'—'}<br><br><strong>${fase.nome}:</strong> ${fase.note||'—'}`;
+    `<strong>${piantaNome(pianta)}:</strong> ${pianta.note||'—'}<br><br><strong>${faseNome(fase)}:</strong> ${fase.note||'—'}`;
 
   // Modalità target per ricette custom
   if(fase.modo==='target'){
@@ -1893,7 +1954,7 @@ function caricaRicettaInCalcolaFromBuiltin(pianta, fase){
     const info=getSale(s.id);
     return {id:s.id, nome:info?info.nome:s.id, dose:s.g, prezzo:info?info.prezzo:0, fixed:!!info};
   });
-  ricettaCaricata={nome:`${pianta.nome} — ${fase.nome}`,modo:'grammi'};
+  ricettaCaricata={nome:`${piantaNome(pianta)} — ${faseNome(fase)}`,modo:'grammi'};
   document.getElementById('lbl-ricetta-caricata').textContent=ricettaCaricata.nome;
   document.getElementById('lbl-modo-caricato').style.display='inline';
   document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style="background:var(--vm);color:#fff">Ricetta Fissa g</span>`;
