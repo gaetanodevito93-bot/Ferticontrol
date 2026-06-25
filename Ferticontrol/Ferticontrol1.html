@@ -98,11 +98,183 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .tag-fix{font-size:.6rem;color:var(--ts);margin-top:3px;text-align:center}
 .el-txt{font-size:.65rem;color:var(--vi);font-family:'JetBrains Mono',monospace;margin-top:3px}
 
-/* ── STAMPA ── */
+/* ── STAMPA PROFESSIONALE ── */
 @media print{
-  .no-print,.tabbar,.topbar,header{display:none!important}
-  body{background:#fff!important}
-  .card{break-inside:avoid;box-shadow:none!important}
+  /* Nascondi elementi non necessari */
+  .no-print,.tabbar,.topbar,header,.tabs,.lang-selector,
+  .hbadge,.btn,.alert,.sep,.ph,.ricalcola-bar,
+  #ricalcola-bar,.field input,.field select,.field textarea,
+  .utag,.urow,.pianta-grid,.fase-grid,.serb-grid,.ri-grid,
+  .target-grid,.modal,.modal-overlay,.tooltip,.tw,
+  [onclick],.btn-pr,.btn-se,.btn-del,.btn-sm,
+  .cat-row,.cat-grid,.ing-row,.calc-table .btn,
+  #calc-table button,#calc-tbody button,
+  .tab[onclick],.tab.active,.tab:hover,
+  .no-print,.tabbar,.topbar,header,.tabs,.lang-selector,
+  .hbadge,.btn,.alert,.sep,.ph,.ricalcola-bar,
+  [onclick]:not(td):not(tr):not(th):not(.tbl):not(.tbl-wrap),
+  button:not(.tbl):not(.tbl-wrap){display:none!important}
+
+  /* Mostra tutti i pannelli */
+  .panel{display:block!important;padding:0!important;margin:0 0 16px 0!important}
+
+  /* Body */
+  body{
+    background:#fff!important;
+    font-size:11pt;
+    line-height:1.4;
+    color:#000;
+    margin:0;
+    padding:0;
+  }
+
+  /* Header di stampa */
+  body::before{
+    content:"FERTICONTROL — Calcolatore Fertirrigazione";
+    display:block!important;
+    background:linear-gradient(135deg,#1a3a2a 0%,#2d5a3d 100%)!important;
+    color:#fff!important;
+    padding:12px 20px!important;
+    font-size:14pt;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    border-bottom:3px solid #d4660a;
+    margin-bottom:16px;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Footer di stampa */
+  body::after{
+    content:"FertiControl v2.0 — Stampa: " counter(page) " / " counter(pages);
+    display:block!important;
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:#f5f5f5;
+    border-top:1px solid #ccc;
+    padding:8px 20px;
+    font-size:8pt;
+    color:#666;
+    text-align:center;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Card */
+  .card{
+    break-inside:avoid;
+    box-shadow:none!important;
+    border:1px solid #ccc;
+    margin-bottom:12px;
+    page-break-inside:avoid;
+  }
+
+  /* Card header */
+  .ch{
+    background:#2d5a3d!important;
+    color:#fff!important;
+    padding:8px 12px!important;
+    font-size:10pt;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Card body */
+  .cb{
+    padding:10px 12px!important;
+  }
+
+  /* Tabelle */
+  .tbl{
+    width:100%!important;
+    border-collapse:collapse!important;
+    font-size:9pt;
+    margin:8px 0;
+  }
+  .tbl th,.tbl td{
+    border:1px solid #ccc!important;
+    padding:6px 8px!important;
+    text-align:left;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .tbl th{
+    background:#e8e8e8!important;
+    font-weight:700;
+    font-size:8pt;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .tbl tr:nth-child(even){
+    background:#f9f9f9!important;
+  }
+
+  /* Badge di stampa */
+  .ba,.bb,.bcat{
+    border:1px solid #666;
+    padding:2px 6px;
+    font-size:7pt;
+  }
+
+  /* Tabelle risultati con bordo */
+  .tbl-wrap{
+    border:1px solid #ccc;
+    border-radius:4px;
+    overflow:hidden;
+    page-break-inside:avoid;
+  }
+
+  /* Etichette */
+  label{
+    font-size:8pt;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:#333;
+    margin-bottom:4px;
+  }
+
+  /* Titoli sez. */
+  .sec-h{
+    border-bottom:2px solid #2d5a3d;
+    padding-bottom:6px;
+    margin-bottom:10px;
+  }
+  .sec-h h4{
+    font-size:12pt;
+    color:#2d5a3d;
+    margin:0;
+  }
+
+  /* Alert */
+  .alert{
+    border:1px solid #ccc;
+    background:#f9f9f9!important;
+    padding:8px 10px;
+    font-size:9pt;
+  }
+  .al-err{border-left:3px solid #c0392b}
+  .al-ok{border-left:3px solid #27ae60}
+  .al-blu{border-left:3px solid #2471a3}
+
+  /* Link */
+  a[href]::after{
+    content:" (" attr(href) ")";
+    font-size:8pt;
+    color:#666;
+  }
+
+  /* Evita righe sparse */
+  tr{page-break-inside:avoid}
+
+  /* Margini pagina */
+  @page{
+    size:A4 portrait;
+    margin:15mm 12mm 20mm 12mm;
+  }
 }
 
 /* ── MOBILE RESPONSIVENESS ── */
@@ -479,13 +651,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 /* ── PLACEHOLDER ── */
 .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px;padding:48px 24px;text-align:center;color:var(--ts)}
 .ph p{max-width:280px;font-size:.82rem;line-height:1.7}
-
-/* ── PRINT ── */
-@media print{
-  .no-print,.tabbar,.topbar,header,.tabs{display:none!important}
-  body{background:#fff!important}
-  .card{break-inside:avoid;box-shadow:none!important;border-color:#ccc}
-}
 
 /* ── RESPONSIVE (mobile) ── */
 @media(max-width:600px){
@@ -4385,60 +4550,101 @@ function stampaMiscela(){
   const htmlStampa = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="utf-8">
 <title>FertiControl ${dataOra}</title>
 <style>
-@page{size:A4 portrait;margin:10mm}
+@page{size:A4 portrait;margin:0}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:7pt;color:#111;line-height:1.35}
-.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:3px;margin-bottom:4px}
-.header h1{font-size:10pt;color:#2d6a2d;font-weight:700}
-.header .meta{font-size:6pt;color:#555;text-align:right;line-height:1.5}
-.badge{display:inline-block;padding:2.5px 8px;border-radius:3px;font-size:6.5pt;font-weight:700;margin-bottom:3px;border:1px solid}
-.badge.ok{background:#e8f5e8;border-color:#2d6a2d;color:#155724}
-.badge.err{background:#fde8e8;border-color:#c0392b;color:#721c24}
-.warn{background:#fff8e1;border:1px solid #f0c040;border-radius:3px;padding:2px 6px;font-size:6pt;color:#7a5c00;margin-bottom:5px}
-.serb-grid{display:grid;grid-template-columns:${gridCols};gap:3.5mm;margin-bottom:5mm}
-.serb{border:1.5px solid #2d6a2d;border-radius:3px;overflow:hidden}
-.st{background:#2d6a2d;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
-.bottom-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:5mm;align-items:start}
-.box{border:1px solid #ccc;border-radius:3px;overflow:hidden;margin-bottom:3mm}
-.box-title{background:#4a7c59;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
+body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:7pt;color:#222;line-height:1.3;background:#fff;padding:10mm 12mm 14mm 12mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#1a3a2a,#2d6a3d);color:#fff;padding:8px 12px 6px 12px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:flex-end;margin:0 0 0 0}
+.header h1{font-size:12pt;font-weight:700;letter-spacing:.03em}
+.header .sub{font-size:6pt;opacity:.75;margin-top:1px}
+.header .meta{font-size:6pt;text-align:right;line-height:1.5;opacity:.85}
+.header-line{height:3px;background:linear-gradient(90deg,#d4660a,#f5a65b);margin:0 0 4px 0;border-radius:0 0 3px 3px}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:7pt;font-weight:700;margin:3px 0;border:1.5px solid}
+.badge.ok{background:#d4edda;border-color:#28a745;color:#155724}
+.badge.err{background:#f8d7da;border-color:#dc3545;color:#721c24}
+
+/* ── WARNING ── */
+.warn{background:#fff8e1;border-left:3px solid #f0a030;border-radius:0 4px 4px 0;padding:4px 8px;font-size:6pt;color:#7a5c00;margin:2px 0 4px 0;line-height:1.35}
+
+/* ── SEZIONI ── */
+.sec{margin-bottom:3mm}
+.sec-title{font-size:8pt;color:#fff;background:linear-gradient(135deg,#2d6a3d,#4a8c5e);padding:3px 8px;border-radius:4px 4px 0 0;font-weight:700;letter-spacing:.03em;margin-bottom:0}
+.sec-body{border:1px solid #c8e6c9;border-top:none;border-radius:0 0 4px 4px;padding:3px 0;margin-bottom:3mm}
+
+/* ── SERBATOI ── */
+.serb-grid{display:grid;grid-template-columns:${gridCols};gap:3mm}
+.serb{border:1.5px solid #2d6a2d;border-radius:4px;overflow:hidden;page-break-inside:avoid}
+.st{background:linear-gradient(135deg,#1a3a2a,#2d6a3d);color:#fff;padding:3px 6px;font-weight:700;font-size:7pt;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center}
+.st .vol{font-size:5.5pt;opacity:.7;font-weight:400}
+
+/* ── BOTTOM GRID ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:3mm;align-items:start}
+
+/* ── BOX ── */
+.box{border:1px solid #c8e6c9;border-radius:4px;overflow:hidden;margin-bottom:2mm;page-break-inside:avoid}
+.box-title{background:linear-gradient(135deg,#2d6a3d,#4a8c5e);color:#fff;padding:3px 6px;font-weight:700;font-size:6.5pt}
+
+/* ── TABELLE ── */
 table{width:100%;border-collapse:collapse}
-td{padding:1.5px 5px;border-bottom:1px solid #eee;font-size:6.5pt}
-tr:last-child td{border-bottom:none;font-weight:700;background:#f0f5f0}
-.r{text-align:right;font-family:monospace}
-small{font-size:5.5pt;color:#666;font-weight:normal}
-h2{font-size:7pt;color:#2d6a2d;font-weight:700;margin-bottom:2px;margin-top:0;border-bottom:1px solid #c8e6c8;padding-bottom:1px}
-ol{padding-left:13px;margin:0}
-li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
-.firma{border-top:1px dashed #aaa;margin-top:5mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
-.firma-line{border-top:1px solid #333;padding-top:2px;margin-top:7mm;font-size:6pt;color:#444}
+th{background:#e8f5e9;border:1px solid #c8e6c9;padding:2px 5px;font-size:6pt;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#2e7d32;text-align:left}
+td{padding:2.5px 5px;border:1px solid #e0e0e0;font-size:6.5pt}
+tr:nth-child(even){background:#f1f8e9}
+tr:last-child td{border-bottom:2px solid #2d6a2d;font-weight:700;background:#c8e6c9}
+.r{text-align:right;font-family:'Consolas','Courier New',monospace;font-weight:600;color:#333}
+small{font-size:5pt;color:#666;font-weight:normal}
+
+/* ── LISTE ── */
+ol{padding-left:14px;margin:0}
+li{font-size:6.5pt;margin-bottom:1.5px;line-height:1.3}
+li::marker{color:#2d6a3d;font-weight:700}
+
+/* ── FIRMA ── */
+.firma{border-top:2px solid #2d6a2d;margin-top:4mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
+.firma-line{border-top:1px solid #555;padding-top:2px;margin-top:6mm;font-size:6pt;color:#444}
+
+/* ── FOOTER ── */
+.footer{position:fixed;bottom:0;left:12mm;right:12mm;border-top:1px solid #ccc;padding:3px 0;font-size:5.5pt;color:#888;text-align:center;display:flex;justify-content:space-between}
+
+@media print{
+  .footer{position:fixed;bottom:4mm;left:12mm;right:12mm}
+}
 </style></head><body>
 
 <div class="header">
   <div>
-    <h1>${TT('FertiControl — Scheda Miscela Nutritiva','FertiControl — Nutrient Mix Sheet')}</h1>
-    <div style="font-size:6pt;color:#555;margin-top:1px">${TT('Generata:','Generated:')} ${dataOra}</div>
+    <h1>🌿 ${TT('FertiControl — Scheda Miscela Nutritiva','FertiControl — Nutrient Mix Sheet')}</h1>
+    <div class="sub">${TT('Coltura Coco Coir — Soluzioni Madri A/B','Coco Coir crop — Mother Solutions A/B')}${nSerb>=3?'/C':''} · ${TT('Fertirrigazione idroponica','Hydroponic fertigation')}</div>
   </div>
-  <div class="meta">${TT('Coltura Coco Coir — Soluzioni Madri A/B','Coco Coir crop — Mother Solutions A/B')}${nSerb>=3?'/C':''}<br>${TT('Fertirrigazione idroponica','Hydroponic fertigation')}</div>
+  <div class="meta">${TT('Generata:','Generated:')} ${dataOra}</div>
 </div>
+<div class="header-line"></div>
 
 <div class="badge ${badgeOk?'ok':'err'}">${badge}</div>
-<div class="warn">${TT('⚠️ Verificare sempre EC e pH al punto di consegna prima dell\'irrigazione. Non miscelare mai i concentrati direttamente tra loro.','⚠️ Always check EC and pH at the delivery point before irrigation. Never mix the concentrates directly together.')}</div>
+<div class="warn">⚠️ ${TT('Verificare sempre EC e pH al punto di consegna prima dell\'irrigazione. Non miscelare mai i concentrati direttamente tra loro.','Always check EC and pH at the delivery point before irrigation. Never mix the concentrates directly together.')}</div>
 
-<h2 style="margin-bottom:3px">${TT('Soluzioni Madri — Dosi per Concentrato','Mother Solutions — Doses per Concentrate')}</h2>
-<div class="serb-grid">${serbHtml}</div>
+<div class="sec">
+  <div class="sec-title">🧂 ${TT('Soluzioni Madri — Dosi per Concentrato','Mother Solutions — Doses per Concentrate')}</div>
+  <div class="sec-body" style="padding:3px 4px"><div class="serb-grid">${serbHtml}</div></div>
+</div>
 
 <div class="bottom-grid">
   <div>
-    <h2>${TT('Riepilogo Parametri','Parameter Summary')}</h2>
-    <div class="box">
-      <div class="box-title">${TT('Risultati calcolo','Calculation results')}</div>
-      <table>${riepilogoHtml}</table>
+    <div class="sec">
+      <div class="sec-title">📊 ${TT('Riepilogo Parametri','Parameter Summary')}</div>
+      <div class="sec-body" style="padding:0"><div class="box" style="border:none;margin:0;border-radius:0">
+        <table>${riepilogoHtml}</table>
+      </div></div>
     </div>
-    ${ioniHtml?`<h2>${TT('Apporti Ionici Finali','Final Ionic Inputs')}</h2><div class="box"><div class="box-title">${TT('mg/L soluzione diluita','mg/L diluted solution')}</div><table>${ioniHtml}</table></div>`:''}
+    ${ioniHtml?`<div class="sec"><div class="sec-title">💧 ${TT('Apporti Ionici Finali','Final Ionic Inputs')}</div><div class="sec-body" style="padding:0"><div class="box" style="border:none;margin:0;border-radius:0"><div class="box-title" style="font-size:5.5pt;padding:2px 6px">${TT('mg/L soluzione diluita','mg/L diluted solution')}</div><table>${ioniHtml}</table></div></div></div>`:''}
   </div>
   <div>
-    <h2>${TT('Procedura di Preparazione','Preparation Procedure')}</h2>
-    <ol>${procHtml}</ol>
+    <div class="sec">
+      <div class="sec-title">📋 ${TT('Procedura di Preparazione','Preparation Procedure')}</div>
+      <div class="sec-body" style="padding:3px 6px"><ol>${procHtml}</ol></div>
+    </div>
   </div>
 </div>
 
@@ -4447,6 +4653,8 @@ li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
   <div class="firma-line">${TT('Verificata da','Verified by')}</div>
   <div class="firma-line">${TT('Data preparazione','Preparation date')}</div>
 </div>
+
+<div class="footer"><span>FertiControl v2.0</span><span>${dataOra}</span></div>
 
 </body></html>`;
 
@@ -4546,46 +4754,71 @@ function stampaCatalogo(){
   const htmlStampa = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="utf-8">
 <title>${TT('FertiControl — Catalogo','FertiControl — Catalog')} ${dataOra}</title>
 <style>
-@page{size:A4 portrait;margin:12mm}
+@page{size:A4 portrait;margin:0}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#111;line-height:1.4}
-.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:4px;margin-bottom:8px}
-.header h1{font-size:12pt;color:#2d6a2d;font-weight:700}
-.header .meta{font-size:7pt;color:#555;text-align:right;line-height:1.5}
-.sez{margin-bottom:9mm;break-inside:avoid}
-.sez-h{font-size:10pt;font-weight:700;padding:3px 8px;border-radius:3px;margin-bottom:5px;display:flex;justify-content:space-between}
-.sez-ok{background:#e8f5e8;color:#155724;border:1px solid #2d6a2d}
-.sez-no{background:#fde8e8;color:#721c24;border:1px solid #c0392b}
-.grp{margin-bottom:4mm;break-inside:avoid}
-.gt{font-size:8pt;font-weight:700;color:#2d6a2d;border-bottom:1px solid #c8e6c8;padding-bottom:1px;margin-bottom:2px}
+body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:6.5pt;color:#222;line-height:1.2;background:#fff;padding:10mm 12mm 14mm 12mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#1a3a2a,#2d6a3d);color:#fff;padding:8px 12px 6px 12px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:flex-end}
+.header h1{font-size:12pt;font-weight:700;letter-spacing:.03em}
+.header .sub{font-size:6pt;opacity:.75;margin-top:1px}
+.header .meta{font-size:6pt;text-align:right;line-height:1.5;opacity:.85}
+.header-line{height:3px;background:linear-gradient(90deg,#d4660a,#f5a65b);margin:0 0 4px 0;border-radius:0 0 3px 3px}
+
+/* ── SEZIONI ── */
+.sez{margin-bottom:4mm;page-break-inside:avoid}
+.sez-h{font-size:8pt;font-weight:700;padding:4px 10px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center}
+.sez-ok{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:1px solid #1b5e20}
+.sez-no{background:linear-gradient(135deg,#b71c1c,#c62828);color:#fff;border:1px solid #b71c1c}
+.sez-body{border:1px solid #e0e0e0;border-top:none;border-radius:0 0 4px 4px;padding:2px 0;margin-bottom:2mm}
+
+/* ── GRUPPI ── */
+.grp{margin-bottom:2mm;page-break-inside:avoid;padding:0 3mm}
+.gt{font-size:7pt;font-weight:700;color:#2d6a3d;border-bottom:1.5px solid #c8e6c9;padding-bottom:1px;margin-bottom:2px;letter-spacing:.03em;display:flex;align-items:center;gap:4px}
+.gt::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#2d6a3d,#4a8c5e)}
+
+/* ── TABELLE ── */
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:6.5pt;color:#666;text-transform:uppercase;border-bottom:1px solid #ccc;padding:2px 5px}
-td{padding:2px 5px;border-bottom:1px solid #eee;font-size:7.5pt}
-.r{text-align:right;font-family:monospace}
-.vuoto{font-size:7.5pt;color:#888;font-style:italic;padding:3px 5px}
-.tot{font-size:7pt;color:#555;font-weight:400}
-.firma{border-top:1px dashed #aaa;margin-top:6mm;padding-top:3mm;font-size:7pt;color:#444}
+th{text-align:left;font-size:5.5pt;color:#2e7d32;text-transform:uppercase;letter-spacing:.04em;border-bottom:1.5px solid #c8e6c9;padding:2px 5px;background:#e8f5e9;font-weight:700}
+td{padding:2px 5px;border-bottom:1px solid #e0e0e0;font-size:6.5pt}
+tr:nth-child(even){background:#f1f8e9}
+.r{text-align:right;font-family:'Consolas','Courier New',monospace;font-weight:600;color:#333}
+
+/* ── ALTRO ── */
+.vuoto{font-size:6.5pt;color:#6c757d;font-style:italic;padding:3px 6px;background:#f5f5f5;border-radius:3px}
+.tot{font-size:6.5pt;color:#fff;font-weight:600}
+.firma{border-top:2px solid #2d6a2d;margin-top:5mm;padding-top:2mm;font-size:6.5pt;color:#444;line-height:1.4}
+
+/* ── FOOTER ── */
+.footer{position:fixed;bottom:4mm;left:12mm;right:12mm;border-top:1px solid #ccc;padding:3px 0;font-size:5.5pt;color:#888;text-align:center;display:flex;justify-content:space-between}
+
+@media print{
+  .footer{position:fixed;bottom:4mm;left:12mm;right:12mm}
+}
 </style></head><body>
 
 <div class="header">
   <div>
-    <h1>${TT('FertiControl — Catalogo Ingredienti','FertiControl — Ingredient Catalog')}</h1>
-    <div style="font-size:7pt;color:#555;margin-top:1px">${TT('Inventario magazzino — generato:','Warehouse inventory — generated:')} ${dataOra}</div>
+    <h1>📦 ${TT('FertiControl — Catalogo Ingredienti','FertiControl — Ingredient Catalog')}</h1>
+    <div class="sub">${TT('Inventario magazzino — generato:','Warehouse inventory — generated:')} ${dataOra}</div>
   </div>
   <div class="meta">${TT('Totale:','Total:')} ${catalogo.length} ${TT('ingredienti','ingredients')}<br>${TT('Presenti:','In stock:')} ${presenti.length} · ${TT('Mancanti:','Missing:')} ${mancanti.length}</div>
 </div>
+<div class="header-line"></div>
 
 <div class="sez">
-  <div class="sez-h sez-ok"><span>${TT('✓ Presenti in magazzino','✓ In stock')}</span><span class="tot">${presenti.length} ${TT('ingredienti','ingredients')}</span></div>
-  ${buildSezione(presenti)}
+  <div class="sez-h sez-ok"><span>✅ ${TT('Presenti in magazzino','In stock')}</span><span class="tot">${presenti.length} ${TT('ingredienti','ingredients')}</span></div>
+  <div class="sez-body">${buildSezione(presenti)}</div>
 </div>
 
 <div class="sez">
-  <div class="sez-h sez-no"><span>${TT('✗ Non presenti','✗ Not in stock')}</span><span class="tot">${mancanti.length} ${TT('ingredienti','ingredients')}</span></div>
-  ${buildSezione(mancanti)}
+  <div class="sez-h sez-no"><span>❌ ${TT('Non presenti','Not in stock')}</span><span class="tot">${mancanti.length} ${TT('ingredienti','ingredients')}</span></div>
+  <div class="sez-body">${buildSezione(mancanti)}</div>
 </div>
 
-<div class="firma">${TT('Lista della spesa / inventario — spuntare gli ingredienti da riordinare.','Shopping list / inventory — check the ingredients to reorder.')} _____________________________</div>
+<div class="firma">📝 ${TT('Lista della spesa / inventario — spuntare gli ingredienti da riordinare.','Shopping list / inventory — check the ingredients to reorder.')} _____________________________</div>
+
+<div class="footer"><span>FertiControl v2.0</span><span>${dataOra}</span></div>
 
 </body></html>`;
 
