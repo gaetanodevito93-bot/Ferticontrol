@@ -98,183 +98,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .tag-fix{font-size:.6rem;color:var(--ts);margin-top:3px;text-align:center}
 .el-txt{font-size:.65rem;color:var(--vi);font-family:'JetBrains Mono',monospace;margin-top:3px}
 
-/* ── STAMPA PROFESSIONALE ── */
+/* ── STAMPA ── */
 @media print{
-  /* Nascondi elementi non necessari */
-  .no-print,.tabbar,.topbar,header,.tabs,.lang-selector,
-  .hbadge,.btn,.alert,.sep,.ph,.ricalcola-bar,
-  #ricalcola-bar,.field input,.field select,.field textarea,
-  .utag,.urow,.pianta-grid,.fase-grid,.serb-grid,.ri-grid,
-  .target-grid,.modal,.modal-overlay,.tooltip,.tw,
-  [onclick],.btn-pr,.btn-se,.btn-del,.btn-sm,
-  .cat-row,.cat-grid,.ing-row,.calc-table .btn,
-  #calc-table button,#calc-tbody button,
-  .tab[onclick],.tab.active,.tab:hover,
-  .no-print,.tabbar,.topbar,header,.tabs,.lang-selector,
-  .hbadge,.btn,.alert,.sep,.ph,.ricalcola-bar,
-  [onclick]:not(td):not(tr):not(th):not(.tbl):not(.tbl-wrap),
-  button:not(.tbl):not(.tbl-wrap){display:none!important}
-
-  /* Mostra tutti i pannelli */
-  .panel{display:block!important;padding:0!important;margin:0 0 16px 0!important}
-
-  /* Body */
-  body{
-    background:#fff!important;
-    font-size:11pt;
-    line-height:1.4;
-    color:#000;
-    margin:0;
-    padding:0;
-  }
-
-  /* Header di stampa */
-  body::before{
-    content:"FERTICONTROL — Calcolatore Fertirrigazione";
-    display:block!important;
-    background:linear-gradient(135deg,#1a3a2a 0%,#2d5a3d 100%)!important;
-    color:#fff!important;
-    padding:12px 20px!important;
-    font-size:14pt;
-    font-weight:700;
-    letter-spacing:.05em;
-    text-transform:uppercase;
-    border-bottom:3px solid #d4660a;
-    margin-bottom:16px;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
-
-  /* Footer di stampa */
-  body::after{
-    content:"FertiControl v2.0 — Stampa: " counter(page) " / " counter(pages);
-    display:block!important;
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    background:#f5f5f5;
-    border-top:1px solid #ccc;
-    padding:8px 20px;
-    font-size:8pt;
-    color:#666;
-    text-align:center;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
-
-  /* Card */
-  .card{
-    break-inside:avoid;
-    box-shadow:none!important;
-    border:1px solid #ccc;
-    margin-bottom:12px;
-    page-break-inside:avoid;
-  }
-
-  /* Card header */
-  .ch{
-    background:#2d5a3d!important;
-    color:#fff!important;
-    padding:8px 12px!important;
-    font-size:10pt;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
-
-  /* Card body */
-  .cb{
-    padding:10px 12px!important;
-  }
-
-  /* Tabelle */
-  .tbl{
-    width:100%!important;
-    border-collapse:collapse!important;
-    font-size:9pt;
-    margin:8px 0;
-  }
-  .tbl th,.tbl td{
-    border:1px solid #ccc!important;
-    padding:6px 8px!important;
-    text-align:left;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
-  .tbl th{
-    background:#e8e8e8!important;
-    font-weight:700;
-    font-size:8pt;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-  }
-  .tbl tr:nth-child(even){
-    background:#f9f9f9!important;
-  }
-
-  /* Badge di stampa */
-  .ba,.bb,.bcat{
-    border:1px solid #666;
-    padding:2px 6px;
-    font-size:7pt;
-  }
-
-  /* Tabelle risultati con bordo */
-  .tbl-wrap{
-    border:1px solid #ccc;
-    border-radius:4px;
-    overflow:hidden;
-    page-break-inside:avoid;
-  }
-
-  /* Etichette */
-  label{
-    font-size:8pt;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.05em;
-    color:#333;
-    margin-bottom:4px;
-  }
-
-  /* Titoli sez. */
-  .sec-h{
-    border-bottom:2px solid #2d5a3d;
-    padding-bottom:6px;
-    margin-bottom:10px;
-  }
-  .sec-h h4{
-    font-size:12pt;
-    color:#2d5a3d;
-    margin:0;
-  }
-
-  /* Alert */
-  .alert{
-    border:1px solid #ccc;
-    background:#f9f9f9!important;
-    padding:8px 10px;
-    font-size:9pt;
-  }
-  .al-err{border-left:3px solid #c0392b}
-  .al-ok{border-left:3px solid #27ae60}
-  .al-blu{border-left:3px solid #2471a3}
-
-  /* Link */
-  a[href]::after{
-    content:" (" attr(href) ")";
-    font-size:8pt;
-    color:#666;
-  }
-
-  /* Evita righe sparse */
-  tr{page-break-inside:avoid}
-
-  /* Margini pagina */
-  @page{
-    size:A4 portrait;
-    margin:15mm 12mm 20mm 12mm;
-  }
+  .no-print,.tabbar,.topbar,header{display:none!important}
+  body{background:#fff!important}
+  .card{break-inside:avoid;box-shadow:none!important}
 }
 
 /* ── MOBILE RESPONSIVENESS ── */
@@ -652,6 +480,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px;padding:48px 24px;text-align:center;color:var(--ts)}
 .ph p{max-width:280px;font-size:.82rem;line-height:1.7}
 
+/* ── PRINT ── */
+@media print{
+  .no-print,.tabbar,.topbar,header,.tabs{display:none!important}
+  body{background:#fff!important}
+  .card{break-inside:avoid;box-shadow:none!important;border-color:#ccc}
+}
+
 /* ── RESPONSIVE (mobile) ── */
 @media(max-width:600px){
   header{padding:14px 16px}
@@ -722,15 +557,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
       </div>
       <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" data-i18n="acqua.ions">Ioni presenti (mg/L)</div>
       <div class="row3">
-        <div class="tg-box"><div class="tg-lbl"><span>Ca²⁺<span class="tg-name">Calcio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>Mg²⁺<span class="tg-name">Magnesio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>K⁺<span class="tg-name">Potassio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>Na⁺<span class="tg-name">Sodio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>SO₄²⁻<span class="tg-name">Solfati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>Cl⁻<span class="tg-name">Cloruri</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>HCO₃⁻<span class="tg-name">Bicarbonati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1" title="Bicarbonati — principale causa di precipitazione CaCO₃"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>NO₃⁻<span class="tg-name">Nitrati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
-        <div class="tg-box"><div class="tg-lbl"><span>Fe<span class="tg-name">Ferro</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Ca²⁺<span class="tg-name" data-i18n="ion.ca">Calcio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-ca" value="80" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Mg²⁺<span class="tg-name" data-i18n="ion.mg">Magnesio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-mg" value="20" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>K⁺<span class="tg-name" data-i18n="ion.k">Potassio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-k" value="5" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Na⁺<span class="tg-name" data-i18n="ion.na">Sodio</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-na" value="30" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>SO₄²⁻<span class="tg-name" data-i18n="ion.so4">Solfati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-so4" value="40" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Cl⁻<span class="tg-name" data-i18n="ion.cl">Cloruri</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-cl" value="50" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>HCO₃⁻<span class="tg-name" data-i18n="ion.hco3">Bicarbonati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-hco3" value="150" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>NO₃⁻<span class="tg-name" data-i18n="ion.no3">Nitrati</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-no3" value="10" min="0" step="1"></div>
+        <div class="tg-box"><div class="tg-lbl"><span>Fe<span class="tg-name" data-i18n="ion.fe">Ferro</span></span><span class="tg-unit">mg/L</span></div><input type="number" id="aq-fe" value="0.1" min="0" step="0.01"></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
         <button class="btn btn-se btn-sm" onclick="presetAcqua('ottima')" data-i18n="preset.ottima">💧 Ottima (EC 0.1)</button>
@@ -965,25 +800,25 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 <!-- ═══ MODAL: Nuovo Ingrediente ═══ -->
 <div class="modal-bg" id="modal-ing" role="dialog" aria-modal="true" aria-labelledby="modal-ing-title">
   <div class="modal">
-    <div class="modal-h"><h3 id="modal-ing-title">✏️ Nuovo Ingrediente</h3><button class="modal-close" onclick="closeModal('modal-ing')" aria-label="Chiudi finestra">✕</button></div>
+    <div class="modal-h"><h3 id="modal-ing-title" data-i18n="modal.ing.title">✏️ Nuovo Ingrediente</h3><button class="modal-close" onclick="closeModal('modal-ing')" aria-label="Chiudi finestra">✕</button></div>
     <div class="modal-b">
       <input type="hidden" id="ing-edit-id">
-      <div class="field"><label>Nome prodotto</label><input type="text" id="ing-nome" placeholder="Es. Nitrato di Potassio KNO₃"></div>
+      <div class="field"><label data-i18n="modal.ing.nome">Nome prodotto</label><input type="text" id="ing-nome" data-i18n-placeholder="ph.ing.nome" placeholder="Es. Nitrato di Potassio KNO₃"></div>
       <div class="row2">
-        <div class="field"><label>Categoria</label>
+        <div class="field"><label data-i18n="modal.ing.cat">Categoria</label>
           <select id="ing-cat"><option value="macro">Macronutriente</option><option value="micro">Micronutriente</option><option value="ph">Correttore pH</option></select>
         </div>
       </div>
       <div class="sep"></div>
       <div class="sec-h"><h4 data-i18n="modal.ing.compo">Composizione chimica (%)</h4></div>
       <div class="row3">
-        <div class="field"><label>% N (Azoto)</label><input type="number" id="ing-N" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% P (Fosforo)</label><input type="number" id="ing-P" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% K (Potassio)</label><input type="number" id="ing-K" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% Ca (Calcio)</label><input type="number" id="ing-Ca" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% Mg (Magnesio)</label><input type="number" id="ing-Mg" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% S (Zolfo)</label><input type="number" id="ing-S" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% Fe (Ferro)</label><input type="number" id="ing-Fe" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.N">% N (Azoto)</label><input type="number" id="ing-N" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.P">% P (Fosforo)</label><input type="number" id="ing-P" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.K">% K (Potassio)</label><input type="number" id="ing-K" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Ca">% Ca (Calcio)</label><input type="number" id="ing-Ca" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Mg">% Mg (Magnesio)</label><input type="number" id="ing-Mg" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.S">% S (Zolfo)</label><input type="number" id="ing-S" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Fe">% Fe (Ferro)</label><input type="number" id="ing-Fe" value="0" min="0" max="100" step="0.1"></div>
         <div class="field"><label>% Mn</label><input type="number" id="ing-Mn" value="0" min="0" max="100" step="0.01"></div>
         <div class="field"><label>% Zn</label><input type="number" id="ing-Zn" value="0" min="0" max="100" step="0.01"></div>
       </div>
@@ -1007,10 +842,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
     <div class="modal-b">
       <input type="hidden" id="ric-edit-id">
       <div class="row2">
-        <div class="field"><label data-i18n="modal.ricetta.nome">Nome pianta / ricetta</label><input type="text" id="ric-nome" placeholder="Es. Pomodoro Cherry"></div>
+        <div class="field"><label data-i18n="modal.ricetta.nome">Nome pianta / ricetta</label><input type="text" id="ric-nome" data-i18n-placeholder="ph.ric.nome" placeholder="Es. Pomodoro Cherry"></div>
         <div class="field"><label data-i18n="modal.ricetta.emoji">Emoji 🌿</label><input type="text" id="ric-emoji" value="🌱" maxlength="4"></div>
       </div>
-      <div class="field"><label data-i18n="modal.ricetta.note">Note generali</label><textarea id="ric-note" rows="2" style="resize:vertical" placeholder="Indica substrato, ph target, avvertenze…"></textarea></div>
+      <div class="field"><label data-i18n="modal.ricetta.note">Note generali</label><textarea id="ric-note" rows="2" style="resize:vertical" data-i18n-placeholder="ph.ric.note" placeholder="Indica substrato, ph target, avvertenze…"></textarea></div>
       <div class="sep"></div>
       <div class="sec-h"><h4 data-i18n="modal.ricetta.fasi">Fasi di crescita</h4><button class="btn btn-se btn-sm" onclick="aggiungiFase()" data-i18n="modal.ricetta.addFase">+ Fase</button></div>
       <div id="fasi-editor"></div>
@@ -1178,6 +1013,8 @@ const TRANSLATIONS = {
     'js.toastReset': 'Dati ripristinati ai valori di fabbrica',
     'js.toastDosi': 'Dosi originali ripristinate',
     'js.toastBilanciate': 'Dosi bilanciate applicate alla ricetta',
+    'js.nuovaFase': 'Nuova Fase',
+    'js.targetHint': 'Modalità Target mg/L: premi "Calcola Dosaggi" per risolvere automaticamente la formula.',
     'js.ratioAgro': '📐 Rapporti Agronomici',
     'js.noteOper': '📝 Note Operative',
     'js.correzionePH': '🧪 Correzione pH / Bicarbonati',
@@ -1186,6 +1023,24 @@ const TRANSLATIONS = {
     'js.sale': 'Sale',
     'js.serb': 'Serb.',
     'js.totSali': 'Totale sali',
+    'js.ricettaFissaG': 'Ricetta Fissa g',
+    'js.unitaPh': 'unità pH',
+    'js.silicatoWarn': '<strong>Silicato di Potassio (K₂SiO₃):</strong> questa anteprima lo mostra in Serbatoio B per riferimento, ma è <strong>incompatibile con CaN e chelati</strong>. In fase di calcolo il motore lo sposta automaticamente in Serbatoio C. Non mescolarlo mai manualmente con Ca, fosfati o Fe-chelati.',
+    'js.idNonTrovato': 'sale/i con ID non trovato nel catalogo attuale',
+    'js.hoBadge': '✓ Ho',
+    'js.mancaBadge': '✗ Manca',
+    'ph.ing.nome': 'Es. Nitrato di Potassio KNO₃',
+    'ph.ric.nome': 'Es. Pomodoro Cherry',
+    'ph.ric.note': 'Indica substrato, ph target, avvertenze…',
+    'ing.el.N': '% N (Azoto)',
+    'ing.el.P': '% P (Fosforo)',
+    'ing.el.K': '% K (Potassio)',
+    'ing.el.Ca': '% Ca (Calcio)',
+    'ing.el.Mg': '% Mg (Magnesio)',
+    'ing.el.S': '% S (Zolfo)',
+    'ing.el.Fe': '% Fe (Ferro)',
+    'ion.ca': 'Calcio', 'ion.mg': 'Magnesio', 'ion.k': 'Potassio', 'ion.na': 'Sodio',
+    'ion.so4': 'Solfati', 'ion.cl': 'Cloruri', 'ion.hco3': 'Bicarbonati', 'ion.no3': 'Nitrati', 'ion.fe': 'Ferro',
   },
   en: {
     'header.subtitle': '— Mother solution calculator for fertigation ',
@@ -1338,6 +1193,8 @@ const TRANSLATIONS = {
     'js.toastReset': 'Data restored to factory defaults',
     'js.toastDosi': 'Original doses restored',
     'js.toastBilanciate': 'Balanced doses applied to recipe',
+    'js.nuovaFase': 'New Stage',
+    'js.targetHint': 'Target mg/L mode: press "Calculate Doses" to automatically solve the formula.',
     'js.ratioAgro': '📐 Agronomic Ratios',
     'js.noteOper': '📝 Operating Notes',
     'js.correzionePH': '🧪 pH / Bicarbonate Correction',
@@ -1346,6 +1203,24 @@ const TRANSLATIONS = {
     'js.sale': 'Salt',
     'js.serb': 'Tank',
     'js.totSali': 'Total salts',
+    'js.ricettaFissaG': 'Fixed Recipe g',
+    'js.unitaPh': 'pH units',
+    'js.silicatoWarn': '<strong>Potassium Silicate (K₂SiO₃):</strong> this preview shows it in Tank B for reference, but it is <strong>incompatible with CaN and chelates</strong>. During calculation the engine automatically moves it to Tank C. Never mix it manually with Ca, phosphates or Fe-chelates.',
+    'js.idNonTrovato': 'salt(s) with ID not found in the current catalog',
+    'js.hoBadge': '✓ Have',
+    'js.mancaBadge': '✗ Missing',
+    'ph.ing.nome': 'e.g. Potassium Nitrate KNO₃',
+    'ph.ric.nome': 'e.g. Cherry Tomato',
+    'ph.ric.note': 'Specify substrate, target pH, warnings…',
+    'ing.el.N': '% N (Nitrogen)',
+    'ing.el.P': '% P (Phosphorus)',
+    'ing.el.K': '% K (Potassium)',
+    'ing.el.Ca': '% Ca (Calcium)',
+    'ing.el.Mg': '% Mg (Magnesium)',
+    'ing.el.S': '% S (Sulfur)',
+    'ing.el.Fe': '% Fe (Iron)',
+    'ion.ca': 'Calcium', 'ion.mg': 'Magnesium', 'ion.k': 'Potassium', 'ion.na': 'Sodium',
+    'ion.so4': 'Sulfates', 'ion.cl': 'Chlorides', 'ion.hco3': 'Bicarbonates', 'ion.no3': 'Nitrates', 'ion.fe': 'Iron',
   }
 };
 
@@ -1362,30 +1237,7 @@ function setLang(lang) {
   applyLang();
   // Re-render dynamic content with new language
   renderCatalogo();
-  // Preserve current recipe selection across language switch
-  const _pianta = piantaSel, _fase = faseSel, _tipo = tipoRicettaSel;
   renderRicetteCustom();
-  if(_pianta && _fase) {
-    piantaSel = _pianta; faseSel = _fase; tipoRicettaSel = _tipo;
-    renderRicettaOut(_pianta, _fase, _tipo);
-    document.getElementById('ricetta-out-wrap').style.display='block';
-    // Restore active state on plant and fase buttons
-    document.querySelectorAll('.pianta-btn').forEach(b=>b.classList.toggle('active',
-      _tipo==='builtin' ? b.dataset.id===_pianta.id && b.dataset.tipo==='builtin' : false));
-    if(_tipo==='builtin') {
-      const fr = document.getElementById('fase-row');
-      fr.innerHTML='';
-      _pianta.fasi.forEach((f,i)=>{
-        const d=document.createElement('div');
-        d.className='fase-btn'; d.dataset.i=i;
-        if(f===_fase) d.classList.add('active');
-        d.innerHTML=`${f.icon}<br>${faseNome(f)}`;
-        d.onclick=()=>selFase(i);
-        fr.appendChild(d);
-      });
-      document.getElementById('card-fasi-wrap').style.display='block';
-    }
-  }
   if(calcRighe.length) renderCalcTabella();
   if(document.getElementById('calc-out').querySelector('#risultato-stampa')) calcola();
   aggiornaStat();
@@ -1413,44 +1265,6 @@ function applyLang() {
     ingCat.options[2].textContent = t('cat.ph');
   }
 }
-
-const PLANT_NAMES_EN = {
-  'Pomodoro':'Tomato','Lattuga':'Lettuce','Basilico':'Basil',
-  'Peperone':'Bell Pepper','Cetriolo':'Cucumber','Fragola':'Strawberry',
-  'Cannabis / Canapa':'Cannabis / Hemp','Melanzana':'Aubergine',
-  'Zucchina':'Courgette','Spinacio':'Spinach','Rucola':'Rocket'
-};
-const FASE_NAMES_EN = {
-  'Trapianto / Radicamento':'Transplant / Rooting',
-  'Vegetativo (1°-3° truss)':'Vegetative (1st–3rd truss)',
-  'Fruttificazione (4°+ truss)':'Fruiting (4th+ truss)',
-  'Fine ciclo / Lavaggio':'End of cycle / Flushing',
-  'Germinazione / Plantula':'Germination / Seedling',
-  'Crescita vegetativa':'Vegetative growth',
-  'Pre-raccolta (7 gg)':'Pre-harvest (7 days)',
-  'Germinazione':'Germination',
-  'Pre-bolting / Raccolta':'Pre-bolting / Harvest',
-  'Trapianto':'Transplant',
-  'Vegetativo':'Vegetative',
-  'Fioritura e Fruttificazione':'Flowering and Fruiting',
-  'Giovane':'Young',
-  'Vegetativo / Fioritura':'Vegetative / Flowering',
-  'Produzione piena':'Full production',
-  'Radicamento':'Rooting',
-  'Fioritura e Frutto':'Flowering and Fruiting',
-  'Germinazione / Cloni':'Germination / Clones',
-  'Vegetativo (sett. 2-5)':'Vegetative (weeks 2–5)',
-  'Fioritura piena (sett. 4-7)':'Full Flowering (weeks 4–7)',
-  'Fruttificazione':'Fruiting',
-  'Produzione':'Production',
-  'Fine stagione':'End of season',
-  'Germoglio / Plantula':'Sprout / Seedling',
-  'Crescita':'Growth',
-  'Pre-raccolta':'Pre-harvest',
-  'Pre-raccolta (5 gg)':'Pre-harvest (5 days)'
-};
-function piantaNome(p){ return currentLang==='en'?(PLANT_NAMES_EN[p.nome]||p.nome):p.nome; }
-function faseNome(f){ return currentLang==='en'?(FASE_NAMES_EN[f.nome]||f.nome):f.nome; }
 
 // ════════════════════════════════════════════════════
 // DATABASE SALI — A/B fissi per chimica
@@ -1896,6 +1710,162 @@ const PIANTE_BUILTIN = [
 
 ];
 
+// ════════════════════════════════════════════════
+// TRADUZIONI DEI DATI (catalogo sali + ricette predefinite)
+// I dati originali (italiano) restano intatti; questi campi
+// vengono usati solo in visualizzazione quando currentLang==='en'.
+// ════════════════════════════════════════════════
+const SALI_I18N = {
+  CaN:   {nome:"Calcium Nitrate Ca(NO₃)₂·4H₂O",     note:"Tank B mandatory: precipitates with phosphates and sulfates in the concentrate. Dissolve in lukewarm water."},
+  KNO3:  {nome:"Potassium Nitrate KNO₃",            note:"First choice for K and nitric N. Highly soluble."},
+  MgNO3: {nome:"Magnesium Nitrate Mg(NO₃)₂·6H₂O",   note:"Preferable to sulfate in coco to avoid sulfur buildup. Provides Mg and N without S."},
+  MgSO4: {nome:"Magnesium Sulfate MgSO₄·7H₂O",      note:"Epsom salt. Cheap but adds S: moderate in coco to avoid sulfate buildup."},
+  KH2PO4:{nome:"Monopotassium Phosphate KH₂PO₄",    note:"P + K, lowers pH. Forms CaHPO₄ precipitate if it meets calcium: always in A."},
+  MAP:   {nome:"Monoammonium Phosphate MAP NH₄H₂PO₄",note:"P source with N-NH₄. Max 10% of total N in coco to avoid ammonium toxicity."},
+  K2SO4: {nome:"Potassium Sulfate K₂SO₄",           note:"K without nitrogen: ideal in flowering. Adds S."},
+  NH4NO3:{nome:"Ammonium Nitrate NH₄NO₃",           note:"NH₄ max 5% of total N in coco. Avoid in summer."},
+  CaCl2: {nome:"Calcium Chloride CaCl₂·2H₂O",       note:"Alternative Ca supplement. Excess Cl damages roots: only for specific Ca deficiency."},
+  FeEDTA:{nome:"Iron Chelate Fe-EDTA 13%",          note:"Stable pH 4.5–6.5. First choice in coco at correct pH. If pH tends to rise above 6.5 (long cycles), use Fe-DTPA or Fe-EDDHA."},
+  FeDTPA:{nome:"Iron Chelate Fe-DTPA 11%",          note:"Stable up to pH 7. Preferable to Fe-EDTA if pH tends to rise above 6.5."},
+  FeEDDHA:{nome:"Iron Chelate Fe-EDDHA 6%",         note:"The most stable chelate (up to pH 9). For chronic iron chlorosis."},
+  MixCh: {nome:"EDTA Chelate Mix (Fe+Mn+Zn+Cu+B+Mo)",note:"All micros in one product (Fe+Mn+Zn+Cu+B+Mo). If you use it do NOT add separate micros."},
+  FeSO4: {nome:"Iron Sulfate FeSO₄·7H₂O",           note:"Cheap but unstable: oxidizes to Fe³⁺. Add citric acid to stabilize."},
+  MnSO4: {nome:"Manganese Sulfate MnSO₄·H₂O",       note:"Low dose: excess causes toxicity. Do not add if you use the Chelate Mix."},
+  ZnSO4: {nome:"Zinc Sulfate ZnSO₄·7H₂O",           note:"Very low dose: Zn phytotoxic in excess. Do not add if you use the Chelate Mix."},
+  H3BO3: {nome:"Boric Acid H₃BO₃",                  note:"Dissolve in hot water. Narrow deficiency/toxicity margin: respect the dose."},
+  NaMoO4:{nome:"Sodium Molybdate Na₂MoO₄·2H₂O",     note:"The micro needed in the smallest amount. Prepare a 1 g/L stock solution and dose from it."},
+  HNO3:  {nome:"Nitric Acid HNO₃ 38%",              note:"pH-down corrector. PPE mandatory. Always in A."},
+  H3PO4: {nome:"Phosphoric Acid H₃PO₄ 75%",         note:"Safer than HNO₃. Do not mix with Ca in the concentrate."},
+  KOH:   {nome:"Potassium Hydroxide KOH 50%",       note:"Raises pH. Very caustic. Always diluted."},
+  K2SiO3:{nome:"Potassium Silicate K₂SiO₃ (sol. ~49%)",note:"Commercial liquid product ~49% K₂SiO₃ (pH 11-12). Silicon (Si) strengthens cell walls. ⚠️ Incompatible with Ca, phosphates, chelates and acids: precipitates CaSiO₃ and degrades chelates. The engine automatically moves it to Tank C if available; never mix it manually with CaN, KH₂PO₄ or Fe-chelates."},
+};
+
+const RICETTE_I18N = {
+  pomodoro: {nome:"Tomato", note:"Requirements from Romano Tesi (2010) and Sonneveld & Straver (2002). High Ca and K in fruiting. pH 5.8-6.2. Drain EC = input EC + 0.5.", fasi:[
+    {nome:"Transplant / Rooting", note:"Ca=90 K=130 P=30 Mg=28 N≈124 mg/L. EC 1.0-1.2. Young roots, no NH₄."},
+    {nome:"Vegetative (1st-3rd truss)", note:"Ca=140 K=254 P=39 Mg=30 N≈204 mg/L. Sonneveld (2002) standard tomato reference."},
+    {nome:"Fruiting (4th+ truss)", note:"Ca=180 K=325 P=42 Mg=45 N≈250 mg/L. K/Ca = 1.8 (Romano Tesi: 1.5-2.0). High Ca against BER."},
+    {nome:"End of cycle / Flush", note:"Ca=65 K=90 P=20 Mg=18 N≈89 mg/L. Reduce EC. Flush substrate at EC 0.5."},
+  ]},
+  lattuga: {nome:"Lettuce", note:"Romano Tesi (2010): EC 1.0-2.0. High N for leaves. Ca against tip-burn. pH 5.5-6.2.", fasi:[
+    {nome:"Germination / Seedling", note:"Ca=70 K=100 P=22 Mg=20 N≈98 mg/L. Light solution."},
+    {nome:"Vegetative growth", note:"Ca=125 K=175 P=38 Mg=35 N≈172 mg/L. Romano Tesi target for DFT/NFT."},
+    {nome:"Pre-harvest (7 days)", note:"Ca=80 K=110 P=25 Mg=22 N≈109 mg/L. Reduce EC for turgor and flavor (Romano Tesi)."},
+  ]},
+  basilico: {nome:"Basil", note:"Romano Tesi (2010): high Mg for essential oil synthesis. Moderate N. pH 5.8-6.2.", fasi:[
+    {nome:"Germination", note:"Ca=65 K=90 P=20 Mg=20 N≈91 mg/L. Very delicate roots."},
+    {nome:"Vegetative growth", note:"Ca=115 K=165 P=38 Mg=38 N≈166 mg/L. High Mg for chlorophyll and oils."},
+    {nome:"Pre-bolting / Harvest", note:"Ca=95 K=180 P=32 Mg=35 N≈156 mg/L. High K concentrates aromas. Reduce N."},
+  ]},
+  peperone: {nome:"Pepper", note:"Romano Tesi (2010): high K in fruiting. Sensitive to Ca deficiency (BER). pH 5.8-6.2.", fasi:[
+    {nome:"Transplant", note:"Ca=95 K=140 P=32 Mg=28 N≈134 mg/L. Sensitive to NH₄ at the young stage."},
+    {nome:"Vegetative", note:"Ca=145 K=230 P=40 Mg=42 N≈213 mg/L. Balanced N and Ca."},
+    {nome:"Flowering and Fruiting", note:"Ca=165 K=300 P=42 Mg=48 N≈235 mg/L. High K for fruit set. Ca against BER."},
+  ]},
+  cetriolo: {nome:"Cucumber", note:"Romano Tesi (2010): high K demand. Fast growth. pH 5.8-6.0. Drainage ≥30%.", fasi:[
+    {nome:"Young", note:"Ca=120 K=200 P=38 Mg=38 N≈181 mg/L."},
+    {nome:"Vegetative / Flowering", note:"Ca=155 K=265 P=43 Mg=48 N≈239 mg/L. High K. Ca against bitter tip."},
+    {nome:"Full production", note:"Ca=170 K=300 P=46 Mg=52 N≈232 mg/L. Refresh every 7-10 days."},
+  ]},
+  fragola: {nome:"Strawberry", note:"Romano Tesi (2010): high Ca for fruit structure. Medium-low EC. pH 5.8-6.2.", fasi:[
+    {nome:"Rooting", note:"Ca=68 K=120 P=26 Mg=25 N≈107 mg/L. Roots sensitive to salinity."},
+    {nome:"Vegetative", note:"Ca=130 K=189 P=36 Mg=38 N≈185 mg/L. Balanced N and Ca."},
+    {nome:"Flowering and Fruit", note:"Ca=150 K=234 P=38 Mg=44 N≈220 mg/L. High K for sugars. Ca against cracking."},
+  ]},
+  cannabis: {nome:"Cannabis / Hemp", note:"Intensive nutrition. High N in vegetative, high P and K in flowering. pH 5.8-6.2.", fasi:[
+    {nome:"Germination / Clones", note:"EC 0.8-1.2. Ca=90 K=130 P=30 Mg=28 mg/L. Very sensitive roots."},
+    {nome:"Vegetative (weeks 2-5)", note:"Ca=165 K=280 P=43 Mg=52 N≈255 mg/L. Very high N, Ca and Mg for structure."},
+    {nome:"Stretch / Early Flower", note:"Ca=155 K=295 P=46 Mg=50 N≈235 mg/L. Reduce N, increase P and K."},
+    {nome:"Full flowering (weeks 4-7)", note:"Ca=165 K=310 P=52 Mg=48 N≈235 mg/L. High P and K, N moderate relative to K."},
+    {nome:"Ripening / Flush", note:"EC 0.5-1.0. Coco flush. Residual Ca + Mg to prevent leaf yellowing."},
+  ]},
+  melanzana: {nome:"Eggplant", note:"Romano Tesi (2010): similar to pepper but more demanding in Ca. pH 5.8-6.5.", fasi:[
+    {nome:"Transplant", note:"Ca=95 K=140 P=30 Mg=28 N≈134 mg/L. Slow acclimatization."},
+    {nome:"Vegetative", note:"Ca=155 K=246 P=42 Mg=45 N≈229 mg/L. Romano Tesi: Ca critical to prevent bitterness."},
+    {nome:"Fruiting", note:"Ca=175 K=300 P=45 Mg=52 N≈244 mg/L. K/Ca = 1.7. Increase K for color."},
+  ]},
+  zucchina: {nome:"Zucchini", note:"Romano Tesi (2010): fast growth, high N and K demand. Short cycle. pH 5.8-6.2.", fasi:[
+    {nome:"Young", note:"Ca=120 K=200 P=38 Mg=36 N≈178 mg/L."},
+    {nome:"Production", note:"Ca=165 K=291 P=45 Mg=50 N≈255 mg/L. High N for fast growth."},
+    {nome:"End of season", note:"Ca=68 K=118 P=20 Mg=20 N≈103 mg/L. Reduce EC to close the cycle."},
+  ]},
+  spinacio: {nome:"Spinach", note:"Romano Tesi (2010): highest N among vegetable crops. pH 5.5-6.5. EC 1.5-3.0.", fasi:[
+    {nome:"Sprout / Seedling", note:"Ca=80 K=130 P=32 Mg=25 N≈117 mg/L. Light solution."},
+    {nome:"Growth", note:"Ca=130 K=220 P=45 Mg=40 N≈194 mg/L. Very high N for leaf accumulation."},
+    {nome:"Pre-harvest", note:"Ca=68 K=102 P=20 Mg=14 N≈95 mg/L. Reduce EC. Fe micronutrient maintained."},
+  ]},
+  rucola: {nome:"Arugula", note:"Romano Tesi (2010): very short cycle (25-35 days). Moderate EC. pH 5.8-6.2.", fasi:[
+    {nome:"Growth", note:"Ca=110 K=164 P=35 Mg=30 N≈153 mg/L. Single cycle, fast growth."},
+    {nome:"Pre-harvest (5 days)", note:"Ca=70 K=100 P=22 Mg=19 N≈97 mg/L. Reduce EC to intensify aromas."},
+  ]},
+};
+
+// Helper di localizzazione dei dati: in EN usano i dizionari sopra, altrimenti il dato originale.
+function salNome(s){ if(currentLang==='en' && s){ const tr=SALI_I18N[s.id]; if(tr&&tr.nome) return tr.nome; } return s?(s.nome||''):''; }
+function salNote(s){ if(currentLang==='en' && s){ const tr=SALI_I18N[s.id]; if(tr&&tr.note) return tr.note; } return s?(s.note||''):''; }
+function ricNome(r){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.nome) return tr.nome; } return r?(r.nome||''):''; }
+function ricNote(r){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.note) return tr.note; } return r?(r.note||''):''; }
+function faseNome(r,fi,f){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.fasi&&tr.fasi[fi]&&tr.fasi[fi].nome) return tr.fasi[fi].nome; } return f?(f.nome||''):''; }
+function faseNote(r,fi,f){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.fasi&&tr.fasi[fi]&&tr.fasi[fi].note) return tr.fasi[fi].note; } return f?(f.note||''):''; }
+
+// TT: scelta inline IT/EN per frasi del motore con interpolazione.
+function TT(it,en){ return currentLang==='en'?en:it; }
+// M: traduce le stringhe statiche del motore (regole di incompatibilità, ecc.).
+// Se la stringa non è mappata (es. formule chimiche) viene restituita invariata.
+const MOTORE_TR = {
+  // GRUPPI_INCOMPAT — p
+  'Fosfato di Calcio':'Calcium Phosphate', 'Solfato di Calcio':'Calcium Sulfate',
+  'Silicato di Calcio':'Calcium Silicate', 'Molibdato di Calcio':'Calcium Molybdate',
+  'Polimeri silicato':'Silicate polymers', 'Acido silicico':'Silicic acid',
+  'Degrado chelati':'Chelate degradation', 'Idrossido ferrico':'Ferric hydroxide',
+  'Neutralizzazione':'Neutralization', 'Fosfato ferroso':'Ferrous phosphate',
+  'Degrado chelato':'Chelate degradation', 'Molibdato metallico':'Metal molybdate',
+  // GRUPPI_INCOMPAT — m
+  'Ca²⁺ + fosfati → CaHPO₄/Ca₃(PO₄)₂ insolubili.':'Ca²⁺ + phosphates → insoluble CaHPO₄/Ca₃(PO₄)₂.',
+  'Ca²⁺ + SO₄²⁻ → CaSO₄ (verifica IAP nel concentrato).':'Ca²⁺ + SO₄²⁻ → CaSO₄ (check IAP in the concentrate).',
+  'Ca²⁺ + silicato → CaSiO₃ insolubile.':'Ca²⁺ + silicate → insoluble CaSiO₃.',
+  'Ca²⁺ + MoO₄²⁻ → CaMoO₄ (Ksp=1.8e-8).':'Ca²⁺ + MoO₄²⁻ → CaMoO₄ (Ksp=1.8e-8).',
+  'pH alto del silicato polimerizza i fosfati.':'High silicate pH polymerizes phosphates.',
+  'Silicato + acido → gel di acido silicico.':'Silicate + acid → silicic acid gel.',
+  'pH 11-12 del silicato distrugge i chelati.':'Silicate pH 11-12 destroys chelates.',
+  'Silicato precipita Fe(OH)₃.':'Silicate precipitates Fe(OH)₃.',
+  'Base forte + acido forte → reazione violenta.':'Strong base + strong acid → violent reaction.',
+  'Fe²⁺ + fosfati → FePO₄/vivianite.':'Fe²⁺ + phosphates → FePO₄/vivianite.',
+  'Fe²⁺ libero compete col chelato.':'Free Fe²⁺ competes with the chelate.',
+  'MoO₄²⁻ + micro-solfati → co-precipitazione.':'MoO₄²⁻ + micro-sulfates → co-precipitation.',
+  // INCOMPAT_MATRIX — p
+  'Polimeri Si':'Si polymers', 'Reaz. acido-base':'Acid-base reaction',
+  'Degr. chelato':'Chelate degr.', 'Degr. chelati':'Chelate degr.', 'Reaz. violenta':'Violent reaction',
+  // INCOMPAT_MATRIX — m
+  'Stesso.':'Same.',
+  'Ca²⁺ + H₂PO₄⁻ → CaHPO₄ insolubile (Ksp=2.7e-7). Precipita a qualsiasi concentrazione.':'Ca²⁺ + H₂PO₄⁻ → insoluble CaHPO₄ (Ksp=2.7e-7). Precipitates at any concentration.',
+  'Ca²⁺ + H₂PO₄⁻ da MAP → CaHPO₄. NH₄⁺ aggrava il blocco radicale.':'Ca²⁺ + H₂PO₄⁻ from MAP → CaHPO₄. NH₄⁺ worsens root lock-out.',
+  'Ca²⁺ + H₃PO₄ → Ca₃(PO₄)₂. Aggiungere H₃PO₄ solo all\'acqua diluita, mai nel concentrato Ca.':'Ca²⁺ + H₃PO₄ → Ca₃(PO₄)₂. Add H₃PO₄ only to diluted water, never to the Ca concentrate.',
+  'CaCl₂ + fosfato → precipitazione identica a Ca(NO₃)₂.':'CaCl₂ + phosphate → precipitation identical to Ca(NO₃)₂.',
+  'Molibdato di Calcio ha Ksp=1.8e-8: precipita SEMPRE nel concentrato. NaMoO₄ va separato dal Ca (serbatoio diverso).':'Calcium molybdate has Ksp=1.8e-8: it ALWAYS precipitates in the concentrate. NaMoO₄ must be separated from Ca (different tank).',
+  'Silicato di Calcio è insolubile. K₂SiO₃ va in un serbatoio SOLO, senza Ca, né chelati, né acidi.':'Calcium silicate is insoluble. K₂SiO₃ must go in a tank ALONE, with no Ca, chelates or acids.',
+  'pH 11-12 del silicato causa polimerizzazione dei fosfati → ostruzione tubazioni.':'Silicate pH 11-12 causes phosphate polymerization → pipe clogging.',
+  'Acido fosforico neutralizza il silicato → acido polisilicico gelatinoso.':'Phosphoric acid neutralizes the silicate → gelatinous polysilicic acid.',
+  'HNO₃ neutralizza K₂SiO₃ violentemente → acido silicico gelatinoso.':'HNO₃ neutralizes K₂SiO₃ violently → gelatinous silicic acid.',
+  'pH 11-12 del silicato precipita Fe(OH)₃ istantaneamente.':'Silicate pH 11-12 precipitates Fe(OH)₃ instantly.',
+  'pH >9 del silicato degrada i chelati EDTA. Usare EDDHA o tenere separati.':'Silicate pH >9 degrades EDTA chelates. Use EDDHA or keep them separate.',
+  'Stesso. DTPA stabile fino pH 7.5, non a pH 11.':'Same. DTPA is stable up to pH 7.5, not at pH 11.',
+  'Anche EDDHA si degrada parzialmente a pH >9. Preparare K₂SiO₃ separatamente e aggiungere per primo.':'EDDHA also partially degrades at pH >9. Prepare K₂SiO₃ separately and add it first.',
+  'pH 11-12 del silicato distrugge tutti i chelati del Mix.':'Silicate pH 11-12 destroys all the chelates in the Mix.',
+  'A pH >10 può precipitare idrossido di Magnesio.':'At pH >10 magnesium hydroxide may precipitate.',
+  'Base forte + acido forte: reazione esotermica violenta. Non mescolare MAI nel concentrato.':'Strong base + strong acid: violent exothermic reaction. NEVER mix in the concentrate.',
+  'Fe²⁺ + H₂PO₄⁻ → vivianite/FePO₄ (Ksp=9.9e-16). Precipita nel concentrato A. Usare Fe-chelato invece di FeSO₄.':'Fe²⁺ + H₂PO₄⁻ → vivianite/FePO₄ (Ksp=9.9e-16). Precipitates in concentrate A. Use Fe-chelate instead of FeSO₄.',
+  'A pH <4 stabile, ma rischioso a pH >5.':'Stable at pH <4, but risky at pH >5.',
+  'Mn²⁺ + H₂PO₄⁻ → MnHPO₄ (Ksp=1e-13 per Mn₃(PO₄)₂). Rischio a concentrazione alta.':'Mn²⁺ + H₂PO₄⁻ → MnHPO₄ (Ksp=1e-13 for Mn₃(PO₄)₂). Risk at high concentration.',
+  'Zinco fosfato è quasi insolubile (Ksp=9e-33). Sposta Zn o P in serbatoi separati.':'Zinc phosphate is nearly insoluble (Ksp=9e-33). Move Zn or P to separate tanks.',
+  'Molibdato di Zinco poco solubile a concentrazione alta.':'Zinc molybdate is poorly soluble at high concentration.',
+  'Molibdato di Manganese: possibile co-precipitazione.':'Manganese molybdate: possible co-precipitation.',
+  'Possibile co-precipitazione a pH neutro.':'Possible co-precipitation at neutral pH.',
+  'Fe²⁺ libero da FeSO₄ compete col Fe nel chelato → degradazione EDTA.':'Free Fe²⁺ from FeSO₄ competes with the Fe in the chelate → EDTA degradation.',
+  'Fe²⁺ libero degrada tutti i chelati del Mix.':'Free Fe²⁺ degrades all the chelates in the Mix.',
+};
+function M(s){ if(currentLang==='en' && s && MOTORE_TR[s]) return MOTORE_TR[s]; return s; }
+
 let piantaSel = null, faseSel = null;
 let tipoRicettaSel = null; // 'builtin' o 'custom'
 
@@ -1911,8 +1881,8 @@ function showTab(id){
   if(tab){ tab.classList.add('active'); tab.setAttribute('aria-selected','true'); }
   if(id==='dati'||id==='catalogo') setTimeout(aggiornaStat,0);
 }
-function saveCatalogo(){ try{ localStorage.setItem('fc_catalogo', JSON.stringify(catalogo)); }catch(e){ console.warn('Salvataggio catalogo fallito:', e.message); showToast('Errore salvataggio: spazio esaurito', false); } }
-function saveRicette(){ try{ localStorage.setItem('fc_ricette', JSON.stringify(ricetteCustom)); }catch(e){ console.warn('Salvataggio ricette fallito:', e.message); showToast('Errore salvataggio: spazio esaurito', false); } }
+function saveCatalogo(){ try{ localStorage.setItem('fc_catalogo', JSON.stringify(catalogo)); }catch(e){ console.warn('Salvataggio catalogo fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
+function saveRicette(){ try{ localStorage.setItem('fc_ricette', JSON.stringify(ricetteCustom)); }catch(e){ console.warn('Salvataggio ricette fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
 function openModal(id){ document.getElementById(id).classList.add('open') }
 function closeModal(id){ document.getElementById(id).classList.remove('open') }
 function esc(s){
@@ -1937,7 +1907,7 @@ function initPiante(){
   PIANTE_BUILTIN.forEach(p=>{
     const d = document.createElement('div');
     d.className='pianta-btn'; d.dataset.id=p.id; d.dataset.tipo='builtin';
-    d.innerHTML=`<span class="em">${p.emoji}</span>${piantaNome(p)}`;
+    d.innerHTML=`<span class="em">${p.emoji}</span>${ricNome(p)}`;
     d.onclick=()=>selPianta(p.id, 'builtin');
     grid.appendChild(d);
   });
@@ -1978,7 +1948,7 @@ function selPianta(id, tipo){
     piantaSel.fasi.forEach((f,i)=>{
       const d=document.createElement('div');
       d.className='fase-btn'; d.dataset.i=i;
-      d.innerHTML=`${f.icon}<br>${faseNome(f)}`;
+      d.innerHTML=`${f.icon}<br>${faseNome(piantaSel, i, f)}`;
       d.onclick=()=>selFase(i);
       fr.appendChild(d);
     });
@@ -2024,9 +1994,12 @@ function selFase(i){
 }
 
 function renderRicettaOut(pianta, fase, tipo){
-  document.getElementById('ricetta-out-title').textContent=`🔬 ${piantaNome(pianta)} — ${faseNome(fase)}`;
+  const fi = pianta.fasi.indexOf(fase);
+  const pNome = ricNome(pianta), pNote = ricNote(pianta)||'—';
+  const fNome = faseNome(pianta, fi, fase), fNote = faseNote(pianta, fi, fase)||'—';
+  document.getElementById('ricetta-out-title').textContent=`🔬 ${pNome} — ${fNome}`;
   document.getElementById('note-agronomiche').innerHTML=
-    `<strong>${piantaNome(pianta)}:</strong> ${pianta.note||'—'}<br><br><strong>${faseNome(fase)}:</strong> ${fase.note||'—'}`;
+    `<strong>${pNome}:</strong> ${pNote}<br><br><strong>${fNome}:</strong> ${fNote}`;
 
   // Modalità target per ricette custom
   if(fase.modo==='target'){
@@ -2034,8 +2007,8 @@ function renderRicettaOut(pianta, fase, tipo){
     let html=`<div class="alert al-inf" style="margin-bottom:10px">🎯 <strong>${t('js.targetMode')}</strong> ${t('js.targetDesc')}</div>`;
     html+=`<div class="ri-grid">
       <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
-      <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">unità pH</div></div>
-      <div class="ri-box"><div class="ri-lbl">Modalità</div><div class="ri-val" style="font-size:.7rem">Target</div><div class="ri-sub">mg/L</div></div>
+      <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${currentLang==='en'?'pH units':'unità pH'}</div></div>
+      <div class="ri-box"><div class="ri-lbl">${currentLang==='en'?'Mode':'Modalità'}</div><div class="ri-val" style="font-size:.7rem">Target</div><div class="ri-sub">mg/L</div></div>
     </div>`;
     html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th></tr></thead><tbody>`;
     Object.entries(t).filter(([,v])=>v>0).forEach(([el,v])=>{
@@ -2053,7 +2026,7 @@ function renderRicettaOut(pianta, fase, tipo){
 
   let html=`<div class="ri-grid">
     <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
-    <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">unità pH</div></div>
+    <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${t('js.unitaPh')}</div></div>
     <div class="ri-box"><div class="ri-lbl">${t('js.componenti')}</div><div class="ri-val">${(fase.sali||[]).length}</div><div class="ri-sub">${t('js.sali')}</div></div>
   </div>`;
 
@@ -2061,7 +2034,7 @@ function renderRicettaOut(pianta, fase, tipo){
   // A
   html+=`<div class="serb-card a"><div class="serb-title"><span class="ba">A</span> ${t('js.serbatorio')} A</div>`;
   perA.forEach(s=>{ const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'}; const pz=info.prezzo?(info.prezzo*(s.g/1000)):0;
-    html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${info.nome}</span><span class="gr-a">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
+    html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${salNome(info)}</span><span class="gr-a">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
   });
   const tA=perA.reduce((s,r)=>s+r.g,0);
   const cA=perA.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
@@ -2070,7 +2043,7 @@ function renderRicettaOut(pianta, fase, tipo){
   // B
   html+=`<div class="serb-card b"><div class="serb-title"><span class="bb">B</span> ${t('js.serbatorio')} B</div>`;
   perB.forEach(s=>{ const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'}; const pz=info.prezzo?(info.prezzo*(s.g/1000)):0;
-    html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${info.nome}</span><span class="gr-b">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
+    html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${salNome(info)}</span><span class="gr-b">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
   });
   const tB=perB.reduce((s,r)=>s+r.g,0);
   const cB=perB.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
@@ -2080,11 +2053,11 @@ function renderRicettaOut(pianta, fase, tipo){
   const totCosto=cA+cB;
   if(totCosto>0) html+=`<div class="alert al-inf">💰 <strong>${t('js.costoPer1000')}</strong> ${fmtEuro(totCosto)} ${t('js.prezziDa')}</div>`;
   if((fase.sali||[]).some(s=>s.id==='K2SiO3'))
-    html+=`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span><strong>Silicato di Potassio (K₂SiO₃):</strong> questa anteprima lo mostra in Serbatoio B per riferimento, ma è <strong>incompatibile con CaN e chelati</strong>. In fase di calcolo il motore lo sposta automaticamente in Serbatoio C. Non mescolarlo mai manualmente con Ca, fosfati o Fe-chelati.</span></div>`;
+    html+=`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span>${t('js.silicatoWarn')}</span></div>`;
 
   // Sal non trovati in catalogo (per custom)
   if(perX.length){
-    html+=`<div class="alert al-inf" style="margin-top:8px">⚠️ ${perX.length} sale/i con ID non trovato nel catalogo attuale: ${perX.map(s=>s.id||s.nome||'?').join(', ')}.</div>`;
+    html+=`<div class="alert al-inf" style="margin-top:8px">⚠️ ${perX.length} ${t('js.idNonTrovato')}: ${perX.map(s=>s.id||s.nome||'?').join(', ')}.</div>`;
   }
 
   document.getElementById('ricetta-out').innerHTML=html;
@@ -2115,14 +2088,15 @@ function editCurrentRicetta(){
 }
 
 function caricaRicettaInCalcolaFromBuiltin(pianta, fase){
+  const fi = pianta.fasi.indexOf(fase);
   calcRighe = fase.sali.map(s=>{
     const info=getSale(s.id);
-    return {id:s.id, nome:info?info.nome:s.id, dose:s.g, prezzo:info?info.prezzo:0, fixed:!!info};
+    return {id:s.id, nome:info?salNome(info):s.id, dose:s.g, prezzo:info?info.prezzo:0, fixed:!!info};
   });
-  ricettaCaricata={nome:`${piantaNome(pianta)} — ${faseNome(fase)}`,modo:'grammi'};
+  ricettaCaricata={nome:`${ricNome(pianta)} — ${faseNome(pianta, fi, fase)}`,modo:'grammi'};
   document.getElementById('lbl-ricetta-caricata').textContent=ricettaCaricata.nome;
   document.getElementById('lbl-modo-caricato').style.display='inline';
-  document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style="background:var(--vm);color:#fff">Ricetta Fissa g</span>`;
+  document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style="background:var(--vm);color:#fff">${t('js.ricettaFissaG')}</span>`;
   renderCalcTabella();
   showTab('calcola');
 }
@@ -2179,19 +2153,19 @@ function caricaCustomInCalcola(ri,fi){
   ricettaCaricata={nome:`${ric.nome} — ${f.nome}`,modo:f.modo};
   document.getElementById('lbl-ricetta-caricata').textContent=ricettaCaricata.nome;
   document.getElementById('lbl-modo-caricato').style.display='inline';
-  const mL=f.modo==='target'?'Target mg/L':'Ricetta Fissa g';
+  const mL=f.modo==='target'?TT('Target mg/L','Target mg/L'):TT('Ricetta Fissa g','Fixed Recipe g');
   document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style="background:${f.modo==='target'?'var(--vi)':'var(--vm)'};color:#fff">${mL}</span>`;
 
   if(f.modo==='grammi'){
     calcRighe = (f.sali||[]).map(s=>{
       const info=getSale(s.id||s.nome);
-      return {id:s.id||null,nome:s.nome||(info?info.nome:s.id),dose:s.g,prezzo:info?info.prezzo:0,fixed:!!info};
+      return {id:s.id||null,nome:s.nome||(info?salNome(info):s.id),dose:s.g,prezzo:info?info.prezzo:0,fixed:!!info};
     });
     renderCalcTabella();
   } else {
     // target mode: prepara righe vuote, il calcolo avverrà in calcola()
     calcRighe=[];
-    document.getElementById('calc-tbody').innerHTML='<tr><td colspan="5" style="padding:12px;text-align:center;color:var(--ts);font-size:.78rem">Modalità Target mg/L: premi "Calcola Dosaggi" per risolvere automaticamente la formula.</td></tr>';
+    document.getElementById('calc-tbody').innerHTML=`<tr><td colspan="5" style="padding:12px;text-align:center;color:var(--ts);font-size:.78rem">${t('js.targetHint')}</td></tr>`;
   }
   // store target for solver
   if(f.modo==='target') window._targetAttivo={targets:f.targets, pianta:ric.nome, fase:f.nome};
@@ -2250,7 +2224,7 @@ function editRicetta(ri){
 }
 
 function aggiungiFase(){
-  fasiBozza.push({nome:'Nuova Fase',icon:'🌿',ec:[1.5,2.5],ph:[5.8,6.2],note:'',modo:'grammi',sali:[],targets:{N:150,P:40,K:200,Ca:160,Mg:40,Fe:2,Mn:0.5,B:0.3,Zn:0.1,Cu:0.05,Mo:0.05}});
+  fasiBozza.push({nome:t('js.nuovaFase'),icon:'🌿',ec:[1.5,2.5],ph:[5.8,6.2],note:'',modo:'grammi',sali:[],targets:{N:150,P:40,K:200,Ca:160,Mg:40,Fe:2,Mn:0.5,B:0.3,Zn:0.1,Cu:0.05,Mo:0.05}});
   renderFasiEditor();
 }
 
@@ -2281,7 +2255,7 @@ function renderFasiEditor(){
           <button class="btn btn-del btn-sm" onclick="fasiBozza[${fi}].sali.splice(${si},1);renderFasiEditor()">✕</button>
         </div>`;
       });
-      saliHtml+=`<button class="btn btn-se btn-sm" onclick="fasiBozza[${fi}].sali=fasiBozza[${fi}].sali||[];fasiBozza[${fi}].sali.push({id:'KNO3',nome:'Nitrato di Potassio KNO₃',g:0});renderFasiEditor()">+ Sale</button></div>`;
+      saliHtml+=`<button class="btn btn-se btn-sm" onclick="fasiBozza[${fi}].sali=fasiBozza[${fi}].sali||[];fasiBozza[${fi}].sali.push({id:'KNO3',nome:salNome(getSale('KNO3'))||'KNO₃',g:0});renderFasiEditor()">${TT('+ Sale','+ Salt')}</button></div>`;
     }
 
     const card=document.createElement('div');
@@ -2294,18 +2268,18 @@ function renderFasiEditor(){
       </div>
       <div style="padding:10px 12px">
         <div class="mode-toggle" style="margin-bottom:10px">
-          <button class="mode-btn ${!isTarget?'active':''}" onclick="fasiBozza[${fi}].modo='grammi';renderFasiEditor()">📊 Ricetta Fissa (g)</button>
-          <button class="mode-btn ${isTarget?'active':''}" onclick="fasiBozza[${fi}].modo='target';renderFasiEditor()">🎯 Target Elementare (mg/L)</button>
+          <button class="mode-btn ${!isTarget?'active':''}" onclick="fasiBozza[${fi}].modo='grammi';renderFasiEditor()">${TT('📊 Ricetta Fissa (g)','📊 Fixed Recipe (g)')}</button>
+          <button class="mode-btn ${isTarget?'active':''}" onclick="fasiBozza[${fi}].modo='target';renderFasiEditor()">${TT('🎯 Target Elementare (mg/L)','🎯 Elemental Target (mg/L)')}</button>
         </div>
         <div class="row2">
-          <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">EC min-max (mS/cm)</label>
+          <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">${TT('EC min-max (mS/cm)','EC min-max (mS/cm)')}</label>
             <div style="display:flex;gap:4px"><input type="number" value="${f.ec[0]}" step="0.1" onchange="fasiBozza[${fi}].ec[0]=+this.value" style="padding:5px"><input type="number" value="${f.ec[1]}" step="0.1" onchange="fasiBozza[${fi}].ec[1]=+this.value" style="padding:5px"></div>
           </div>
-          <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">pH min-max</label>
+          <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">${TT('pH min-max','pH min-max')}</label>
             <div style="display:flex;gap:4px"><input type="number" value="${f.ph[0]}" step="0.1" onchange="fasiBozza[${fi}].ph[0]=+this.value" style="padding:5px"><input type="number" value="${f.ph[1]}" step="0.1" onchange="fasiBozza[${fi}].ph[1]=+this.value" style="padding:5px"></div>
           </div>
         </div>
-        <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">Note fase</label>
+        <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">${TT('Note fase','Stage notes')}</label>
           <input type="text" value="${f.note||''}" onchange="fasiBozza[${fi}].note=this.value" style="padding:5px 8px;margin-top:3px;background:#fff">
         </div>
         ${targetsHtml}${saliHtml}
@@ -2318,13 +2292,13 @@ function renderFasiEditor(){
 function buildSelectOpts(selId){
   const gruppi={macro:[],micro:[],ph:[]};
   catalogo.forEach(s=>{ if(gruppi[s.cat]) gruppi[s.cat].push(s); });
-  const lbl={macro:'🌱 Macro',micro:'🔬 Micro',ph:'⚗️ pH / Additivi'};
+  const lbl={macro:TT('🌱 Macro','🌱 Macro'),micro:TT('🔬 Micro','🔬 Micro'),ph:TT('⚗️ pH / Additivi','⚗️ pH / Additives')};
   let h='';
   Object.entries(lbl).forEach(([cat,l])=>{
     const arr=gruppi[cat];
     if(!arr||!arr.length) return;
     h+=`<optgroup label="${l}">`;
-    arr.forEach(s=>{ h+=`<option value="${s.id}"${s.id===selId?' selected':''}>${s.nome}</option>`; });
+    arr.forEach(s=>{ h+=`<option value="${s.id}"${s.id===selId?' selected':''}>${salNome(s)}</option>`; });
     h+='</optgroup>';
   });
   return h;
@@ -2371,7 +2345,7 @@ function renderCalcTabella(){
         <select onchange="cambioSaleCalc(${i},this.value)" style="width:100%;font-size:.75rem;padding:5px 6px;background:#fff">
           ${buildSelectCalc(r.id||'__custom')}
         </select>
-        ${!info?`<input type="text" placeholder="Nome…" value="${r.nomeCustom||''}" onchange="calcRighe[${i}].nomeCustom=this.value" style="margin-top:4px;font-size:.75rem;padding:5px;background:#fff">`:``}
+        ${!info?`<input type="text" placeholder="${TT('Nome…','Name…')}" value="${r.nomeCustom||''}" onchange="calcRighe[${i}].nomeCustom=this.value" style="margin-top:4px;font-size:.75rem;padding:5px;background:#fff">`:``}
         ${info&&info.el?`<div class="el-txt">${Object.entries(info.el).map(([k,v])=>`${k} ${v}%`).join(', ')}</div>`:''}
       </td>
       <td style="vertical-align:top;padding-top:20px">
@@ -2405,7 +2379,7 @@ function updateRicalcolaBar(){
 function aggiungiRigaCalc(){
   if(!catalogo.length){ showToast(t('js.catalogoVuoto'), false); return; }
   const info=catalogo[0];
-  calcRighe.push({id:info.id,nome:info.nome,dose:info.dose,prezzo:info.prezzo||0,fixed:true});
+  calcRighe.push({id:info.id,nome:salNome(info),dose:info.dose,prezzo:info.prezzo||0,fixed:true});
   renderCalcTabella();
 }
 function rimuoviRigaCalc(i){ calcRighe.splice(i,1); renderCalcTabella(); }
@@ -2414,7 +2388,7 @@ function cambioSaleCalc(i,id){
     calcRighe[i]={id:'__custom',nome:'Personalizzato',dose:0,prezzo:0,fixed:false,nomeCustom:''};
   } else {
     const info=getSale(id);
-    if(info) calcRighe[i]={id:info.id,nome:info.nome,dose:info.dose,prezzo:info.prezzo||0,fixed:true};
+    if(info) calcRighe[i]={id:info.id,nome:salNome(info),dose:info.dose,prezzo:info.prezzo||0,fixed:true};
   }
   renderCalcTabella();
 }
@@ -2554,7 +2528,7 @@ function solverTarget(targets, volA, volB, dil, aq){
 
     macroSalts.forEach((s, i) => {
       const dose = Math.round(doses[i] * 10) / 10;
-      if (dose > 0.5) righe.push({ id:s.id, nome:s.nome, dose, prezzo:s.prezzo||0, fixed:true });
+      if (dose > 0.5) righe.push({ id:s.id, nome:salNome(s), dose, prezzo:s.prezzo||0, fixed:true });
     });
   }
 
@@ -2573,7 +2547,7 @@ function solverTarget(targets, volA, volB, dil, aq){
     ];
     gMixCh = Math.max(...doseDaMicro);
     feInMixCh = gMixCh * ((el.Fe||0) / 100);
-    if (gMixCh > 0) righe.push({ id:'MixCh', nome:mixCh.nome, dose:Math.round(gMixCh*10)/10, prezzo:mixCh.prezzo||0, fixed:true,
+    if (gMixCh > 0) righe.push({ id:'MixCh', nome:salNome(mixCh), dose:Math.round(gMixCh*10)/10, prezzo:mixCh.prezzo||0, fixed:true,
       _nota:'Dose dal micro più esigente' });
   }
   const feResiduo = Math.max(0, reqFe - feInMixCh);
@@ -2583,7 +2557,7 @@ function solverTarget(targets, volA, volB, dil, aq){
     const best = chelati[0];
     if (best) {
       const gFe = dose1000(feResiduo, best.el.Fe);
-      if (gFe > 0.1) righe.push({ id:best.id, nome:best.nome, dose:Math.round(gFe*10)/10, prezzo:best.prezzo||0, fixed:true,
+      if (gFe > 0.1) righe.push({ id:best.id, nome:salNome(best), dose:Math.round(gFe*10)/10, prezzo:best.prezzo||0, fixed:true,
         _nota:`Fe residuo dopo MixCh (${feInMixCh.toFixed(2)} mg/L coperti)` });
     }
   }
@@ -2595,7 +2569,7 @@ function solverTarget(targets, volA, volB, dil, aq){
       const sale = catalogo.find(s => s.id === sid && s.el?.[tid] > 0);
       if (!sale) return;
       const g = dose1000(req, sale.el[tid]);
-      if (g > 0.01) righe.push({ id:sale.id, nome:sale.nome, dose:Math.round(g*100)/100, prezzo:sale.prezzo||0, fixed:true });
+      if (g > 0.01) righe.push({ id:sale.id, nome:salNome(sale), dose:Math.round(g*100)/100, prezzo:sale.prezzo||0, fixed:true });
     });
   }
   return righe;
@@ -2612,7 +2586,7 @@ function ricalcolaConDisponibili(){
 
   mancanti.forEach(r=>{
     const info = getSale(r.id);
-    if(!info){ nonSostituibili.push({nome:r.nome||r.id,motivo:'Ingrediente non trovato nel catalogo'}); return; }
+    if(!info){ nonSostituibili.push({nome:r.nome||r.id,motivo:TT('Ingrediente non trovato nel catalogo','Ingredient not found in the catalog')}); return; }
 
     // Cerca alternative: stesso elemento chiave, disponibile (serb rimosso: assegnato dal motore)
     const elChiave = Object.keys(info.el||{})[0];
@@ -2642,7 +2616,7 @@ function ricalcolaConDisponibili(){
         nome: r.nome || r.id,
         serb: info.serb,
         elPrincipale: elChiave,
-        motivo: `Nessuna alternativa disponibile in scorta per ${elChiave} (Serb. ${info.serb})`
+        motivo: TT(`Nessuna alternativa disponibile in scorta per ${elChiave} (Serb. ${info.serb})`,`No alternative available in stock for ${elChiave} (Tank ${info.serb})`)
       });
     }
   });
@@ -2653,7 +2627,7 @@ function ricalcolaConDisponibili(){
     if(idx>-1){
       calcRighe[idx] = {
         id: sub.alternativa.id,
-        nome: sub.alternativa.nome,
+        nome: salNome(sub.alternativa),
         dose: sub.nuovaDose,
         prezzo: sub.alternativa.prezzo || 0,
         fixed: true,
@@ -2719,15 +2693,15 @@ function aggiornaDiluizioneWarning(){
   if(dil>200){
     w.style.display='flex';
     w.className='alert al-err';
-    wt.innerHTML=`Diluizione 1:${dil}: la soluzione madre è <strong>${dil}× la soluzione finale</strong> — concentrazione molto elevata. Rischio precipitazioni alto. Riduci la diluizione (≤ 1:150) oppure usa il Serbatoio C.`;
+    wt.innerHTML=TT(`Diluizione 1:${dil}: la soluzione madre è <strong>${dil}× la soluzione finale</strong> — concentrazione molto elevata. Rischio precipitazioni alto. Riduci la diluizione (≤ 1:150) oppure usa il Serbatoio C.`,`Dilution 1:${dil}: the mother solution is <strong>${dil}× the final solution</strong> — very high concentration. High precipitation risk. Reduce the dilution (≤ 1:150) or use Tank C.`);
   } else if(dil>150){
     w.style.display='flex';
     w.className='alert al-inf';
-    wt.innerHTML=`Diluizione 1:${dil}: la soluzione madre è ${dil}× la soluzione finale. Concentrazione elevata — il motore verificherà automaticamente i limiti.`;
+    wt.innerHTML=TT(`Diluizione 1:${dil}: la soluzione madre è ${dil}× la soluzione finale. Concentrazione elevata — il motore verificherà automaticamente i limiti.`,`Dilution 1:${dil}: the mother solution is ${dil}× the final solution. High concentration — the engine will automatically check the limits.`);
   } else if(dil<20){
     w.style.display='flex';
     w.className='alert al-inf';
-    wt.innerHTML=`Diluizione 1:${dil}: molto bassa — le pompe peristaltiche dovranno iniettare ${(1000/dil).toFixed(0)} mL per ogni litro di soluzione finale. Verifica la portata massima delle pompe.`;
+    wt.innerHTML=TT(`Diluizione 1:${dil}: molto bassa — le pompe peristaltiche dovranno iniettare ${(1000/dil).toFixed(0)} mL per ogni litro di soluzione finale. Verifica la portata massima delle pompe.`,`Dilution 1:${dil}: very low — peristaltic pumps will have to inject ${(1000/dil).toFixed(0)} mL per liter of final solution. Check the pumps' maximum flow rate.`);
   } else {
     w.style.display='none';
   }
@@ -2971,7 +2945,7 @@ function autoRisolvi(righeInput, dil, aq){
     const mmolHCO3 = aq.hco3/61.0;
     interventi.push({
       tipo:'acido', icona:'🧪',
-      msg:`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L di HNO₃ 38%</strong> (o ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare pH a 5.8–6.0.`
+      msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L di HNO₃ 38%</strong> (o ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare pH a 5.8–6.0.`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L of HNO₃ 38%</strong> (or ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) to the dilution water before the salts to bring pH to 5.8–6.0.`)
     });
   }
 
@@ -2989,13 +2963,13 @@ function autoRisolvi(righeInput, dil, aq){
       // Sposta il silicato in C se disponibile, altrimenti sposta gli altri
       if(usaSerbC){
         righe = righe.map(r=>r.id==='K2SiO3'?{...r,serb:'C'}:r);
-        interventi.push({tipo:'sposta',icona:'🔀',msg:`<strong>Silicato di Potassio</strong> spostato in Serb. C: incompatibile con Ca, fosfati, chelati e acidi (pH 11-12 precipita CaSiO₃ e distrugge i chelati).`});
+        interventi.push({tipo:'sposta',icona:'🔀',msg:TT(`<strong>Silicato di Potassio</strong> spostato in Serb. C: incompatibile con Ca, fosfati, chelati e acidi (pH 11-12 precipita CaSiO₃ e distrugge i chelati).`,`<strong>Potassium Silicate</strong> moved to Tank C: incompatible with Ca, phosphates, chelates and acids (pH 11-12 precipitates CaSiO₃ and destroys chelates).`)});
       } else {
         // Sposta gli incompatibili fuori dal serb del silicato
         conflittiSi.forEach(r=>{
           const altrSerb = siSerb==='B'?'A':'B';
           righe = righe.map(rr=>rr.id===r.id?{...rr,serb:altrSerb}:rr);
-          interventi.push({tipo:'sposta',icona:'🔀',msg:`<strong>${r.nome||r.id}</strong> spostato in Serb. ${altrSerb}: incompatibile con Silicato di Potassio (pH 11-12 nel serbatoio silicato).`});
+          interventi.push({tipo:'sposta',icona:'🔀',msg:TT(`<strong>${r.nome||r.id}</strong> spostato in Serb. ${altrSerb}: incompatibile con Silicato di Potassio (pH 11-12 nel serbatoio silicato).`,`<strong>${r.nome||r.id}</strong> moved to Tank ${altrSerb}: incompatible with Potassium Silicate (pH 11-12 in the silicate tank).`)});
         });
       }
     }
@@ -3020,7 +2994,7 @@ function autoRisolvi(righeInput, dil, aq){
       if (dest) {
         righe = righe.map(rr => rr.id === r.id ? {...rr, serb:dest} : rr);
         interventi.push({tipo:'sposta', icona:'🔀',
-          msg:`<strong>${r.nome||r.id}</strong> → Serb. ${dest}: SI CaSO₄ = ${si.CaSO4.toFixed(2)} nel Serb. ${s} concentrato (×${dil}, pH 6, Davies). Solfati separati dal Calcio.`});
+          msg:TT(`<strong>${r.nome||r.id}</strong> → Serb. ${dest}: SI CaSO₄ = ${si.CaSO4.toFixed(2)} nel Serb. ${s} concentrato (×${dil}, pH 6, Davies). Solfati separati dal Calcio.`,`<strong>${r.nome||r.id}</strong> → Tank ${dest}: SI CaSO₄ = ${si.CaSO4.toFixed(2)} in Tank ${s} concentrate (×${dil}, pH 6, Davies). Sulfates separated from Calcium.`)});
       }
     });
   });
@@ -3074,10 +3048,10 @@ function autoRisolvi(righeInput, dil, aq){
 
       righe = righe.map(r=>r.id===daSposta.id?{...r,serb:destSerb}:r);
       const nomeA = ra.nome||ra.id, nomeB = rb.nome||rb.id;
-      const mainMsg = regola.g==='C' ? `🔴 Critico` : `🟡 Attenzione`;
+      const mainMsg = regola.g==='C' ? TT('🔴 Critico','🔴 Critical') : TT('🟡 Attenzione','🟡 Warning');
       interventi.push({
         tipo:'sposta', icona:'🔀',
-        msg:`<strong>${daSposta.nome||daSposta.id}</strong> → Serb. ${destSerb} [${mainMsg}]: ${regola.m} <em>(${regola.p})</em>`
+        msg:`<strong>${daSposta.nome||daSposta.id}</strong> → ${TT('Serb.','Tank')} ${destSerb} [${mainMsg}]: ${M(regola.m)} <em>(${M(regola.p)})</em>`
       });
       conflittoRisolto = true;
       break; // ricomincia il ciclo dopo ogni spostamento
@@ -3102,7 +3076,7 @@ function autoRisolvi(righeInput, dil, aq){
         const nDaNH4 = nNH4max - (riCalcIoni.N_NH4 - r.dose*elN/100*0.5); // NH4 residuo senza questo sale
         const nuova = Math.max(0, Math.round(nDaNH4 / (elN/100*0.5) * 10) / 10); // dose sale per produrre nDaNH4 di NH4
         if(nuova < vecchia){
-          interventi.push({tipo:'riduzione',icona:'⬇️',msg:`<strong>NH₄NO₃</strong> ridotto da ${vecchia}→${nuova} g/1000L: NH₄⁺ era ${(ratioNH4*100).toFixed(0)}% dell'N totale (cap: 10%). NH₄⁺ in eccesso blocca Ca e Mg e brucia le radici.`});
+          interventi.push({tipo:'riduzione',icona:'⬇️',msg:TT(`<strong>NH₄NO₃</strong> ridotto da ${vecchia}→${nuova} g/1000L: NH₄⁺ era ${(ratioNH4*100).toFixed(0)}% dell'N totale (cap: 10%). NH₄⁺ in eccesso blocca Ca e Mg e brucia le radici.`,`<strong>NH₄NO₃</strong> reduced from ${vecchia}→${nuova} g/1000L: NH₄⁺ was ${(ratioNH4*100).toFixed(0)}% of total N (cap: 10%). Excess NH₄⁺ locks out Ca and Mg and burns the roots.`)});
           return {...r, dose:nuova};
         }
       }
@@ -3114,7 +3088,7 @@ function autoRisolvi(righeInput, dil, aq){
   // Step 6: FeSO4 singolo — avviso ossidazione
   // ────────────────────────────────────────────────
   if(righe.some(r=>r.id==='FeSO4')){
-    interventi.push({tipo:'avviso',icona:'⚗️',msg:`<strong>FeSO₄</strong> in uso: il Fe²⁺ si ossida a Fe³⁺ rapidamente a pH >4. Aggiungere <strong>acido citrico</strong> (0.5–1 g/L nel serbatoio) per stabilizzare. In alternativa, sostituire con Fe-EDTA o Fe-DTPA.`});
+    interventi.push({tipo:'avviso',icona:'⚗️',msg:TT(`<strong>FeSO₄</strong> in uso: il Fe²⁺ si ossida a Fe³⁺ rapidamente a pH >4. Aggiungere <strong>acido citrico</strong> (0.5–1 g/L nel serbatoio) per stabilizzare. In alternativa, sostituire con Fe-EDTA o Fe-DTPA.`,`<strong>FeSO₄</strong> in use: Fe²⁺ oxidizes to Fe³⁺ quickly at pH >4. Add <strong>citric acid</strong> (0.5–1 g/L in the tank) to stabilize. Alternatively, replace with Fe-EDTA or Fe-DTPA.`)});
   }
 
   // ────────────────────────────────────────────────
@@ -3165,7 +3139,7 @@ function autoRisolvi(righeInput, dil, aq){
         ecConcSugg: ecConcSugg.toFixed(0),
         ecFin: ecFin2.toFixed(2),
         mlPerLitro,
-        msg:`EC nel concentrato critico = <strong>${ecConcCritica.toFixed(0)} mS/cm</strong> con diluizione 1:${dil}. Concentrazione molto elevata — valuta una diluizione inferiore (1:${candidato}).`
+        msg:TT(`EC nel concentrato critico = <strong>${ecConcCritica.toFixed(0)} mS/cm</strong> con diluizione 1:${dil}. Concentrazione molto elevata — valuta una diluizione inferiore (1:${candidato}).`,`Critical concentrate EC = <strong>${ecConcCritica.toFixed(0)} mS/cm</strong> at dilution 1:${dil}. Very high concentration — consider a lower dilution (1:${candidato}).`)
       });
     } else {
       // Anche con dil attuale siamo oltre limite ma non possiamo abbassare oltre
@@ -3173,7 +3147,7 @@ function autoRisolvi(righeInput, dil, aq){
       interventi.push({
         tipo:'ec_critica_irrisolvibile',
         icona:'⚠️',
-        msg:`EC concentrato = ${ecConcCritica.toFixed(0)} mS/cm anche con diluizione 1:${dil}. Le dosi sono troppo alte per qualsiasi diluizione pratica: riduci le concentrazioni della ricetta o distribuisci su più serbatoi.`
+        msg:TT(`EC concentrato = ${ecConcCritica.toFixed(0)} mS/cm anche con diluizione 1:${dil}. Le dosi sono troppo alte per qualsiasi diluizione pratica: riduci le concentrazioni della ricetta o distribuisci su più serbatoi.`,`Concentrate EC = ${ecConcCritica.toFixed(0)} mS/cm even at dilution 1:${dil}. The doses are too high for any practical dilution: reduce the recipe concentrations or split across more tanks.`)
       });
     }
   }
@@ -3376,7 +3350,7 @@ function checkNeedSerbC(righe, dil, aq){
     const rb = righe.find(r => r.id === regola.b);
     if (!ra || !rb) return;
     if (ra.serb === rb.serb) {
-      motivi.push(`${ra.nome||ra.id} e ${rb.nome||rb.id} ancora nello stesso Serb. ${ra.serb} — necessario serbatoio C (${regola.p})`);
+      motivi.push(TT(`${ra.nome||ra.id} e ${rb.nome||rb.id} ancora nello stesso Serb. ${ra.serb} — necessario serbatoio C (${M(regola.p)})`,`${ra.nome||ra.id} and ${rb.nome||rb.id} still in the same Tank ${ra.serb} — Tank C required (${M(regola.p)})`));
     }
   });
 
@@ -3387,7 +3361,7 @@ function checkNeedSerbC(righe, dil, aq){
     if(!righeS.length) return;
     const si = serbSIs(righeS, aq, dil);
     if(si.CaSO4 > -0.5 && !usaSerbC){
-      motivi.push(`SI CaSO₄ = ${si.CaSO4.toFixed(2)} nel Serb. ${s} concentrato (×${dil}): necessario serbatoio C per separare solfati da Ca`);
+      motivi.push(TT(`SI CaSO₄ = ${si.CaSO4.toFixed(2)} nel Serb. ${s} concentrato (×${dil}): necessario serbatoio C per separare solfati da Ca`,`SI CaSO₄ = ${si.CaSO4.toFixed(2)} in Tank ${s} concentrate (×${dil}): Tank C required to separate sulfates from Ca`));
     }
   });
 
@@ -3420,17 +3394,17 @@ function verificaSicurezza(righe, dil, aq, phFinale){
           coppieConflitto++;
           conflitti.push({
             gravita: res.gravita,
-            titolo: `${righeS[i].nome||righeS[i].id} + ${righeS[j].nome||righeS[j].id} nel Serb. ${s}`,
-            dettaglio: `${res.m} (${res.p}) — rilevato ${res.fonte==='gruppo'?'per gruppo ionico':'da matrice'}`
+            titolo: TT(`${righeS[i].nome||righeS[i].id} + ${righeS[j].nome||righeS[j].id} nel Serb. ${s}`,`${righeS[i].nome||righeS[i].id} + ${righeS[j].nome||righeS[j].id} in Tank ${s}`),
+            dettaglio: `${M(res.m)} (${M(res.p)}) — ${TT(res.fonte==='gruppo'?'rilevato per gruppo ionico':'rilevato da matrice', res.fonte==='gruppo'?'detected by ionic group':'detected from matrix')}`
           });
         }
       }
     }
   });
   audit.push({
-    check:'Compatibilità coppie nei serbatoi',
+    check:TT('Compatibilità coppie nei serbatoi','Pair compatibility in tanks'),
     esito: coppieConflitto===0 ? 'OK' : 'CONFLITTO',
-    dettaglio:`${coppieControllate} coppie verificate (per ID + gruppo ionico), ${coppieConflitto} conflitti residui`
+    dettaglio:TT(`${coppieControllate} coppie verificate (per ID + gruppo ionico), ${coppieConflitto} conflitti residui`,`${coppieControllate} pairs checked (by ID + ionic group), ${coppieConflitto} residual conflicts`)
   });
 
   // ── CHECK 2: SI CaSO4 per serbatoio (siForIons + Davies, Ksp unificato) ──
@@ -3441,10 +3415,10 @@ function verificaSicurezza(righe, dil, aq, phFinale){
     const si = serbSIs(righeS, aq, dil);
     if(si.CaSO4 > -0.5){
       caso4Problemi++;
-      conflitti.push({gravita: si.CaSO4>0?'C':'A', titolo:`CaSO₄ nel Serb. ${s}`, dettaglio:`SI = ${si.CaSO4.toFixed(2)} nel concentrato (×${dil}, pH 6, 20°C, Davies). Ca e solfati ancora insieme in questo serbatoio.`});
+      conflitti.push({gravita: si.CaSO4>0?'C':'A', titolo:TT(`CaSO₄ nel Serb. ${s}`,`CaSO₄ in Tank ${s}`), dettaglio:TT(`SI = ${si.CaSO4.toFixed(2)} nel concentrato (×${dil}, pH 6, 20°C, Davies). Ca e solfati ancora insieme in questo serbatoio.`,`SI = ${si.CaSO4.toFixed(2)} in the concentrate (×${dil}, pH 6, 20°C, Davies). Ca and sulfates still together in this tank.`)});
     }
   });
-  audit.push({check:'Prodotto solubilità CaSO₄ (per serbatoio)', esito: caso4Problemi===0?'OK':'CONFLITTO', dettaglio: caso4Problemi===0?`Nessun rischio gesso in ${serbs.length} serbatoi`:`${caso4Problemi} serbatoi a rischio`});
+  audit.push({check:TT('Prodotto solubilità CaSO₄ (per serbatoio)','CaSO₄ solubility product (per tank)'), esito: caso4Problemi===0?'OK':'CONFLITTO', dettaglio: caso4Problemi===0?TT(`Nessun rischio gesso in ${serbs.length} serbatoi`,`No gypsum risk in ${serbs.length} tanks`):TT(`${caso4Problemi} serbatoi a rischio`,`${caso4Problemi} tanks at risk`)});
 
   // ── CHECK 2b: SI nel concentrato PER-SERBATOIO (CaHPO4, Struvite, CaSO4) ──
   // Usa worstSerbSI: peggior SI tra i serbatoi dove gli ioni coesistono.
@@ -3453,15 +3427,15 @@ function verificaSicurezza(righe, dil, aq, phFinale){
   try {
     const siWorst = worstSerbSI(righe, aq, dil);
     const siConcChecks = [
-      {key:'CaSO4',   label:'CaSO₄ concentrato', si:siWorst.CaSO4},
-      {key:'CaHPO4',  label:'CaHPO₄ concentrato', si:siWorst.CaHPO4},
-      {key:'struvite',label:'Struvite concentrato', si:siWorst.struvite},
+      {key:'CaSO4',   label:TT('CaSO₄ concentrato','CaSO₄ concentrate'), si:siWorst.CaSO4},
+      {key:'CaHPO4',  label:TT('CaHPO₄ concentrato','CaHPO₄ concentrate'), si:siWorst.CaHPO4},
+      {key:'struvite',label:TT('Struvite concentrato','Struvite concentrate'), si:siWorst.struvite},
     ];
     siConcChecks.forEach(sc => {
       const esito = sc.si < -0.5 ? 'OK' : sc.si < 0 ? 'AVVISO' : 'CONFLITTO';
-      const nota = sc.si < -0.5 ? 'Ampio margine nel concentrato (per-serbatoio)'
-        : sc.si < 0 ? `Prossimo a saturazione (SI ${sc.si.toFixed(2)})`
-        : `Sovrasaturo (SI +${sc.si.toFixed(2)}): rischio precipitazione nel serbatoio madre`;
+      const nota = sc.si < -0.5 ? TT('Ampio margine nel concentrato (per-serbatoio)','Wide margin in the concentrate (per-tank)')
+        : sc.si < 0 ? TT(`Prossimo a saturazione (SI ${sc.si.toFixed(2)})`,`Close to saturation (SI ${sc.si.toFixed(2)})`)
+        : TT(`Sovrasaturo (SI +${sc.si.toFixed(2)}): rischio precipitazione nel serbatoio madre`,`Supersaturated (SI +${sc.si.toFixed(2)}): precipitation risk in the mother tank`);
       audit.push({check: sc.label, esito, dettaglio: nota});
       if(sc.si > -0.5){
         // Struvite solo-concentrato (soluzione finale sicura) → AVVISO, non critico.
@@ -3472,13 +3446,13 @@ function verificaSicurezza(righe, dil, aq, phFinale){
           gravita: (sc.si > 0 && !soloConc) ? 'C' : 'A',
           titolo: sc.label,
           dettaglio: soloConc
-            ? `${nota}. La soluzione finale è sicura (SI ${siFin[sc.key].toFixed(2)}). Usa 3 serbatoi (MAP nel serb. C separato da Mg) o pulisci il tank periodicamente.`
-            : `${nota}. Valuta di ridurre le dosi o aumentare la diluizione.`
+            ? TT(`${nota}. La soluzione finale è sicura (SI ${siFin[sc.key].toFixed(2)}). Usa 3 serbatoi (MAP nel serb. C separato da Mg) o pulisci il tank periodicamente.`,`${nota}. The final solution is safe (SI ${siFin[sc.key].toFixed(2)}). Use 3 tanks (MAP in Tank C separated from Mg) or clean the tank periodically.`)
+            : TT(`${nota}. Valuta di ridurre le dosi o aumentare la diluizione.`,`${nota}. Consider reducing the doses or increasing the dilution.`)
         });
       }
     });
   } catch(e) {
-    audit.push({check:'SI nel concentrato (CaHPO4/Struvite)', esito:'INFO', dettaglio:'Calcolo non disponibile'});
+    audit.push({check:TT('SI nel concentrato (CaHPO4/Struvite)','SI in the concentrate (CaHPO4/Struvite)'), esito:'INFO', dettaglio:TT('Calcolo non disponibile','Calculation not available')});
   }
 
   // ── CHECK 2c: SI nella SOLUZIONE FINALE al pH operativo ──
@@ -3492,16 +3466,16 @@ function verificaSicurezza(righe, dil, aq, phFinale){
   [['CaSO₄','CaSO4'],['CaHPO₄','CaHPO4'],['Struvite','struvite']].forEach(([lab,key])=>{
     const val = siFin[key];
     const esito = val < -0.5 ? 'OK' : val < 0 ? 'AVVISO' : 'CONFLITTO';
-    const nota = val < -0.5 ? 'Ampio margine nella soluzione finale'
-      : val < 0 ? `Margine ridotto (SI ${val.toFixed(2)}): metastabile, sicuro a pH ≤ ${phFinale}`
-      : `Sovrasaturo (SI +${val.toFixed(2)}) nella soluzione finale`;
-    audit.push({check:`${lab} soluzione finale (pH ${phFinale})`, esito, dettaglio:nota});
+    const nota = val < -0.5 ? TT('Ampio margine nella soluzione finale','Wide margin in the final solution')
+      : val < 0 ? TT(`Margine ridotto (SI ${val.toFixed(2)}): metastabile, sicuro a pH ≤ ${phFinale}`,`Reduced margin (SI ${val.toFixed(2)}): metastable, safe at pH ≤ ${phFinale}`)
+      : TT(`Sovrasaturo (SI +${val.toFixed(2)}) nella soluzione finale`,`Supersaturated (SI +${val.toFixed(2)}) in the final solution`);
+    audit.push({check:TT(`${lab} soluzione finale (pH ${phFinale})`,`${lab} final solution (pH ${phFinale})`), esito, dettaglio:nota});
     if(val > 0){
       const pHDip = (key==='CaHPO4' || key==='struvite');
       if(pHDip && phSuggerito!==null){
-        conflitti.push({gravita:'A', titolo:`${lab} nella soluzione finale`, dettaglio:`SI +${val.toFixed(2)} a pH ${phFinale}: abbassa il pH a ${phSuggerito} per riportarlo sotto saturazione (nessun taglio di dosi necessario).`});
+        conflitti.push({gravita:'A', titolo:TT(`${lab} nella soluzione finale`,`${lab} in the final solution`), dettaglio:TT(`SI +${val.toFixed(2)} a pH ${phFinale}: abbassa il pH a ${phSuggerito} per riportarlo sotto saturazione (nessun taglio di dosi necessario).`,`SI +${val.toFixed(2)} at pH ${phFinale}: lower the pH to ${phSuggerito} to bring it back under saturation (no dose cut needed).`)});
       } else {
-        conflitti.push({gravita:'C', titolo:`${lab} nella soluzione finale`, dettaglio:`SI +${val.toFixed(2)}: la soluzione finale è sovrasatura e precipiterà nell'impianto.${pHDip?' Il pH da solo non basta:':''} riduci le dosi dei sali coinvolti.`});
+        conflitti.push({gravita:'C', titolo:TT(`${lab} nella soluzione finale`,`${lab} in the final solution`), dettaglio:TT(`SI +${val.toFixed(2)}: la soluzione finale è sovrasatura e precipiterà nell'impianto.${pHDip?' Il pH da solo non basta:':''} riduci le dosi dei sali coinvolti.`,`SI +${val.toFixed(2)}: the final solution is supersaturated and will precipitate in the system.${pHDip?' pH alone is not enough:':''} reduce the doses of the salts involved.`)});
       }
     }
   });
@@ -3517,39 +3491,39 @@ function verificaSicurezza(righe, dil, aq, phFinale){
     const IAP_mol = (caMM/1000)*(co3/1000);
     const KspCaCO3 = kspCalcite(20); //FIX: usa Ksp temperature-dipendente
     const ok = IAP_mol <= KspCaCO3;
-    audit.push({check:'Prodotto solubilità CaCO₃ (acqua di partenza)', esito: ok?'OK':'GESTITO', dettaglio: ok?`IAP CaCO₃ sotto soglia (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`:`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → neutralizzazione acido prescritta`});
+    audit.push({check:TT('Prodotto solubilità CaCO₃ (acqua di partenza)','CaCO₃ solubility product (source water)'), esito: ok?'OK':'GESTITO', dettaglio: ok?TT(`IAP CaCO₃ sotto soglia (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`,`IAP CaCO₃ below threshold (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`):TT(`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → neutralizzazione acido prescritta`,`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → acid neutralization prescribed`)});
   }
 
   // ── CHECK 4: EC concentrato (informativo) ──
   let ecFin=0; righe.forEach(r=>{ const coeff = EC_COEFF_GLOBAL[r.id] || (r.id==='__custom' ? 0.5 : 0); ecFin+=(r.dose/1000)*coeff; });
   if(aq) ecFin+=aq.ec;
   const ecConc = ecFin*dil;
-  audit.push({check:'EC nel concentrato', esito:'INFO', dettaglio:`${ecConc.toFixed(0)} mS/cm — la sicurezza è verificata dagli indici di saturazione (SI), non da soglie EC arbitrarie`});
+  audit.push({check:TT('EC nel concentrato','EC in the concentrate'), esito:'INFO', dettaglio:TT(`${ecConc.toFixed(0)} mS/cm — la sicurezza è verificata dagli indici di saturazione (SI), non da soglie EC arbitrarie`,`${ecConc.toFixed(0)} mS/cm — safety is verified by saturation indices (SI), not by arbitrary EC thresholds`)});
 
   // ── CHECK 5: NH4 rapporto ──
   const ioni = calcolaIoniDaSali(righe);
   const ratioNH4 = ioni.N_total>0 ? ioni.N_NH4/ioni.N_total : 0;
-  audit.push({check:'Rapporto NH₄⁺/N totale', esito: ratioNH4<=0.10?'OK':'GESTITO', dettaglio:`${(ratioNH4*100).toFixed(0)}% (limite coco 10%)`});
+  audit.push({check:TT('Rapporto NH₄⁺/N totale','NH₄⁺/total N ratio'), esito: ratioNH4<=0.10?'OK':'GESTITO', dettaglio:TT(`${(ratioNH4*100).toFixed(0)}% (limite coco 10%)`,`${(ratioNH4*100).toFixed(0)}% (coco limit 10%)`)});
 
   // ── CHECK 6: Tossicità micro ──
   const microTox = [];
-  if(ioni.Mn>2)    microTox.push(`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (tossicità documentata oltre 2–5 mg/L)`);
-  if(ioni.Zn>0.5) microTox.push(`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (fitotossico in molte colture oltre 0.5 mg/L)`);
-  if(ioni.B>0.5)  microTox.push(`B ${ioni.B.toFixed(2)} mg/L > 0.5 (tossicità a 0.5 mg/L per colture sensibili — Epstein & Bloom 2005)`);
-  if(ioni.Cu>0.15) microTox.push(`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (tossicità in idroponica documentata a 0.1–0.3 mg/L)`);
-  audit.push({check:'Tossicità micronutrienti', esito: microTox.length===0?'OK':'AVVISO', dettaglio: microTox.length===0?'Tutti i micro sotto soglia':microTox.join(', ')});
-  microTox.forEach(t=>conflitti.push({gravita:'A', titolo:'Micronutriente in eccesso', dettaglio:t+' — ridurre la dose manualmente.'}));
+  if(ioni.Mn>2)    microTox.push(TT(`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (tossicità documentata oltre 2–5 mg/L)`,`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (toxicity documented above 2–5 mg/L)`));
+  if(ioni.Zn>0.5) microTox.push(TT(`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (fitotossico in molte colture oltre 0.5 mg/L)`,`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (phytotoxic in many crops above 0.5 mg/L)`));
+  if(ioni.B>0.5)  microTox.push(TT(`B ${ioni.B.toFixed(2)} mg/L > 0.5 (tossicità a 0.5 mg/L per colture sensibili — Epstein & Bloom 2005)`,`B ${ioni.B.toFixed(2)} mg/L > 0.5 (toxicity at 0.5 mg/L for sensitive crops — Epstein & Bloom 2005)`));
+  if(ioni.Cu>0.15) microTox.push(TT(`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (tossicità in idroponica documentata a 0.1–0.3 mg/L)`,`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (hydroponic toxicity documented at 0.1–0.3 mg/L)`));
+  audit.push({check:TT('Tossicità micronutrienti','Micronutrient toxicity'), esito: microTox.length===0?'OK':'AVVISO', dettaglio: microTox.length===0?TT('Tutti i micro sotto soglia','All micros below threshold'):microTox.join(', ')});
+  microTox.forEach(t=>conflitti.push({gravita:'A', titolo:TT('Micronutriente in eccesso','Micronutrient in excess'), dettaglio:t+TT(' — ridurre la dose manualmente.',' — reduce the dose manually.')}));
 
   // ── CHECK 7: Na/Cl acqua ──
   if(aq){
     const sale=[];
-    if(aq.na>50) sale.push(`Na⁺ ${aq.na} mg/L (limite coco ~50)`);
-    if(aq.cl>100) sale.push(`Cl⁻ ${aq.cl} mg/L (limite coco ~100)`);
+    if(aq.na>50) sale.push(TT(`Na⁺ ${aq.na} mg/L (limite coco ~50)`,`Na⁺ ${aq.na} mg/L (coco limit ~50)`));
+    if(aq.cl>100) sale.push(TT(`Cl⁻ ${aq.cl} mg/L (limite coco ~100)`,`Cl⁻ ${aq.cl} mg/L (coco limit ~100)`));
     if(sale.length){
-      audit.push({check:'Salinità acqua (Na/Cl)', esito:'AVVISO', dettaglio:sale.join(', ')});
-      sale.forEach(t=>conflitti.push({gravita:'A', titolo:'Salinità acqua di partenza', dettaglio:t+' — valutare osmosi inversa.'}));
+      audit.push({check:TT('Salinità acqua (Na/Cl)','Water salinity (Na/Cl)'), esito:'AVVISO', dettaglio:sale.join(', ')});
+      sale.forEach(t=>conflitti.push({gravita:'A', titolo:TT('Salinità acqua di partenza','Source water salinity'), dettaglio:t+TT(' — valutare osmosi inversa.',' — consider reverse osmosis.')}));
     } else {
-      audit.push({check:'Salinità acqua (Na/Cl)', esito:'OK', dettaglio:'Na e Cl nei limiti'});
+      audit.push({check:TT('Salinità acqua (Na/Cl)','Water salinity (Na/Cl)'), esito:'OK', dettaglio:TT('Na e Cl nei limiti','Na and Cl within limits')});
     }
   }
 
@@ -3609,7 +3583,7 @@ function correggiDosi(righe, aq){
       const doseNuova = Math.max(0, Math.round((p.dose - riduzione)*10)/10);
       if(doseNuova < p.dose - 0.5){
         nuoveRighe[p.idx] = {...nuoveRighe[p.idx], dose: doseNuova};
-        correzioni.push({sale:p.info.nome||p.id, ione:label, aqMg:aqMg.toFixed(1), doseOriginal:p.dose.toFixed(0), doseNuova:doseNuova});
+        correzioni.push({sale:salNome(p.info)||p.id, ione:label, aqMg:aqMg.toFixed(1), doseOriginal:p.dose.toFixed(0), doseNuova:doseNuova});
       }
     });
   });
@@ -3619,22 +3593,22 @@ function correggiDosi(righe, aq){
 // ─ VALIDAZIONE INPUT (punto 6 del documento) ─────
 function validaInput(volA, volB, volC, dil, aq, righe){
   const errori = [];
-  if(volA<1||volA>100000) errori.push(`Volume Serb. A (${volA} L) fuori range valido (1–100000 L).`);
-  if(volB<1||volB>100000) errori.push(`Volume Serb. B (${volB} L) fuori range valido (1–100000 L).`);
-  if(usaSerbC && (volC<1||volC>100000)) errori.push(`Volume Serb. C (${volC} L) fuori range (1–100000 L).`);
-  if(dil<1||dil>2000) errori.push(`Fattore diluizione 1:${dil} fuori range plausibile (1–2000).`);
+  if(volA<1||volA>100000) errori.push(TT(`Volume Serb. A (${volA} L) fuori range valido (1–100000 L).`,`Tank A volume (${volA} L) out of valid range (1–100000 L).`));
+  if(volB<1||volB>100000) errori.push(TT(`Volume Serb. B (${volB} L) fuori range valido (1–100000 L).`,`Tank B volume (${volB} L) out of valid range (1–100000 L).`));
+  if(usaSerbC && (volC<1||volC>100000)) errori.push(TT(`Volume Serb. C (${volC} L) fuori range (1–100000 L).`,`Tank C volume (${volC} L) out of range (1–100000 L).`));
+  if(dil<1||dil>2000) errori.push(TT(`Fattore diluizione 1:${dil} fuori range plausibile (1–2000).`,`Dilution factor 1:${dil} out of plausible range (1–2000).`));
   if(aq){
-    if(aq.ec<0||aq.ec>10) errori.push(`EC acqua (${aq.ec} mS/cm) implausibile (0–10). Un'acqua con EC>5 è inutilizzabile.`);
-    if(aq.ph<3||aq.ph>11) errori.push(`pH acqua (${aq.ph}) fuori range fisico realistico (3–11).`);
+    if(aq.ec<0||aq.ec>10) errori.push(TT(`EC acqua (${aq.ec} mS/cm) implausibile (0–10). Un'acqua con EC>5 è inutilizzabile.`,`Water EC (${aq.ec} mS/cm) implausible (0–10). Water with EC>5 is unusable.`));
+    if(aq.ph<3||aq.ph>11) errori.push(TT(`pH acqua (${aq.ph}) fuori range fisico realistico (3–11).`,`Water pH (${aq.ph}) out of realistic physical range (3–11).`));
     [['Ca',aq.ca,1000],['Mg',aq.mg,500],['Na',aq.na,2000],['Cl',aq.cl,2000],['SO4',aq.so4,2000],['HCO3',aq.hco3,1000]].forEach(([n,v,max])=>{
-      if(v<0||v>max) errori.push(`${n} acqua (${v} mg/L) fuori range (0–${max}).`);
+      if(v<0||v>max) errori.push(TT(`${n} acqua (${v} mg/L) fuori range (0–${max}).`,`${n} water (${v} mg/L) out of range (0–${max}).`));
     });
   }
   righe.forEach(r=>{
-    if(r.dose<0) errori.push(`Dose negativa per ${r.nome||r.id}.`);
-    if(r.dose>5000) errori.push(`Dose ${r.dose} g/1000L per ${r.nome||r.id} è irrealistica (>5000). Verifica il valore.`);
+    if(r.dose<0) errori.push(TT(`Dose negativa per ${r.nome||r.id}.`,`Negative dose for ${r.nome||r.id}.`));
+    if(r.dose>5000) errori.push(TT(`Dose ${r.dose} g/1000L per ${r.nome||r.id} è irrealistica (>5000). Verifica il valore.`,`Dose ${r.dose} g/1000L for ${r.nome||r.id} is unrealistic (>5000). Check the value.`));
     const info=getSale(r.id);
-    if(info?.el){ const somma=Object.values(info.el).reduce((a,b)=>a+b,0); if(somma>100) errori.push(`${r.nome||r.id}: somma delle percentuali elementari = ${somma.toFixed(0)}% (>100%, impossibile).`); }
+    if(info?.el){ const somma=Object.values(info.el).reduce((a,b)=>a+b,0); if(somma>100) errori.push(TT(`${r.nome||r.id}: somma delle percentuali elementari = ${somma.toFixed(0)}% (>100%, impossibile).`,`${r.nome||r.id}: sum of elemental percentages = ${somma.toFixed(0)}% (>100%, impossible).`)); }
   });
   return errori;
 }
@@ -3666,7 +3640,7 @@ function calcola(){
     window._bilanciaRighe = null; // one-shot: consumato
   }
 
-  if(!righe.length){ mostraErrCalc("Aggiungi almeno un sale."); return; }
+  if(!righe.length){ mostraErrCalc(TT("Aggiungi almeno un sale.","Add at least one salt.")); return; }
 
   // ─────────────────────────────────────────────
   // IMPORTANTE: tutta la pipeline lavora su una COPIA
@@ -3681,7 +3655,7 @@ function calcola(){
   // 0. VALIDAZIONE INPUT
   const erroriInput = validaInput(volA, volB, volC, dil, aq, wRighe);
   if(erroriInput.length>0){
-    let h=`<div class="alert al-err" style="margin-top:12px"><span>🚫</span><div><strong>Input non valido — correggi prima di calcolare:</strong><ul style="margin:6px 0 0 14px;line-height:1.8;font-size:.78rem">`;
+    let h=`<div class="alert al-err" style="margin-top:12px"><span>🚫</span><div><strong>${TT('Input non valido — correggi prima di calcolare:','Invalid input — fix before calculating:')}</strong><ul style="margin:6px 0 0 14px;line-height:1.8;font-size:.78rem">`;
     erroriInput.forEach(e=>h+=`<li>${e}</li>`);
     h+=`</ul></div></div>`;
     document.getElementById('calc-out').innerHTML=h;
@@ -3746,7 +3720,7 @@ function calcola(){
     // Auto-bilanciamento ha risolto i conflitti → VERDE con tabella confronto
     const dev = bilanciaReportData ? bilanciaReportData.deviations.filter(d=>Math.abs(d.pctChange)>0.5) : [];
     html+=`<div class="alert al-ok" style="margin-bottom:10px"><span style="font-size:1.2rem">✅</span><div>
-      <strong>${t('js.voto.corretto')}.</strong> Il sistema ha ridotto le dosi di alcuni sali per evitare precipitazioni nella soluzione madre.
+      <strong>${t('js.voto.corretto')}.</strong> ${TT('Il sistema ha ridotto le dosi di alcuni sali per evitare precipitazioni nella soluzione madre.','The system reduced the doses of some salts to avoid precipitation in the mother solution.')}
       ${dev.length?`<div style="margin-top:8px;padding:8px 10px;background:#fff;border-radius:4px">
         <div style="font-size:.72rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${t('js.doseModificate')}</div>
         <table style="width:100%;font-size:.78rem;border-collapse:collapse">
@@ -3758,7 +3732,7 @@ function calcola(){
             <td style="padding:4px 0;text-align:right;font-weight:700;color:var(--ro)">${d.pctChange.toFixed(1)}%</td>
           </tr>`).join('')}
         </table>
-        <div style="font-size:.7rem;color:var(--ts);margin-top:6px">Riducendo queste dosi, la soluzione non precipiterà nei serbatoi. La EC finale resta nella stessa fascia.</div>
+        <div style="font-size:.7rem;color:var(--ts);margin-top:6px">${TT('Riducendo queste dosi, la soluzione non precipiterà nei serbatoi. La EC finale resta nella stessa fascia.','By reducing these doses, the solution will not precipitate in the tanks. The final EC stays in the same range.')}</div>
       </div>`:''}
       <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-se btn-sm" onclick="ripristinaDosiOriginali()" style="border-color:var(--ro);color:var(--ro)">${t('js.ripristinaOriginali')}</button>
@@ -3767,18 +3741,18 @@ function calcola(){
   } else if(!sicurezza.sicuro){
     // Conflitti critici NON risolti → ROSSO esplicito
     html+=`<div class="alert al-err" style="margin-bottom:10px"><span style="font-size:1.2rem">🛑</span><div>
-      <strong>${t('js.voto.nonsicura')} — ${sicurezza.critici.length} conflitto/i critico/i non risolto/i:</strong>
+      <strong>${t('js.voto.nonsicura')} — ${sicurezza.critici.length} ${TT('conflitto/i critico/i non risolto/i:','unresolved critical conflict(s):')}</strong>
       <ul style="margin:8px 0 0 14px;line-height:1.9;font-size:.78rem">`;
     sicurezza.critici.forEach(c=>html+=`<li><strong>${c.titolo}</strong> — ${c.dettaglio}</li>`);
     html+=`</ul>
       <div style="margin-top:10px;padding:8px 10px;background:#fff;border-radius:4px;font-size:.76rem">
-        ${!usaSerbC ? '➕ Abilita il <strong>Serbatoio C</strong> qui sotto per dare al sistema più spazio per separare i sali.' : '⚠️ Anche con 3 serbatoi restano conflitti: rivedi la ricetta o riduci i sali incompatibili.'}
+        ${!usaSerbC ? TT('➕ Abilita il <strong>Serbatoio C</strong> qui sotto per dare al sistema più spazio per separare i sali.','➕ Enable <strong>Tank C</strong> below to give the system more room to separate the salts.') : TT('⚠️ Anche con 3 serbatoi restano conflitti: rivedi la ricetta o riduci i sali incompatibili.','⚠️ Conflicts remain even with 3 tanks: revise the recipe or reduce the incompatible salts.')}
       </div>
     </div>`;
   } else if(interventi.length>0 || correzioniAcqua.length>0){
-    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.corretto')}.</strong> Tutti i ${sicurezza.audit.length} controlli superati. Nessuna precipitazione attesa una volta miscelati i sali nei serbatoi indicati. Vedi log interventi e audit qui sotto.</span></div>`;
+    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.corretto')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli superati. Nessuna precipitazione attesa una volta miscelati i sali nei serbatoi indicati. Vedi log interventi e audit qui sotto.`,`All ${sicurezza.audit.length} checks passed. No precipitation expected once the salts are mixed in the indicated tanks. See the intervention and audit log below.`)}</span></div>`;
   } else {
-    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.ok')}.</strong> Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.</span></div>`;
+    html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.ok')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.`,`All ${sicurezza.audit.length} compatibility checks passed. No precipitation expected.`)}</span></div>`;
   }
 
   // ── DICITURA VERIFICA DOSI (sempre presente) ──
@@ -3794,19 +3768,21 @@ function calcola(){
         <span style="font-size:1.2rem;flex-shrink:0">📐</span>
         <div style="flex:1">
           <div style="font-weight:700;color:#e65100;font-size:.84rem;margin-bottom:5px">
-            Concentrazione estremamente elevata nel serbatoio
+            ${TT('Concentrazione estremamente elevata nel serbatoio','Extremely high concentration in the tank')}
           </div>
           <div style="font-size:.77rem;color:#4a2800;line-height:1.65;margin-bottom:10px">
-            Con 1:${ivDil.dilAttuale} la soluzione madre critica raggiunge <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
+            ${TT(`Con 1:${ivDil.dilAttuale} la soluzione madre critica raggiunge <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
             Le dosi <strong>non sono state modificate</strong>: l'EC finale è preservata a <strong>${ivDil.ecFin} mS/cm</strong>.<br>
-            Una diluizione <strong>1:${ivDil.dilSuggerito}</strong> porterebbe la madre a <strong>${ivDil.ecConcSugg} mS/cm</strong>.<br>
-            <span style="color:#888;font-size:.72rem">La sicurezza è verificata dagli indici di saturazione (SI). Se il SI>0 per qualche composto, il precipitato si formerà indipendentemente dall'EC.</span>
+            Una diluizione <strong>1:${ivDil.dilSuggerito}</strong> porterebbe la madre a <strong>${ivDil.ecConcSugg} mS/cm</strong>.`,`At 1:${ivDil.dilAttuale} the critical mother solution reaches <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
+            The doses <strong>were not modified</strong>: the final EC is preserved at <strong>${ivDil.ecFin} mS/cm</strong>.<br>
+            A dilution of <strong>1:${ivDil.dilSuggerito}</strong> would bring the mother solution to <strong>${ivDil.ecConcSugg} mS/cm</strong>.`)}<br>
+            <span style="color:#888;font-size:.72rem">${TT('La sicurezza è verificata dagli indici di saturazione (SI). Se il SI>0 per qualche composto, il precipitato si formerà indipendentemente dall\'EC.','Safety is verified by saturation indices (SI). If SI>0 for any compound, the precipitate will form regardless of EC.')}</span>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <button class="btn btn-pr btn-sm" onclick="applicaDiluizione(${ivDil.dilSuggerito})" style="width:auto">
-              ✅ Applica diluizione 1:${ivDil.dilSuggerito} e ricalcola
+              ${TT(`✅ Applica diluizione 1:${ivDil.dilSuggerito} e ricalcola`,`✅ Apply dilution 1:${ivDil.dilSuggerito} and recalculate`)}
             </button>
-            <span style="font-size:.72rem;color:#888">Entrambi i serbatoi useranno 1:${ivDil.dilSuggerito}</span>
+            <span style="font-size:.72rem;color:#888">${TT(`Entrambi i serbatoi useranno 1:${ivDil.dilSuggerito}`,`Both tanks will use 1:${ivDil.dilSuggerito}`)}</span>
           </div>
         </div>
       </div>
@@ -3823,7 +3799,7 @@ function calcola(){
     correzioniAcqua.forEach(co=>{
       html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--cs);font-size:.78rem">
         <span style="flex-shrink:0">💧</span>
-        <span>Dose <strong>${co.sale}</strong> ridotta da ${co.doseOriginal}→<strong>${co.doseNuova} g/1000L</strong>: acqua di partenza apporta già ${co.aqMg} mg/L di ${co.ione}.</span>
+        <span>${TT(`Dose <strong>${co.sale}</strong> ridotta da ${co.doseOriginal}→<strong>${co.doseNuova} g/1000L</strong>: acqua di partenza apporta già ${co.aqMg} mg/L di ${co.ione}.`,`<strong>${co.sale}</strong> dose reduced from ${co.doseOriginal}→<strong>${co.doseNuova} g/1000L</strong>: source water already provides ${co.aqMg} mg/L of ${co.ione}.`)}</span>
       </div>`;
     });
     // Interventi chimici
@@ -3859,7 +3835,7 @@ function calcola(){
             <input type="checkbox" ${usaSerbC?'checked':''} onchange="toggleSerbC(this.checked)" style="width:18px;height:18px;accent-color:#7b3f9e;flex-shrink:0">
             ${t('js.abilitaSerbC')}
           </label>
-          ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">Volume Serb. C (L)</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
+          ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">${TT('Volume Serb. C (L)','Tank C volume (L)')}</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
         </div>
       </div>
     </div>`;
@@ -3872,7 +3848,7 @@ function calcola(){
       <div class="ch" style="background:var(--az)">${t('js.solFin')}</div>
       <div class="cb" style="padding-bottom:6px">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
-          <div class="ri-box"><div class="ri-lbl">N tot.</div><div class="ri-val">${(ioni2.N_total).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${TT('N tot.','N tot.')}</div><div class="ri-val">${(ioni2.N_total).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">Ca</div><div class="ri-val">${(ioni2.Ca+aq.ca).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">Mg</div><div class="ri-val">${(ioni2.Mg+aq.mg).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">K</div><div class="ri-val">${(ioni2.K+aq.k).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
@@ -3897,7 +3873,7 @@ function calcola(){
     html+=`<div class="serb-card ${cls}" style="border-color:${colore}">
       <div class="serb-title" style="background:${colore}">
         <span style="background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;font-size:.65rem;font-weight:700">${key}</span>
-        Serb. ${key} — ${vol} L
+        ${TT('Serb.','Tank')} ${key} — ${vol} L
       </div>`;
     let costoSerb=0;
     if(!righeSerb.length){
@@ -3924,17 +3900,17 @@ function calcola(){
   const costoPerMille = costoTot > 0 ? (costoTot / volFinale1000L * 1000) : 0;
 
   html+=`<div class="card" style="margin-top:12px">
-    <div class="ch" style="background:var(--ar)">📊 Riepilogo — Diluizione 1:${dil}</div>
+    <div class="ch" style="background:var(--ar)">${TT('📊 Riepilogo — Diluizione','📊 Summary — Dilution')} 1:${dil}</div>
     <div class="cb">
-      <div class="eco-row"><span>EC soluzione finale</span><span class="eco-val"><strong>${ecFin2.toFixed(2)} mS/cm</strong></span></div>
+      <div class="eco-row"><span>${TT('EC soluzione finale','Final solution EC')}</span><span class="eco-val"><strong>${ecFin2.toFixed(2)} mS/cm</strong></span></div>
       ${serbatoi.map(s=>{
         const ecS = (ecPerSerb[s.key]||0)*dil;
-        return `<div class="eco-row"><span>EC Serb. ${s.key} nel concentrato (×${dil})</span><span class="eco-val">${ecS.toFixed(0)} mS/cm</span></div>`;
+        return `<div class="eco-row"><span>${TT(`EC Serb. ${s.key} nel concentrato (×${dil})`,`Tank ${s.key} EC in concentrate (×${dil})`)}</span><span class="eco-val">${ecS.toFixed(0)} mS/cm</span></div>`;
       }).join('')}
-      ${costoTot>0?`<div class="eco-row"><span>Costo totale batch</span><span class="eco-val">${fmtEuro(costoTot)}</span></div>`:''}
-      ${costoTot>0?`<div class="eco-row"><span>Costo per 1000 L finali</span><span class="eco-val">${fmtEuro(costoPerMille)}</span></div>`:''}
-      <div class="eco-row"><span>Concentrato per 1000 L finali (per serb.)</span><span class="eco-val">${(1000/dil).toFixed(1)} L</span></div>
-      <div class="eco-row"><span>Soluzione finale da batch (tank min)</span><span class="eco-val">${volFinale1000L.toFixed(0)} L</span></div>
+      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo totale batch','Total batch cost')}</span><span class="eco-val">${fmtEuro(costoTot)}</span></div>`:''}
+      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo per 1000 L finali','Cost per 1000 L final')}</span><span class="eco-val">${fmtEuro(costoPerMille)}</span></div>`:''}
+      <div class="eco-row"><span>${TT('Concentrato per 1000 L finali (per serb.)','Concentrate per 1000 L final (per tank)')}</span><span class="eco-val">${(1000/dil).toFixed(1)} L</span></div>
+      <div class="eco-row"><span>${TT('Soluzione finale da batch (tank min)','Final solution per batch (min tank)')}</span><span class="eco-val">${volFinale1000L.toFixed(0)} L</span></div>
     </div>
   </div>`;
 
@@ -3957,23 +3933,23 @@ function calcola(){
 
     // KPI aggiornati con EC precisa
     html+=`<div class="card" style="margin-top:12px">
-      <div class="ch" style="background:#1a5a8a">🔬 Verifica Chimica Precisa (motore FertiControl v2)</div>
+      <div class="ch" style="background:#1a5a8a">${TT('🔬 Verifica Chimica Precisa (motore FertiControl v2)','🔬 Precise Chemical Verification (FertiControl v2 engine)')}</div>
       <div class="cb">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
-          <div class="ri-box"><div class="ri-lbl">EC precisa</div><div class="ri-val" style="color:#1a5a8a">${ecPrecisa.toFixed(2)}</div><div class="ri-sub">mS/cm · conducibilità ioniche</div></div>
-          <div class="ri-box"><div class="ri-lbl">Forza ionica</div><div class="ri-val">${si.I.toFixed(3)}</div><div class="ri-sub">mol/L</div></div>
-          <div class="ri-box"><div class="ri-lbl">Bilancio</div><div class="ri-val" style="color:${Math.abs(bal.cat-bal.an)/Math.max(bal.an,0.01)<0.05?'var(--vc)':'var(--ro)'}">${((bal.cat-bal.an)>=0?'+':'')+(bal.cat-bal.an).toFixed(2)}</div><div class="ri-sub">meq/L (cat-an)</div></div>
-          <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${pH}</div><div class="ri-sub">unità</div></div>
+          <div class="ri-box"><div class="ri-lbl">${TT('EC precisa','Precise EC')}</div><div class="ri-val" style="color:#1a5a8a">${ecPrecisa.toFixed(2)}</div><div class="ri-sub">${TT('mS/cm · conducibilità ioniche','mS/cm · ionic conductivities')}</div></div>
+          <div class="ri-box"><div class="ri-lbl">${TT('Forza ionica','Ionic strength')}</div><div class="ri-val">${si.I.toFixed(3)}</div><div class="ri-sub">mol/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${TT('Bilancio','Balance')}</div><div class="ri-val" style="color:${Math.abs(bal.cat-bal.an)/Math.max(bal.an,0.01)<0.05?'var(--vc)':'var(--ro)'}">${((bal.cat-bal.an)>=0?'+':'')+(bal.cat-bal.an).toFixed(2)}</div><div class="ri-sub">meq/L (cat-an)</div></div>
+          <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${pH}</div><div class="ri-sub">${TT('unità','units')}</div></div>
         </div>
       </div>
     </div>`;
 
     // Indici di saturazione — Gauge
-    function siStatus(si){return si>0?{c:'var(--ro)',t:'sovrasaturo',ico:'🔴'}:si>-0.5?{c:'var(--ar)',t:'margine ridotto',ico:'🟡'}:{c:'var(--vc)',t:'ampio margine',ico:'🟢'};}
+    function siStatus(si){return si>0?{c:'var(--ro)',t:TT('sovrasaturo','supersaturated'),ico:'🔴'}:si>-0.5?{c:'var(--ar)',t:TT('margine ridotto','reduced margin'),ico:'🟡'}:{c:'var(--vc)',t:TT('ampio margine','wide margin'),ico:'🟢'};}
     function gaugeHTML(label,sub,siVal){
       const pos=Math.max(0,Math.min(100,(siVal+3)/4*100));
       const st=siStatus(siVal);
-      const note=siVal>0?`Sovrasaturo (SI +${siVal.toFixed(2)}): rischio di ${label}. Riduci EC.`:siVal>-0.5?`Prossimo a saturazione (SI ${siVal.toFixed(2)}): tieni controllato.`:`Ampio margine (SI ${siVal.toFixed(2)}): nessun rischio.`;
+      const note=siVal>0?TT(`Sovrasaturo (SI +${siVal.toFixed(2)}): rischio di ${label}. Riduci EC.`,`Supersaturated (SI +${siVal.toFixed(2)}): risk of ${label}. Reduce EC.`):siVal>-0.5?TT(`Prossimo a saturazione (SI ${siVal.toFixed(2)}): tieni controllato.`,`Close to saturation (SI ${siVal.toFixed(2)}): keep it monitored.`):TT(`Ampio margine (SI ${siVal.toFixed(2)}): nessun rischio.`,`Wide margin (SI ${siVal.toFixed(2)}): no risk.`);
       return `<div class="gauge"><div class="gtop"><div class="gname">${label} <small>${sub}</small></div><div class="gval" style="color:${st.c}">SI ${(siVal>=0?'+':'')}${siVal.toFixed(2)}</div></div>
         <div class="track2"><div class="center-line"></div><div class="marker" style="left:${pos}%;background:${st.c}"></div></div>
         <div class="gnote" style="color:${st.c}">${st.ico} ${note}</div></div>`;
@@ -3984,44 +3960,44 @@ function calcola(){
     }
 
     html+=`<div class="card" style="margin-top:12px">
-      <div class="ch" style="background:var(--vm)">⚠️ Verifica Anti-Precipitazione</div>
+      <div class="ch" style="background:var(--vm)">${TT('⚠️ Verifica Anti-Precipitazione','⚠️ Anti-Precipitation Check')}</div>
       <div class="cb">
-        <p style="font-size:.72rem;color:var(--ts);margin-bottom:10px">Indici di saturazione a ${tempC}°C e pH ${pH}. Ksp corretti con la temperatura. Attività da equazione di Davies (I = ${si.I.toFixed(3)} mol/L).</p>
+        <p style="font-size:.72rem;color:var(--ts);margin-bottom:10px">${TT(`Indici di saturazione a ${tempC}°C e pH ${pH}. Ksp corretti con la temperatura. Attività da equazione di Davies (I = ${si.I.toFixed(3)} mol/L).`,`Saturation indices at ${tempC}°C and pH ${pH}. Ksp temperature-corrected. Activities from the Davies equation (I = ${si.I.toFixed(3)} mol/L).`)}</p>
         <div class="gauge-wrap">
-          ${gaugeHTML('Solfato di calcio','CaSO₄ · gesso',si.CaSO4)}
-          ${gaugeHTML('Fosfato di calcio','CaHPO₄ · pH-dipendente',si.CaHPO4)}
+          ${gaugeHTML(TT('Solfato di calcio','Calcium sulfate'),'CaSO₄ · '+TT('gesso','gypsum'),si.CaSO4)}
+          ${gaugeHTML(TT('Fosfato di calcio','Calcium phosphate'),'CaHPO₄ · '+TT('pH-dipendente','pH-dependent'),si.CaHPO4)}
           <div class="si-rows">
-            ${siRowHTML('Carbonato di calcio','CaCO₃ · da bicarbonati',si.CaCO3)}
-            ${siRowHTML('Struvite','MgNH₄PO₄ · serbatoio B',si.struvite)}
+            ${siRowHTML(TT('Carbonato di calcio','Calcium carbonate'),'CaCO₃ · '+TT('da bicarbonati','from bicarbonates'),si.CaCO3)}
+            ${siRowHTML('Struvite','MgNH₄PO₄ · '+TT('serbatoio B','tank B'),si.struvite)}
           </div>
         </div>`;
 
     // ── SI NEL CONCENTRATO — verifica se il serbatoio madre precipita ──
     const viciniSatConc = [];
-    if(siConc.CaSO4 > -0.5) viciniSatConc.push({nome:'CaSO₄ (gesso)', si:siConc.CaSO4, key:'CaSO4'});
-    if(siConc.CaHPO4 > -0.5) viciniSatConc.push({nome:'CaHPO₄ (fosfato calcio)', si:siConc.CaHPO4, key:'CaHPO4'});
-    if(siConc.CaCO3 > -0.5) viciniSatConc.push({nome:'CaCO₃ (calcare)', si:siConc.CaCO3, key:'CaCO3'});
+    if(siConc.CaSO4 > -0.5) viciniSatConc.push({nome:TT('CaSO₄ (gesso)','CaSO₄ (gypsum)'), si:siConc.CaSO4, key:'CaSO4'});
+    if(siConc.CaHPO4 > -0.5) viciniSatConc.push({nome:TT('CaHPO₄ (fosfato calcio)','CaHPO₄ (calcium phosphate)'), si:siConc.CaHPO4, key:'CaHPO4'});
+    if(siConc.CaCO3 > -0.5) viciniSatConc.push({nome:TT('CaCO₃ (calcare)','CaCO₃ (limescale)'), si:siConc.CaCO3, key:'CaCO3'});
     if(siConc.struvite > -0.5) viciniSatConc.push({nome:'Struvite (MgNH₄PO₄)', si:siConc.struvite, key:'struvite'});
 
     html+=`<div style="margin-top:14px">
-      <div style="font-size:.78rem;font-weight:700;color:var(--vs);margin-bottom:8px">🏭 Nel Concentrato (1:${dil})</div>
-      <p style="font-size:.7rem;color:var(--ts);margin-bottom:8px">Concentrazioni ×${dil} rispetto alla soluzione finale. Verifica se la soluzione madre precipita nei serbatoi.</p>
+      <div style="font-size:.78rem;font-weight:700;color:var(--vs);margin-bottom:8px">${TT('🏭 Nel Concentrato','🏭 In the Concentrate')} (1:${dil})</div>
+      <p style="font-size:.7rem;color:var(--ts);margin-bottom:8px">${TT(`Concentrazioni ×${dil} rispetto alla soluzione finale. Verifica se la soluzione madre precipita nei serbatoi.`,`Concentrations ×${dil} relative to the final solution. Checks whether the mother solution precipitates in the tanks.`)}</p>
       <div class="gauge-wrap">
-        ${gaugeHTML('CaSO₄ concentrato','×'+dil,siConc.CaSO4)}
-        ${gaugeHTML('CaHPO₄ concentrato','×'+dil,siConc.CaHPO4)}
+        ${gaugeHTML(TT('CaSO₄ concentrato','CaSO₄ concentrate'),'×'+dil,siConc.CaSO4)}
+        ${gaugeHTML(TT('CaHPO₄ concentrato','CaHPO₄ concentrate'),'×'+dil,siConc.CaHPO4)}
         <div class="si-rows">
-          ${siRowHTML('CaCO₃ concentrato','×'+dil,siConc.CaCO3)}
-          ${siRowHTML('Struvite concentrato','×'+dil,siConc.struvite)}
+          ${siRowHTML(TT('CaCO₃ concentrato','CaCO₃ concentrate'),'×'+dil,siConc.CaCO3)}
+          ${siRowHTML(TT('Struvite concentrato','Struvite concentrate'),'×'+dil,siConc.struvite)}
         </div>
       </div>
       ${viciniSatConc.length > 0 ? `
         <div class="alert al-inf" style="margin-top:6px">
           <span>⚠️</span>
-          <span><strong>Concentrato a rischio:</strong> ${viciniSatConc.map(v=>`${v.nome} (SI ${v.si>=0?'+':''}${v.si.toFixed(2)})`).join(', ')}. La separazione A/B evita l'incontro di Ca con solfati/fosfati nel concentrato — verifica che siano in serbatoi diversi.</span>
+          <span><strong>${TT('Concentrato a rischio:','Concentrate at risk:')}</strong> ${viciniSatConc.map(v=>`${v.nome} (SI ${v.si>=0?'+':''}${v.si.toFixed(2)})`).join(', ')}. ${TT('La separazione A/B evita l\'incontro di Ca con solfati/fosfati nel concentrato — verifica che siano in serbatoi diversi.','A/B separation prevents Ca from meeting sulfates/phosphates in the concentrate — check that they are in different tanks.')}</span>
         </div>` : `
         <div class="alert al-ok" style="margin-top:6px">
           <span>✅</span>
-          <span>Concentrato sicuro: tutti gli SI nel concentrato sotto soglia.</span>
+          <span>${TT('Concentrato sicuro: tutti gli SI nel concentrato sotto soglia.','Safe concentrate: all SI in the concentrate below threshold.')}</span>
         </div>`}
     </div></div>`;
 
@@ -4030,29 +4006,29 @@ function calcola(){
     // (dil solo concentra il serbatoio madre). I consigli puntano sulle
     // azioni che riducono davvero il SI: ridurre dosi, pH, o cambiare sale.
     const viciniSat = [];
-    if(si.CaSO4 > 0) viciniSat.push({nome:'CaSO₄ (gesso)', si:si.CaSO4, key:'CaSO4',
+    if(si.CaSO4 > 0) viciniSat.push({nome:TT('CaSO₄ (gesso)','CaSO₄ (gypsum)'), si:si.CaSO4, key:'CaSO4',
       consigli:[
-        'Riduci la dose di solfati (MgSO₄ → MgNO₃ se possibile)',
-        'Riduci la dose di Ca (CaN) del 10-15%',
-        'Usa acqua con meno SO₄²⁻ (analisi acqua)'
+        TT('Riduci la dose di solfati (MgSO₄ → MgNO₃ se possibile)','Reduce the sulfate dose (MgSO₄ → MgNO₃ if possible)'),
+        TT('Riduci la dose di Ca (CaN) del 10-15%','Reduce the Ca dose (CaN) by 10-15%'),
+        TT('Usa acqua con meno SO₄²⁻ (analisi acqua)','Use water with less SO₄²⁻ (water analysis)')
       ]});
-    if(si.CaHPO4 > 0) viciniSat.push({nome:'CaHPO₄ (fosfato calcio)', si:si.CaHPO4, key:'CaHPO4',
+    if(si.CaHPO4 > 0) viciniSat.push({nome:TT('CaHPO₄ (fosfato calcio)','CaHPO₄ (calcium phosphate)'), si:si.CaHPO4, key:'CaHPO4',
       consigli:[
-        'Abbassa il pH a 5.5–5.8 (riduce HPO4²⁻ → H₂PO₄⁻)',
-        'Riduci la dose di Ca (CaN)',
-        'Riduci la dose di fosfati (KH₂PO₄)'
+        TT('Abbassa il pH a 5.5–5.8 (riduce HPO4²⁻ → H₂PO₄⁻)','Lower the pH to 5.5–5.8 (reduces HPO4²⁻ → H₂PO₄⁻)'),
+        TT('Riduci la dose di Ca (CaN)','Reduce the Ca dose (CaN)'),
+        TT('Riduci la dose di fosfati (KH₂PO₄)','Reduce the phosphate dose (KH₂PO₄)')
       ]});
-    if(si.CaCO3 > 0) viciniSat.push({nome:'CaCO₃ (calcare)', si:si.CaCO3, key:'CaCO3',
+    if(si.CaCO3 > 0) viciniSat.push({nome:TT('CaCO₃ (calcare)','CaCO₃ (limescale)'), si:si.CaCO3, key:'CaCO3',
       consigli:[
-        'Neutralizza HCO₃⁻ con acido (HNO₃ o H₃PO₄) prima di mescolare',
-        'Riduci i bicarbonati nell\'acqua di partenza (filtro a osmosi)',
-        'Abbassa il pH della soluzione finale a 5.5–5.8'
+        TT('Neutralizza HCO₃⁻ con acido (HNO₃ o H₃PO₄) prima di mescolare','Neutralize HCO₃⁻ with acid (HNO₃ or H₃PO₄) before mixing'),
+        TT('Riduci i bicarbonati nell\'acqua di partenza (filtro a osmosi)','Reduce bicarbonates in the source water (reverse osmosis filter)'),
+        TT('Abbassa il pH della soluzione finale a 5.5–5.8','Lower the final solution pH to 5.5–5.8')
       ]});
     if(si.struvite > 0) viciniSat.push({nome:'Struvite (MgNH₄PO₄)', si:si.struvite, key:'struvite',
       consigli:[
-        'Riduci NH₄⁺ (usa solo forme NO₃⁻: KNO₃, CaN, MgNO₃)',
-        'Riduci fosfati (KH₂PO₄)',
-        'Mantieni Mg²⁺ e PO₄³⁻ in serbatoi separati'
+        TT('Riduci NH₄⁺ (usa solo forme NO₃⁻: KNO₃, CaN, MgNO₃)','Reduce NH₄⁺ (use only NO₃⁻ forms: KNO₃, CaN, MgNO₃)'),
+        TT('Riduci fosfati (KH₂PO₄)','Reduce phosphates (KH₂PO₄)'),
+        TT('Mantieni Mg²⁺ e PO₄³⁻ in serbatoi separati','Keep Mg²⁺ and PO₄³⁻ in separate tanks')
       ]});
 
     if(viciniSat.length > 0){
@@ -4063,11 +4039,10 @@ function calcola(){
             <span style="font-size:1.2rem;flex-shrink:0">✅</span>
             <div style="flex:1">
               <div style="font-weight:700;color:var(--vc);font-size:.84rem;margin-bottom:5px">
-                Correzione applicata — tutti gli indici ora nella zona sicura
+                ${TT('Correzione applicata — tutti gli indici ora nella zona sicura','Correction applied — all indices now in the safe zone')}
               </div>
               <div style="font-size:.77rem;color:#155724;line-height:1.65">
-                Il sistema ha ridotto automaticamente le dosi dei sali che causavano saturazione.
-                La soluzione ora è stabile e non precipiterà nei serbatoi.
+                ${TT('Il sistema ha ridotto automaticamente le dosi dei sali che causavano saturazione. La soluzione ora è stabile e non precipiterà nei serbatoi.','The system automatically reduced the doses of the salts that were causing saturation. The solution is now stable and will not precipitate in the tanks.')}
                 <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
                   <button class="btn btn-se btn-sm" onclick="ripristinaDosiOriginali()" style="border-color:var(--ro);color:var(--ro)">
                     ${t('js.ripristinaOriginali')}
@@ -4085,16 +4060,16 @@ function calcola(){
             <span style="font-size:1.2rem;flex-shrink:0">🧪</span>
             <div style="flex:1">
               <div style="font-weight:700;color:#1c7ed6;font-size:.84rem;margin-bottom:5px">
-                Basta correggere il pH — nessuna modifica alle dosi
+                ${TT('Basta correggere il pH — nessuna modifica alle dosi','Just adjust the pH — no dose changes')}
               </div>
               <div style="font-size:.77rem;color:#0b3d66;line-height:1.65;margin-bottom:10px">
-                <strong>${peggioFin.nome}</strong> è sovrasaturo (SI +${peggioFin.si.toFixed(2)}) a pH ${phFinale}, ma è <strong>metastabile</strong>: portando la soluzione finale a <strong>pH ${sicurezza.phSuggerito}</strong> torna sotto saturazione mantenendo intatto l'apporto nutritivo della ricetta.
+                ${TT(`<strong>${peggioFin.nome}</strong> è sovrasaturo (SI +${peggioFin.si.toFixed(2)}) a pH ${phFinale}, ma è <strong>metastabile</strong>: portando la soluzione finale a <strong>pH ${sicurezza.phSuggerito}</strong> torna sotto saturazione mantenendo intatto l'apporto nutritivo della ricetta.`,`<strong>${peggioFin.nome}</strong> is supersaturated (SI +${peggioFin.si.toFixed(2)}) at pH ${phFinale}, but it is <strong>metastable</strong>: bringing the final solution to <strong>pH ${sicurezza.phSuggerito}</strong> returns it below saturation while keeping the recipe's nutrient supply intact.`)}
                 <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
                   <button class="btn btn-pr btn-sm" onclick="applicaPhFinale(${sicurezza.phSuggerito})" style="width:auto;background:#1c7ed6">
-                    ✅ Imposta pH ${sicurezza.phSuggerito} e ricalcola
+                    ${TT(`✅ Imposta pH ${sicurezza.phSuggerito} e ricalcola`,`✅ Set pH ${sicurezza.phSuggerito} and recalculate`)}
                   </button>
                   <button class="btn btn-se btn-sm" onclick="calcolaBilanciato()" style="border-color:#1c7ed6;color:#1c7ed6">
-                    ⚖️ Oppure riduci le dosi
+                    ${TT('⚖️ Oppure riduci le dosi','⚖️ Or reduce the doses')}
                   </button>
                 </div>
               </div>
@@ -4113,19 +4088,19 @@ function calcola(){
             <span style="font-size:1.2rem;flex-shrink:0">🔔</span>
             <div style="flex:1">
               <div style="font-weight:700;color:#e65100;font-size:.84rem;margin-bottom:5px">
-                ${peggio.si > 0 ? 'Rischio precipitazione attivo' : 'Margine di sicurezza ridotto'}
+                ${peggio.si > 0 ? TT('Rischio precipitazione attivo','Active precipitation risk') : TT('Margine di sicurezza ridotto','Reduced safety margin')}
               </div>
               <div style="font-size:.77rem;color:#4a2800;line-height:1.65;margin-bottom:10px">
-                <strong>${peggio.nome}</strong> ha SI = ${peggio.si >= 0 ? '+' : ''}${peggio.si.toFixed(2)}
-                ${peggio.si > 0 ? ' — condizioni sovrasature, il precipitato si formerà nella soluzione finale.' : ' — prossimo alla saturazione, piccole variazioni possono causare precipitazione.'}
+                <strong>${peggio.nome}</strong> ${TT('ha SI','has SI')} = ${peggio.si >= 0 ? '+' : ''}${peggio.si.toFixed(2)}
+                ${peggio.si > 0 ? TT(' — condizioni sovrasature, il precipitato si formerà nella soluzione finale.',' — supersaturated conditions, the precipitate will form in the final solution.') : TT(' — prossimo alla saturazione, piccole variazioni possono causare precipitazione.',' — close to saturation, small changes can cause precipitation.')}
                 <br><br>
-                <strong>⚠️ Nota:</strong> la diluizione 1:${dil} non influisce sulla saturazione della soluzione finale (SI dipende dalle dosi dei sali, non dalla concentrazione del concentrato). Per ridurre il rischio:
+                <strong>${TT('⚠️ Nota:','⚠️ Note:')}</strong> ${TT(`la diluizione 1:${dil} non influisce sulla saturazione della soluzione finale (SI dipende dalle dosi dei sali, non dalla concentrazione del concentrato). Per ridurre il rischio:`,`dilution 1:${dil} does not affect the saturation of the final solution (SI depends on the salt doses, not on the concentrate concentration). To reduce the risk:`)}
                 <ul style="margin:6px 0 0 16px;line-height:1.8">
                   ${unici.slice(0,5).map(c=>`<li>${c.consiglio}</li>`).join('')}
                 </ul>
                 <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
                   <button class="btn btn-se btn-sm" onclick="calcolaBilanciato()" style="border-color:#e65100;color:#e65100">
-                    ⚖️ Bilancia Sali — Correggi automaticamente il SI
+                    ${TT('⚖️ Bilancia Sali — Correggi automaticamente il SI','⚖️ Balance Salts — Automatically correct the SI')}
                   </button>
                 </div>
               </div>
@@ -4137,7 +4112,7 @@ function calcola(){
 
     html+=`
         <div style="background:var(--cs);border-left:3px solid var(--vc);border-radius:4px;padding:8px 12px;font-size:.72rem;color:var(--ts);margin-top:8px">
-          <strong>Stock concentrati:</strong> Ca in un serbatoio, solfati/fosfati in altro: non si incontrano. La sicurezza negli stock è garantita dalla separazione A/B.
+          <strong>${TT('Stock concentrati:','Concentrate stocks:')}</strong> ${TT('Ca in un serbatoio, solfati/fosfati in altro: non si incontrano. La sicurezza negli stock è garantita dalla separazione A/B.','Ca in one tank, sulfates/phosphates in another: they never meet. Stock safety is guaranteed by A/B separation.')}
         </div>
       </div>
     </div>`;
@@ -4155,9 +4130,9 @@ function calcola(){
     const imbpct=bal.an>0?Math.abs(imb)/bal.an*100:0;
     const ibCls=imbpct<5?'ok':imbpct<12?'warn':'danger';
     const ibColor=ibCls==='ok'?'var(--vc)':ibCls==='warn'?'var(--ar)':'var(--ro)';
-    const ibMsg=ibCls==='ok'?'Ricetta elettro-coerente.':ibCls==='warn'?'Lieve squilibrio: rivedi i rapporti.':'Squilibrio marcato: il profilo richiesto non è del tutto coerente.';
+    const ibMsg=ibCls==='ok'?TT('Ricetta elettro-coerente.','Electrically consistent recipe.'):ibCls==='warn'?TT('Lieve squilibrio: rivedi i rapporti.','Slight imbalance: review the ratios.'):TT('Squilibrio marcato: il profilo richiesto non è del tutto coerente.','Marked imbalance: the requested profile is not fully consistent.');
     html+=`<div class="card" style="margin-top:12px">
-      <div class="ch" style="background:var(--vm)">⚖️ Bilancio Ionico</div>
+      <div class="ch" style="background:var(--vm)">${TT('⚖️ Bilancio Ionico','⚖️ Ionic Balance')}</div>
       <div class="cb">
         <div class="charge-bar">
           <span style="font-size:.72rem;font-weight:600;color:var(--ts);min-width:50px">Cat</span>
@@ -4170,7 +4145,7 @@ function calcola(){
           <span class="bar-label" style="color:var(--sb)">${bal.an.toFixed(2)}</span>
         </div>
         <div style="text-align:center;margin-top:6px">
-          <span style="font-size:.78rem;font-weight:700;color:${ibColor}">Scarto: ${(imb>=0?'+':'')}${imb.toFixed(2)} meq/L (${imbpct.toFixed(1)}%)</span>
+          <span style="font-size:.78rem;font-weight:700;color:${ibColor}">${TT('Scarto','Deviation')}: ${(imb>=0?'+':'')}${imb.toFixed(2)} meq/L (${imbpct.toFixed(1)}%)</span>
           <div style="font-size:.7rem;color:var(--ts);margin-top:2px">${ibMsg}</div>
         </div>
       </div>
@@ -4190,33 +4165,33 @@ function calcola(){
     const kCaColor  = kCa>1.5  ? 'var(--ar)' : 'var(--vc)';
     const kMgColor  = (kMg>4 || kMg<1) ? 'var(--ar)' : 'var(--vc)';
     const caMgColor = (caMg<1.5 || caMg>4.5) ? 'var(--ar)' : 'var(--vc)';
-    const kCaNote  = kCa>1.5  ? 'K eccessivo — rischio carenza Ca' : kCa<0.3 ? 'K basso' : 'in range';
-    const kMgNote  = kMg>4 ? 'K eccessivo — blocca Mg' : kMg<1 ? 'Mg dominante' : 'in range';
-    const caMgNote = caMg<1.5 ? 'Mg dominante — rischio carenza Ca' : caMg>4.5 ? 'Ca eccessivo' : 'in range';
+    const kCaNote  = kCa>1.5  ? TT('K eccessivo — rischio carenza Ca','Excess K — Ca deficiency risk') : kCa<0.3 ? TT('K basso','Low K') : TT('in range','in range');
+    const kMgNote  = kMg>4 ? TT('K eccessivo — blocca Mg','Excess K — blocks Mg') : kMg<1 ? TT('Mg dominante','Mg dominant') : TT('in range','in range');
+    const caMgNote = caMg<1.5 ? TT('Mg dominante — rischio carenza Ca','Mg dominant — Ca deficiency risk') : caMg>4.5 ? TT('Ca eccessivo','Excess Ca') : TT('in range','in range');
     // Fe:Mn (rapporto micro da HydroBuddy — indica disponibilità relativa)
     const feMn = profilo.Mn > 0.01 ? profilo.Fe / profilo.Mn : null;
     const feMnColor = feMn!==null ? (feMn>=2&&feMn<=6 ? 'var(--vc)' : 'var(--ar)') : 'var(--ts)';
-    const feMnNote  = feMn!==null ? (feMn<2 ? 'Fe basso vs Mn' : feMn>6 ? 'Mn scarso — verifica' : 'in range (2–6)') : 'Mn non misurato';
+    const feMnNote  = feMn!==null ? (feMn<2 ? TT('Fe basso vs Mn','Low Fe vs Mn') : feMn>6 ? TT('Mn scarso — verifica','Low Mn — check') : TT('in range (2–6)','in range (2–6)')) : TT('Mn non misurato','Mn not measured');
     const ratioWarn = [];
-    if(kCa>1.5)  ratioWarn.push(`K/Ca meq ${kCa.toFixed(2)} > 1.5: K elevato può bloccare l'assorbimento di Ca²⁺.`);
-    if(kMg>4)    ratioWarn.push(`K/Mg meq ${kMg.toFixed(2)} > 4: K elevato può bloccare l'assorbimento di Mg²⁺.`);
-    if(caMg<1.5) ratioWarn.push(`Ca/Mg meq ${caMg.toFixed(2)} < 1.5: Mg dominante può inibire Ca²⁺ (ottimale 2–3.5).`);
-    if(caMg>4.5) ratioWarn.push(`Ca/Mg meq ${caMg.toFixed(2)} > 4.5: Ca dominante può inibire Mg²⁺.`);
-    if(feMn!==null&&(feMn<2||feMn>6)) ratioWarn.push(`Fe/Mn ${feMn.toFixed(1)} fuori range 2–6: rapporto micro sbilanciato.`);
+    if(kCa>1.5)  ratioWarn.push(TT(`K/Ca meq ${kCa.toFixed(2)} > 1.5: K elevato può bloccare l'assorbimento di Ca²⁺.`,`K/Ca meq ${kCa.toFixed(2)} > 1.5: high K can block Ca²⁺ uptake.`));
+    if(kMg>4)    ratioWarn.push(TT(`K/Mg meq ${kMg.toFixed(2)} > 4: K elevato può bloccare l'assorbimento di Mg²⁺.`,`K/Mg meq ${kMg.toFixed(2)} > 4: high K can block Mg²⁺ uptake.`));
+    if(caMg<1.5) ratioWarn.push(TT(`Ca/Mg meq ${caMg.toFixed(2)} < 1.5: Mg dominante può inibire Ca²⁺ (ottimale 2–3.5).`,`Ca/Mg meq ${caMg.toFixed(2)} < 1.5: dominant Mg can inhibit Ca²⁺ (optimal 2–3.5).`));
+    if(caMg>4.5) ratioWarn.push(TT(`Ca/Mg meq ${caMg.toFixed(2)} > 4.5: Ca dominante può inibire Mg²⁺.`,`Ca/Mg meq ${caMg.toFixed(2)} > 4.5: dominant Ca can inhibit Mg²⁺.`));
+    if(feMn!==null&&(feMn<2||feMn>6)) ratioWarn.push(TT(`Fe/Mn ${feMn.toFixed(1)} fuori range 2–6: rapporto micro sbilanciato.`,`Fe/Mn ${feMn.toFixed(1)} out of range 2–6: unbalanced micro ratio.`));
     html+=`<div class="card" style="margin-top:12px">
       <div class="ch" style="background:var(--vm)">${t('js.ratioAgro')}</div>
       <div class="cb">
         <div class="ratio-grid">
-          <div class="ratio-box"><div class="rl">NH₄ / N totale</div><div class="rv" style="color:${nh4frac>0.10?'var(--ar)':'var(--vc)'}">${Math.round(nh4frac*100)}%</div><div class="rn">${nh4frac>0.10?'alta — vedi note':'in range'}</div></div>
-          <div class="ratio-box"><div class="rl">N : K (mg/L)</div><div class="rv">${nk.toFixed(2)}</div><div class="rn">${nk<0.5?'K-dominante (fioritura)':nk<0.8?'bilanciato':nk<1.0?'N-K equilibrato':'N-dominante (vegetativo)'}</div></div>
+          <div class="ratio-box"><div class="rl">${TT('NH₄ / N totale','NH₄ / total N')}</div><div class="rv" style="color:${nh4frac>0.10?'var(--ar)':'var(--vc)'}">${Math.round(nh4frac*100)}%</div><div class="rn">${nh4frac>0.10?TT('alta — vedi note','high — see notes'):TT('in range','in range')}</div></div>
+          <div class="ratio-box"><div class="rl">N : K (mg/L)</div><div class="rv">${nk.toFixed(2)}</div><div class="rn">${nk<0.5?TT('K-dominante (fioritura)','K-dominant (flowering)'):nk<0.8?TT('bilanciato','balanced'):nk<1.0?TT('N-K equilibrato','N-K balanced'):TT('N-dominante (vegetativo)','N-dominant (vegetative)')}</div></div>
           <div class="ratio-box"><div class="rl">K / Ca (meq/L)</div><div class="rv" style="color:${kCaColor}">${caMeq>0?kCa.toFixed(2):'—'}</div><div class="rn">${caMeq>0?kCaNote:'—'}</div></div>
           <div class="ratio-box"><div class="rl">K / Mg (meq/L)</div><div class="rv" style="color:${kMgColor}">${mgMeq>0?kMg.toFixed(2):'—'}</div><div class="rn">${mgMeq>0?kMgNote:'—'}</div></div>
-          <div class="ratio-box"><div class="rl">Ca / Mg (meq/L)</div><div class="rv" style="color:${caMgColor}">${mgMeq>0?caMg.toFixed(2):'—'}</div><div class="rn">${mgMeq>0?caMgNote:'—'} <span style="font-size:.55rem;opacity:.7">(ottimale 2–3.5)</span></div></div>
+          <div class="ratio-box"><div class="rl">Ca / Mg (meq/L)</div><div class="rv" style="color:${caMgColor}">${mgMeq>0?caMg.toFixed(2):'—'}</div><div class="rn">${mgMeq>0?caMgNote:'—'} <span style="font-size:.55rem;opacity:.7">${TT('(ottimale 2–3.5)','(optimal 2–3.5)')}</span></div></div>
           <div class="ratio-box"><div class="rl">Fe : Mn (mg/L)</div><div class="rv" style="color:${feMnColor}">${feMn!==null?feMn.toFixed(1):'—'}</div><div class="rn">${feMnNote}</div></div>
-          <div class="ratio-box"><div class="rl">Costo / 1000L</div><div class="rv" style="color:var(--ar)">${fmtEuro(costoPerMille)}</div><div class="rn">soluzione finale</div></div>
+          <div class="ratio-box"><div class="rl">${TT('Costo / 1000L','Cost / 1000L')}</div><div class="rv" style="color:var(--ar)">${fmtEuro(costoPerMille)}</div><div class="rn">${TT('soluzione finale','final solution')}</div></div>
         </div>
-        ${nh4frac>0.10?`<div class="alert al-inf" style="margin-top:10px"><span>⚠️</span><span>Frazione ammoniacale alta (${Math.round(nh4frac*100)}% di N, limite coco 10%): rischio di acidificazione e tossicità radicale, soprattutto a basse temperature.</span></div>`:''}
-        ${ratioWarn.length?`<div class="alert al-inf" style="margin-top:10px"><span>⚠️</span><span><strong>Rapporti cationici (meq/L):</strong><br>${ratioWarn.join('<br>')}</span></div>`:''}
+        ${nh4frac>0.10?`<div class="alert al-inf" style="margin-top:10px"><span>⚠️</span><span>${TT(`Frazione ammoniacale alta (${Math.round(nh4frac*100)}% di N, limite coco 10%): rischio di acidificazione e tossicità radicale, soprattutto a basse temperature.`,`High ammonium fraction (${Math.round(nh4frac*100)}% of N, coco limit 10%): risk of acidification and root toxicity, especially at low temperatures.`)}</span></div>`:''}
+        ${ratioWarn.length?`<div class="alert al-inf" style="margin-top:10px"><span>⚠️</span><span><strong>${TT('Rapporti cationici (meq/L):','Cationic ratios (meq/L):')}</strong><br>${ratioWarn.join('<br>')}</span></div>`:''}
       </div>
     </div>`;
 
@@ -4227,13 +4202,13 @@ function calcola(){
         html+=`<div class="card" style="margin-top:12px">
           <div class="ch" style="background:var(--ar)">${t('js.correzionePH')}</div>
           <div class="cb">
-            <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>Neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻ con acido nitrico 38%.</span></div>
+            <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>${TT(`Neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻ con acido nitrico 38%.`,`Neutralized ${acido.meq.toFixed(2)} meq/L of HCO₃⁻ with nitric acid 38%.`)}</span></div>
             <div class="ri-grid" style="grid-template-columns:repeat(3,1fr)">
-              <div class="ri-box"><div class="ri-lbl">HNO₃ 38%</div><div class="ri-val">${acido.volHNO3.toFixed(1)}</div><div class="ri-sub">mL per ${volFinale1000L.toFixed(0)} L</div></div>
-              <div class="ri-box"><div class="ri-lbl">H₃PO₄ 75%</div><div class="ri-val">${acido.volH3PO4.toFixed(1)}</div><div class="ri-sub">mL per ${volFinale1000L.toFixed(0)} L</div></div>
-              <div class="ri-box"><div class="ri-lbl">HCO₃⁻ residuo</div><div class="ri-val">${RESID_HCO3_MEQ.toFixed(1)}</div><div class="ri-sub">meq/L tampone</div></div>
+              <div class="ri-box"><div class="ri-lbl">HNO₃ 38%</div><div class="ri-val">${acido.volHNO3.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L</div></div>
+              <div class="ri-box"><div class="ri-lbl">H₃PO₄ 75%</div><div class="ri-val">${acido.volH3PO4.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L</div></div>
+              <div class="ri-box"><div class="ri-lbl">${TT('HCO₃⁻ residuo','HCO₃⁻ residual')}</div><div class="ri-val">${RESID_HCO3_MEQ.toFixed(1)}</div><div class="ri-sub">${TT('meq/L tampone','meq/L buffer')}</div></div>
             </div>
-            <div style="font-size:.72rem;color:var(--ts);margin-top:8px">Aggiungere l'acido nell'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati.</div>
+            <div style="font-size:.72rem;color:var(--ts);margin-top:8px">${TT('Aggiungere l\'acido nell\'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati.','Add the acid to the dilution water <strong>before</strong> the salts, never to the concentrates.')}</div>
           </div>
         </div>`;
       }
@@ -4241,9 +4216,9 @@ function calcola(){
 
     // Note operative
     const operNotes=[];
-    if(profilo.NO3>(profilo.N+20)) operNotes.push('Azoto nitrico sopra target: è l\'anione di bilanciamento, normale.');
-    if(si.CaSO4>-0.5&&si.CaSO4<=0) operNotes.push('CaSO₄ prossimo a saturazione: monitorare EC e temperature.');
-    if(si.CaHPO4>-0.5&&si.CaHPO4<=0) operNotes.push('CaHPO₄ prossimo a saturazione: mantenere pH < 6.2.');
+    if(profilo.NO3>(profilo.N+20)) operNotes.push(TT('Azoto nitrico sopra target: è l\'anione di bilanciamento, normale.','Nitric nitrogen above target: it is the balancing anion, normal.'));
+    if(si.CaSO4>-0.5&&si.CaSO4<=0) operNotes.push(TT('CaSO₄ prossimo a saturazione: monitorare EC e temperature.','CaSO₄ close to saturation: monitor EC and temperatures.'));
+    if(si.CaHPO4>-0.5&&si.CaHPO4<=0) operNotes.push(TT('CaHPO₄ prossimo a saturazione: mantenere pH < 6.2.','CaHPO₄ close to saturation: keep pH < 6.2.'));
     if(operNotes.length){
       html+=`<div class="card" style="margin-top:12px">
         <div class="ch" style="background:var(--ar)">${t('js.noteOper')}</div>
@@ -4254,7 +4229,7 @@ function calcola(){
 
   } catch(e) {
     console.error('Errore verifica chimica:', e);
-    html+=`<div class="alert al-inf" style="margin-top:12px"><span>ℹ️</span><span>Verifica chimica precisa non disponibile per questa configurazione.</span></div>`;
+    html+=`<div class="alert al-inf" style="margin-top:12px"><span>ℹ️</span><span>${TT('Verifica chimica precisa non disponibile per questa configurazione.','Precise chemical verification not available for this configuration.')}</span></div>`;
   }
 
   // ── CONTRIBUTO PER SOSTANZA ──
@@ -4290,19 +4265,19 @@ function calcola(){
   }
 
   // ── PROCEDURA ──
-  const hco3Note = aq&&aq.hco3>50?`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄) all'acqua di miscelazione fino a pH 5.8–6.0 <em>prima</em> di aggiungere qualsiasi sale.</li>`:'';
-  const serbCNote = usaSerbC?`<li>Prepara <strong>Serb. C</strong> (${volC||100} L) seguendo lo stesso protocollo: prima i sali da soli, poi porta al volume finale.</li>`:'';
+  const hco3Note = aq&&aq.hco3>50?TT(`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄) all'acqua di miscelazione fino a pH 5.8–6.0 <em>prima</em> di aggiungere qualsiasi sale.</li>`,`<li><strong>HCO₃⁻ neutralization:</strong> add acid (HNO₃ or H₃PO₄) to the mixing water until pH 5.8–6.0 <em>before</em> adding any salt.</li>`):'';
+  const serbCNote = usaSerbC?TT(`<li>Prepara <strong>Serb. C</strong> (${volC||100} L) seguendo lo stesso protocollo: prima i sali da soli, poi porta al volume finale.</li>`,`<li>Prepare <strong>Tank C</strong> (${volC||100} L) following the same protocol: salts alone first, then bring to final volume.</li>`):'';
   html+=`<div class="card" style="margin-top:12px">
     <div class="ch">${t('js.procedura')}</div>
     <div class="cb"><ol class="steps">
       ${hco3Note}
-      <li>Riempi <strong>Serb. A</strong> a ${Math.round(volA*0.8)} L. Aggiungi sali A <strong>uno alla volta</strong>: chelati → nitrati → fosfati. Attendi dissoluzione completa.</li>
-      <li>Porta Serb. A a <strong>${volA} L</strong>. Misura pH (target 5.5–6.0).</li>
-      <li>Riempi <strong>Serb. B</strong> a ${Math.round(volB*0.8)} L. Aggiungi Nitrato di Calcio lentamente in acqua tiepida.</li>
-      <li>Porta Serb. B a <strong>${volB} L</strong>.</li>
+      <li>${TT(`Riempi <strong>Serb. A</strong> a ${Math.round(volA*0.8)} L. Aggiungi sali A <strong>uno alla volta</strong>: chelati → nitrati → fosfati. Attendi dissoluzione completa.`,`Fill <strong>Tank A</strong> to ${Math.round(volA*0.8)} L. Add the A salts <strong>one at a time</strong>: chelates → nitrates → phosphates. Wait for complete dissolution.`)}</li>
+      <li>${TT(`Porta Serb. A a <strong>${volA} L</strong>. Misura pH (target 5.5–6.0).`,`Bring Tank A to <strong>${volA} L</strong>. Measure pH (target 5.5–6.0).`)}</li>
+      <li>${TT(`Riempi <strong>Serb. B</strong> a ${Math.round(volB*0.8)} L. Aggiungi Nitrato di Calcio lentamente in acqua tiepida.`,`Fill <strong>Tank B</strong> to ${Math.round(volB*0.8)} L. Add Calcium Nitrate slowly into lukewarm water.`)}</li>
+      <li>${TT(`Porta Serb. B a <strong>${volB} L</strong>.`,`Bring Tank B to <strong>${volB} L</strong>.`)}</li>
       ${serbCNote}
-      <li><strong>Non mischiare mai i concentrati direttamente.</strong> FertiControl dosarà separatamente ogni serbatoio nella linea.</li>
-      <li>Misura EC e pH finali al punto di consegna. Drain EC target = input + 0.5–1.0 mS/cm.</li>
+      <li>${TT('<strong>Non mischiare mai i concentrati direttamente.</strong> FertiControl dosarà separatamente ogni serbatoio nella linea.','<strong>Never mix the concentrates directly.</strong> FertiControl will dose each tank separately in the line.')}</li>
+      <li>${TT('Misura EC e pH finali al punto di consegna. Drain EC target = input + 0.5–1.0 mS/cm.','Measure final EC and pH at the delivery point. Drain EC target = input + 0.5–1.0 mS/cm.')}</li>
     </ol></div>
   </div>`;
 
@@ -4319,7 +4294,7 @@ function calcola(){
     html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 14px;border-bottom:1px solid var(--cs);font-size:.75rem">
       <span style="flex-shrink:0">${ico}</span>
       <div style="flex:1">
-        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><strong>${a.check}</strong><span style="color:${col};font-weight:700;font-size:.7rem">${a.esito}</span></div>
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><strong>${a.check}</strong><span style="color:${col};font-weight:700;font-size:.7rem">${currentLang==='en'?({OK:'OK',CONFLITTO:'CONFLICT',AVVISO:'WARNING',GESTITO:'HANDLED',INFO:'INFO'}[a.esito]||a.esito):a.esito}</span></div>
         <div style="color:var(--ts);margin-top:2px">${a.dettaglio}</div>
       </div>
     </div>`;
@@ -4341,9 +4316,9 @@ function calcola(){
     document.getElementById('calc-out').innerHTML=`
       <div class="alert al-err" style="margin-top:12px">
         <span>⚠️</span>
-        <div><strong>Errore interno nel calcolo.</strong><br>
+        <div><strong>${TT('Errore interno nel calcolo.','Internal calculation error.')}</strong><br>
         <code style="font-size:.72rem;background:#fff;padding:3px 6px;border-radius:3px;display:inline-block;margin-top:5px">${err.message}</code><br>
-        <span style="font-size:.75rem;color:#666;margin-top:4px;display:block">Controlla la console per dettagli. Riprova con valori diversi o ricarica la pagina.</span>
+        <span style="font-size:.75rem;color:#666;margin-top:4px;display:block">${TT('Controlla la console per dettagli. Riprova con valori diversi o ricarica la pagina.','Check the console for details. Try again with different values or reload the page.')}</span>
         </div>
       </div>`;
     document.getElementById('calc-out').scrollIntoView({behavior:'smooth', block:'start'});
@@ -4354,7 +4329,7 @@ function calcola(){
 function stampaMiscela(){
   const contenuto = document.getElementById('risultato-stampa');
   if(!contenuto){ window.print(); return; }
-  const dataOra = new Date().toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'});
+  const dataOra = new Date().toLocaleString(currentLang==='en'?'en-GB':'it-IT',{dateStyle:'short',timeStyle:'short'});
 
   const badgeEl = contenuto.querySelector('.al-ok, .al-err');
   const badge   = badgeEl ? badgeEl.innerText.trim().substring(0,160) : '';
@@ -4377,7 +4352,7 @@ function stampaMiscela(){
 
   // Riepilogo
   let riepilogoHtml = '';
-  const rCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Riepilogo'));
+  const rCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('📊'));
   if(rCard){
     rCard.querySelectorAll('.eco-row').forEach(r => {
       riepilogoHtml += `<tr><td>${r.children[0]?.innerText||''}</td><td class="r">${r.children[1]?.innerText||''}</td></tr>`;
@@ -4386,7 +4361,7 @@ function stampaMiscela(){
 
   // Apporti ionici principali
   let ioniHtml = '';
-  const ioniCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Soluzione Finale'));
+  const ioniCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('💧'));
   if(ioniCard){
     ioniCard.querySelectorAll('.ri-box').forEach(box => {
       const lbl = box.querySelector('.ri-lbl')?.innerText || '';
@@ -4398,7 +4373,7 @@ function stampaMiscela(){
 
   // Procedura
   let procHtml = '';
-  const procCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('Procedura'));
+  const procCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('📋'));
   if(procCard){
     procCard.querySelectorAll('li').forEach(li => {
       procHtml += `<li>${li.innerText}</li>`;
@@ -4407,114 +4382,71 @@ function stampaMiscela(){
 
   const gridCols = nSerb >= 3 ? '1fr 1fr 1fr' : '1fr 1fr';
 
-  const htmlStampa = `<!DOCTYPE html><html lang="it"><head><meta charset="utf-8">
+  const htmlStampa = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="utf-8">
 <title>FertiControl ${dataOra}</title>
 <style>
-@page{size:A4 portrait;margin:0}
+@page{size:A4 portrait;margin:10mm}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:7pt;color:#222;line-height:1.3;background:#fff;padding:10mm 12mm 14mm 12mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-
-/* ── HEADER ── */
-.header{background:linear-gradient(135deg,#1a3a2a,#2d6a3d);color:#fff;padding:8px 12px 6px 12px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:flex-end;margin:0 0 0 0}
-.header h1{font-size:12pt;font-weight:700;letter-spacing:.03em}
-.header .sub{font-size:6pt;opacity:.75;margin-top:1px}
-.header .meta{font-size:6pt;text-align:right;line-height:1.5;opacity:.85}
-.header-line{height:3px;background:linear-gradient(90deg,#d4660a,#f5a65b);margin:0 0 4px 0;border-radius:0 0 3px 3px}
-
-/* ── BADGES ── */
-.badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:7pt;font-weight:700;margin:3px 0;border:1.5px solid}
-.badge.ok{background:#d4edda;border-color:#28a745;color:#155724}
-.badge.err{background:#f8d7da;border-color:#dc3545;color:#721c24}
-
-/* ── WARNING ── */
-.warn{background:#fff8e1;border-left:3px solid #f0a030;border-radius:0 4px 4px 0;padding:4px 8px;font-size:6pt;color:#7a5c00;margin:2px 0 4px 0;line-height:1.35}
-
-/* ── SEZIONI ── */
-.sec{margin-bottom:3mm}
-.sec-title{font-size:8pt;color:#fff;background:linear-gradient(135deg,#2d6a3d,#4a8c5e);padding:3px 8px;border-radius:4px 4px 0 0;font-weight:700;letter-spacing:.03em;margin-bottom:0}
-.sec-body{border:1px solid #c8e6c9;border-top:none;border-radius:0 0 4px 4px;padding:3px 0;margin-bottom:3mm}
-
-/* ── SERBATOI ── */
-.serb-grid{display:grid;grid-template-columns:${gridCols};gap:3mm}
-.serb{border:1.5px solid #2d6a2d;border-radius:4px;overflow:hidden;page-break-inside:avoid}
-.st{background:linear-gradient(135deg,#1a3a2a,#2d6a3d);color:#fff;padding:3px 6px;font-weight:700;font-size:7pt;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center}
-.st .vol{font-size:5.5pt;opacity:.7;font-weight:400}
-
-/* ── BOTTOM GRID ── */
-.bottom-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:3mm;align-items:start}
-
-/* ── BOX ── */
-.box{border:1px solid #c8e6c9;border-radius:4px;overflow:hidden;margin-bottom:2mm;page-break-inside:avoid}
-.box-title{background:linear-gradient(135deg,#2d6a3d,#4a8c5e);color:#fff;padding:3px 6px;font-weight:700;font-size:6.5pt}
-
-/* ── TABELLE ── */
+body{font-family:Arial,Helvetica,sans-serif;font-size:7pt;color:#111;line-height:1.35}
+.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:3px;margin-bottom:4px}
+.header h1{font-size:10pt;color:#2d6a2d;font-weight:700}
+.header .meta{font-size:6pt;color:#555;text-align:right;line-height:1.5}
+.badge{display:inline-block;padding:2.5px 8px;border-radius:3px;font-size:6.5pt;font-weight:700;margin-bottom:3px;border:1px solid}
+.badge.ok{background:#e8f5e8;border-color:#2d6a2d;color:#155724}
+.badge.err{background:#fde8e8;border-color:#c0392b;color:#721c24}
+.warn{background:#fff8e1;border:1px solid #f0c040;border-radius:3px;padding:2px 6px;font-size:6pt;color:#7a5c00;margin-bottom:5px}
+.serb-grid{display:grid;grid-template-columns:${gridCols};gap:3.5mm;margin-bottom:5mm}
+.serb{border:1.5px solid #2d6a2d;border-radius:3px;overflow:hidden}
+.st{background:#2d6a2d;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
+.bottom-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:5mm;align-items:start}
+.box{border:1px solid #ccc;border-radius:3px;overflow:hidden;margin-bottom:3mm}
+.box-title{background:#4a7c59;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
 table{width:100%;border-collapse:collapse}
-th{background:#e8f5e9;border:1px solid #c8e6c9;padding:2px 5px;font-size:6pt;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#2e7d32;text-align:left}
-td{padding:2.5px 5px;border:1px solid #e0e0e0;font-size:6.5pt}
-tr:nth-child(even){background:#f1f8e9}
-tr:last-child td{border-bottom:2px solid #2d6a2d;font-weight:700;background:#c8e6c9}
-.r{text-align:right;font-family:'Consolas','Courier New',monospace;font-weight:600;color:#333}
-small{font-size:5pt;color:#666;font-weight:normal}
-
-/* ── LISTE ── */
-ol{padding-left:14px;margin:0}
-li{font-size:6.5pt;margin-bottom:1.5px;line-height:1.3}
-li::marker{color:#2d6a3d;font-weight:700}
-
-/* ── FIRMA ── */
-.firma{border-top:2px solid #2d6a2d;margin-top:4mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
-.firma-line{border-top:1px solid #555;padding-top:2px;margin-top:6mm;font-size:6pt;color:#444}
-
-/* ── FOOTER ── */
-.footer{position:fixed;bottom:0;left:12mm;right:12mm;border-top:1px solid #ccc;padding:3px 0;font-size:5.5pt;color:#888;text-align:center;display:flex;justify-content:space-between}
-
-@media print{
-  .footer{position:fixed;bottom:4mm;left:12mm;right:12mm}
-}
+td{padding:1.5px 5px;border-bottom:1px solid #eee;font-size:6.5pt}
+tr:last-child td{border-bottom:none;font-weight:700;background:#f0f5f0}
+.r{text-align:right;font-family:monospace}
+small{font-size:5.5pt;color:#666;font-weight:normal}
+h2{font-size:7pt;color:#2d6a2d;font-weight:700;margin-bottom:2px;margin-top:0;border-bottom:1px solid #c8e6c8;padding-bottom:1px}
+ol{padding-left:13px;margin:0}
+li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
+.firma{border-top:1px dashed #aaa;margin-top:5mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
+.firma-line{border-top:1px solid #333;padding-top:2px;margin-top:7mm;font-size:6pt;color:#444}
 </style></head><body>
 
 <div class="header">
   <div>
-    <h1>🌿 FertiControl — Scheda Miscela Nutritiva</h1>
-    <div class="sub">Coltura Coco Coir — Soluzioni Madri A/B${nSerb>=3?'/C':''} · Fertirrigazione idroponica</div>
+    <h1>${TT('FertiControl — Scheda Miscela Nutritiva','FertiControl — Nutrient Mix Sheet')}</h1>
+    <div style="font-size:6pt;color:#555;margin-top:1px">${TT('Generata:','Generated:')} ${dataOra}</div>
   </div>
-  <div class="meta">Generata: ${dataOra}</div>
+  <div class="meta">${TT('Coltura Coco Coir — Soluzioni Madri A/B','Coco Coir crop — Mother Solutions A/B')}${nSerb>=3?'/C':''}<br>${TT('Fertirrigazione idroponica','Hydroponic fertigation')}</div>
 </div>
-<div class="header-line"></div>
 
 <div class="badge ${badgeOk?'ok':'err'}">${badge}</div>
-<div class="warn">⚠️ Verificare sempre EC e pH al punto di consegna prima dell'irrigazione. Non miscelare mai i concentrati direttamente tra loro.</div>
+<div class="warn">${TT('⚠️ Verificare sempre EC e pH al punto di consegna prima dell\'irrigazione. Non miscelare mai i concentrati direttamente tra loro.','⚠️ Always check EC and pH at the delivery point before irrigation. Never mix the concentrates directly together.')}</div>
 
-<div class="sec">
-  <div class="sec-title">🧂 Soluzioni Madri — Dosi per Concentrato</div>
-  <div class="sec-body" style="padding:3px 4px"><div class="serb-grid">${serbHtml}</div></div>
-</div>
+<h2 style="margin-bottom:3px">${TT('Soluzioni Madri — Dosi per Concentrato','Mother Solutions — Doses per Concentrate')}</h2>
+<div class="serb-grid">${serbHtml}</div>
 
 <div class="bottom-grid">
   <div>
-    <div class="sec">
-      <div class="sec-title">📊 Riepilogo Parametri</div>
-      <div class="sec-body" style="padding:0"><div class="box" style="border:none;margin:0;border-radius:0">
-        <table>${riepilogoHtml}</table>
-      </div></div>
+    <h2>${TT('Riepilogo Parametri','Parameter Summary')}</h2>
+    <div class="box">
+      <div class="box-title">${TT('Risultati calcolo','Calculation results')}</div>
+      <table>${riepilogoHtml}</table>
     </div>
-    ${ioniHtml?`<div class="sec"><div class="sec-title">💧 Apporti Ionici Finali</div><div class="sec-body" style="padding:0"><div class="box" style="border:none;margin:0;border-radius:0"><div class="box-title" style="font-size:5.5pt;padding:2px 6px">mg/L soluzione diluita</div><table>${ioniHtml}</table></div></div></div>`:''}
+    ${ioniHtml?`<h2>${TT('Apporti Ionici Finali','Final Ionic Inputs')}</h2><div class="box"><div class="box-title">${TT('mg/L soluzione diluita','mg/L diluted solution')}</div><table>${ioniHtml}</table></div>`:''}
   </div>
   <div>
-    <div class="sec">
-      <div class="sec-title">📋 Procedura di Preparazione</div>
-      <div class="sec-body" style="padding:3px 6px"><ol>${procHtml}</ol></div>
-    </div>
+    <h2>${TT('Procedura di Preparazione','Preparation Procedure')}</h2>
+    <ol>${procHtml}</ol>
   </div>
 </div>
 
 <div class="firma">
-  <div class="firma-line">Preparata da</div>
-  <div class="firma-line">Verificata da</div>
-  <div class="firma-line">Data preparazione</div>
+  <div class="firma-line">${TT('Preparata da','Prepared by')}</div>
+  <div class="firma-line">${TT('Verificata da','Verified by')}</div>
+  <div class="firma-line">${TT('Data preparazione','Preparation date')}</div>
 </div>
-
-<div class="footer"><span>FertiControl v2.0</span><span>${dataOra}</span></div>
 
 </body></html>`;
 
@@ -4571,8 +4503,10 @@ function lanciaStampaIframe(htmlStampa){ lanciaStampa(htmlStampa); }
 // Stampa l'inventario: ingredienti PRESENTI e NON PRESENTI in magazzino,
 // raggruppati per categoria.
 function stampaCatalogo(){
-  const dataOra = new Date().toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'});
-  const CAT_LBL = {macro:'🌱 Macronutrienti', micro:'🔬 Micronutrienti', ph:'⚗️ Correttori pH / Additivi'};
+  const dataOra = new Date().toLocaleString(currentLang==='en'?'en-GB':'it-IT',{dateStyle:'short',timeStyle:'short'});
+  const CAT_LBL = currentLang==='en'
+    ? {macro:'🌱 Macronutrients', micro:'🔬 Micronutrients', ph:'⚗️ pH Correctors / Additives'}
+    : {macro:'🌱 Macronutrienti', micro:'🔬 Micronutrienti', ph:'⚗️ Correttori pH / Additivi'};
   const ordineCat = ['macro','micro','ph'];
 
   const presenti = catalogo.filter(s=>isDisponibile(s.id));
@@ -4580,7 +4514,7 @@ function stampaCatalogo(){
 
   // Costruisce le righe di una sezione, raggruppando per categoria.
   const buildSezione = (lista)=>{
-    if(!lista.length) return '<div class="vuoto">Nessun ingrediente in questa sezione.</div>';
+    if(!lista.length) return `<div class="vuoto">${TT('Nessun ingrediente in questa sezione.','No ingredients in this section.')}</div>`;
     let html='';
     ordineCat.forEach(cat=>{
       const items = lista.filter(s=>s.cat===cat);
@@ -4590,10 +4524,10 @@ function stampaCatalogo(){
       items.forEach(s=>{
         const elStr = s.el?Object.entries(s.el).map(([k,v])=>`${k} ${v}%`).join(', '):'';
         const prezzo = s.prezzo?`€${s.prezzo}/kg`:'—';
-        righe += `<tr><td>${s.nome}</td><td>${elStr}</td><td class="r">${prezzo}</td></tr>`;
+        righe += `<tr><td>${salNome(s)}</td><td>${elStr}</td><td class="r">${prezzo}</td></tr>`;
       });
       html += `<div class="grp"><div class="gt">${CAT_LBL[cat]||cat.toUpperCase()}</div>`+
-              `<table><thead><tr><th>Ingrediente</th><th>Composizione</th><th class="r">Prezzo</th></tr></thead><tbody>${righe}</tbody></table></div>`;
+              `<table><thead><tr><th>${TT('Ingrediente','Ingredient')}</th><th>${TT('Composizione','Composition')}</th><th class="r">${TT('Prezzo','Price')}</th></tr></thead><tbody>${righe}</tbody></table></div>`;
     });
     // categorie non previste in ordineCat
     const altre = lista.filter(s=>!ordineCat.includes(s.cat));
@@ -4602,81 +4536,56 @@ function stampaCatalogo(){
       altre.forEach(s=>{
         const elStr = s.el?Object.entries(s.el).map(([k,v])=>`${k} ${v}%`).join(', '):'';
         const prezzo = s.prezzo?`€${s.prezzo}/kg`:'—';
-        righe += `<tr><td>${s.nome}</td><td>${elStr}</td><td class="r">${prezzo}</td></tr>`;
+        righe += `<tr><td>${salNome(s)}</td><td>${elStr}</td><td class="r">${prezzo}</td></tr>`;
       });
-      html += `<div class="grp"><div class="gt">Altro</div><table><tbody>${righe}</tbody></table></div>`;
+      html += `<div class="grp"><div class="gt">${TT('Altro','Other')}</div><table><tbody>${righe}</tbody></table></div>`;
     }
     return html;
   };
 
-  const htmlStampa = `<!DOCTYPE html><html lang="it"><head><meta charset="utf-8">
-<title>FertiControl — Catalogo ${dataOra}</title>
+  const htmlStampa = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="utf-8">
+<title>${TT('FertiControl — Catalogo','FertiControl — Catalog')} ${dataOra}</title>
 <style>
-@page{size:A4 portrait;margin:0}
+@page{size:A4 portrait;margin:12mm}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:6.5pt;color:#222;line-height:1.2;background:#fff;padding:10mm 12mm 14mm 12mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-
-/* ── HEADER ── */
-.header{background:linear-gradient(135deg,#1a3a2a,#2d6a3d);color:#fff;padding:8px 12px 6px 12px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:flex-end}
-.header h1{font-size:12pt;font-weight:700;letter-spacing:.03em}
-.header .sub{font-size:6pt;opacity:.75;margin-top:1px}
-.header .meta{font-size:6pt;text-align:right;line-height:1.5;opacity:.85}
-.header-line{height:3px;background:linear-gradient(90deg,#d4660a,#f5a65b);margin:0 0 4px 0;border-radius:0 0 3px 3px}
-
-/* ── SEZIONI ── */
-.sez{margin-bottom:4mm;page-break-inside:avoid}
-.sez-h{font-size:8pt;font-weight:700;padding:4px 10px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center}
-.sez-ok{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:1px solid #1b5e20}
-.sez-no{background:linear-gradient(135deg,#b71c1c,#c62828);color:#fff;border:1px solid #b71c1c}
-.sez-body{border:1px solid #e0e0e0;border-top:none;border-radius:0 0 4px 4px;padding:2px 0;margin-bottom:2mm}
-
-/* ── GRUPPI ── */
-.grp{margin-bottom:2mm;page-break-inside:avoid;padding:0 3mm}
-.gt{font-size:7pt;font-weight:700;color:#2d6a3d;border-bottom:1.5px solid #c8e6c9;padding-bottom:1px;margin-bottom:2px;letter-spacing:.03em;display:flex;align-items:center;gap:4px}
-.gt::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#2d6a3d,#4a8c5e)}
-
-/* ── TABELLE ── */
+body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#111;line-height:1.4}
+.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:4px;margin-bottom:8px}
+.header h1{font-size:12pt;color:#2d6a2d;font-weight:700}
+.header .meta{font-size:7pt;color:#555;text-align:right;line-height:1.5}
+.sez{margin-bottom:9mm;break-inside:avoid}
+.sez-h{font-size:10pt;font-weight:700;padding:3px 8px;border-radius:3px;margin-bottom:5px;display:flex;justify-content:space-between}
+.sez-ok{background:#e8f5e8;color:#155724;border:1px solid #2d6a2d}
+.sez-no{background:#fde8e8;color:#721c24;border:1px solid #c0392b}
+.grp{margin-bottom:4mm;break-inside:avoid}
+.gt{font-size:8pt;font-weight:700;color:#2d6a2d;border-bottom:1px solid #c8e6c8;padding-bottom:1px;margin-bottom:2px}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:5.5pt;color:#2e7d32;text-transform:uppercase;letter-spacing:.04em;border-bottom:1.5px solid #c8e6c9;padding:2px 5px;background:#e8f5e9;font-weight:700}
-td{padding:2px 5px;border-bottom:1px solid #e0e0e0;font-size:6.5pt}
-tr:nth-child(even){background:#f1f8e9}
-.r{text-align:right;font-family:'Consolas','Courier New',monospace;font-weight:600;color:#333}
-
-/* ── ALTRO ── */
-.vuoto{font-size:6.5pt;color:#6c757d;font-style:italic;padding:3px 6px;background:#f5f5f5;border-radius:3px}
-.tot{font-size:6.5pt;color:#fff;font-weight:600}
-.firma{border-top:2px solid #2d6a2d;margin-top:5mm;padding-top:2mm;font-size:6.5pt;color:#444;line-height:1.4}
-
-/* ── FOOTER ── */
-.footer{position:fixed;bottom:4mm;left:12mm;right:12mm;border-top:1px solid #ccc;padding:3px 0;font-size:5.5pt;color:#888;text-align:center;display:flex;justify-content:space-between}
-
-@media print{
-  .footer{position:fixed;bottom:4mm;left:12mm;right:12mm}
-}
+th{text-align:left;font-size:6.5pt;color:#666;text-transform:uppercase;border-bottom:1px solid #ccc;padding:2px 5px}
+td{padding:2px 5px;border-bottom:1px solid #eee;font-size:7.5pt}
+.r{text-align:right;font-family:monospace}
+.vuoto{font-size:7.5pt;color:#888;font-style:italic;padding:3px 5px}
+.tot{font-size:7pt;color:#555;font-weight:400}
+.firma{border-top:1px dashed #aaa;margin-top:6mm;padding-top:3mm;font-size:7pt;color:#444}
 </style></head><body>
 
 <div class="header">
   <div>
-    <h1>📦 FertiControl — Catalogo Ingredienti</h1>
-    <div class="sub">Inventario magazzino — generato: ${dataOra}</div>
+    <h1>${TT('FertiControl — Catalogo Ingredienti','FertiControl — Ingredient Catalog')}</h1>
+    <div style="font-size:7pt;color:#555;margin-top:1px">${TT('Inventario magazzino — generato:','Warehouse inventory — generated:')} ${dataOra}</div>
   </div>
-  <div class="meta">Totale: ${catalogo.length} ingredienti<br>Presenti: ${presenti.length} · Mancanti: ${mancanti.length}</div>
-</div>
-<div class="header-line"></div>
-
-<div class="sez">
-  <div class="sez-h sez-ok"><span>✅ Presenti in magazzino</span><span class="tot">${presenti.length} ingredienti</span></div>
-  <div class="sez-body">${buildSezione(presenti)}</div>
+  <div class="meta">${TT('Totale:','Total:')} ${catalogo.length} ${TT('ingredienti','ingredients')}<br>${TT('Presenti:','In stock:')} ${presenti.length} · ${TT('Mancanti:','Missing:')} ${mancanti.length}</div>
 </div>
 
 <div class="sez">
-  <div class="sez-h sez-no"><span>❌ Non presenti</span><span class="tot">${mancanti.length} ingredienti</span></div>
-  <div class="sez-body">${buildSezione(mancanti)}</div>
+  <div class="sez-h sez-ok"><span>${TT('✓ Presenti in magazzino','✓ In stock')}</span><span class="tot">${presenti.length} ${TT('ingredienti','ingredients')}</span></div>
+  ${buildSezione(presenti)}
 </div>
 
-<div class="firma">📝 Lista della spesa / inventario — spuntare gli ingredienti da riordinare. _____________________________</div>
+<div class="sez">
+  <div class="sez-h sez-no"><span>${TT('✗ Non presenti','✗ Not in stock')}</span><span class="tot">${mancanti.length} ${TT('ingredienti','ingredients')}</span></div>
+  ${buildSezione(mancanti)}
+</div>
 
-<div class="footer"><span>FertiControl v2.0</span><span>${dataOra}</span></div>
+<div class="firma">${TT('Lista della spesa / inventario — spuntare gli ingredienti da riordinare.','Shopping list / inventory — check the ingredients to reorder.')} _____________________________</div>
 
 </body></html>`;
 
@@ -4729,8 +4638,8 @@ function renderBilanciaReport(report, autoApplied){
 
   // Complessita' problematica iniziale
   const compInit = [
-    {key:'CaSO4',   label:'CaSO₄ (gesso)', si:siBefore.CaSO4},
-    {key:'CaHPO4',  label:'CaHPO₄ (fosfato)', si:siBefore.CaHPO4},
+    {key:'CaSO4',   label:TT('CaSO₄ (gesso)','CaSO₄ (gypsum)'), si:siBefore.CaSO4},
+    {key:'CaHPO4',  label:TT('CaHPO₄ (fosfato)','CaHPO₄ (phosphate)'), si:siBefore.CaHPO4},
     {key:'struvite', label:'Struvite', si:siBefore.struvite}
   ].filter(c => c.si > -0.5);
 
@@ -4741,21 +4650,21 @@ function renderBilanciaReport(report, autoApplied){
   // Titolo e colore
   const statusColor = converged ? 'var(--vc)' : 'var(--ar)';
   const statusIcon  = converged ? '✅' : '⚠️';
-  const statusText  = converged ? 'Bilanciamento riuscito' : 'Bilanciamento parziale';
+  const statusText  = converged ? TT('Bilanciamento riuscito','Balancing succeeded') : TT('Bilanciamento parziale','Partial balancing');
   const statusNote  = converged
-    ? 'La soluzione finale non è più sovrasatura (SI < 0) e i concentrati restano in zona sicura.'
-    : 'Le dosi minime non permettono ulteriori riduzioni: valuta di abbassare il pH o sostituire un sale.';
+    ? TT('La soluzione finale non è più sovrasatura (SI < 0) e i concentrati restano in zona sicura.','The final solution is no longer supersaturated (SI < 0) and the concentrates remain in the safe zone.')
+    : TT('Le dosi minime non permettono ulteriori riduzioni: valuta di abbassare il pH o sostituire un sale.','The minimum doses do not allow further reductions: consider lowering the pH or replacing a salt.');
 
   let html = `<div class="card" style="margin-top:12px">
     <div class="ch" style="background:linear-gradient(135deg,#1a5a8a,#0c7b8e)">
-      <span>⚖️ Bilanciamento Sali — Report Deviazioni</span>
+      <span>${TT('⚖️ Bilanciamento Sali — Report Deviazioni','⚖️ Salt Balancing — Deviation Report')}</span>
     </div>
     <div class="cb">
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
         <span style="font-size:1.1rem">${statusIcon}</span>
         <div>
           <div style="font-weight:700;color:${statusColor};font-size:.84rem">${statusText}</div>
-          <div style="font-size:.72rem;color:var(--ts)">${iterations} iterazioni · Deviazione max: <strong>${maxDev.toFixed(1)}%</strong></div>
+          <div style="font-size:.72rem;color:var(--ts)">${iterations} ${TT('iterazioni · Deviazione max:','iterations · Max deviation:')} <strong>${maxDev.toFixed(1)}%</strong></div>
         </div>
       </div>
       <div style="font-size:.76rem;color:var(--ts);line-height:1.6;margin-bottom:10px">${statusNote}</div>`;
@@ -4763,7 +4672,7 @@ function renderBilanciaReport(report, autoApplied){
   // ── Confronto SI prima/dopo ──
   if(compFinal.length > 0){
     html += `<div style="background:var(--cs);border-radius:6px;padding:10px 12px;margin-bottom:12px">
-      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--ts);letter-spacing:.05em;margin-bottom:6px">Confronto SI (prima → dopo)</div>`;
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--ts);letter-spacing:.05em;margin-bottom:6px">${TT('Confronto SI (prima → dopo)','SI comparison (before → after)')}</div>`;
     compFinal.forEach(c => {
       const improved = c.siNew < c.si;
       const arrow = c.siNew < c.si ? '↓' : c.siNew === c.si ? '→' : '↑';
@@ -4785,11 +4694,11 @@ function renderBilanciaReport(report, autoApplied){
   if(deviations.length > 0){
     html += `<div class="tbl-wrap" style="margin-bottom:12px"><table class="tbl" style="min-width:400px">
       <thead><tr>
-        <th>Sale</th>
-        <th style="text-align:right">Originale</th>
-        <th style="text-align:right">Bilanciato</th>
-        <th style="text-align:right">Variazione</th>
-        <th>Ione</th>
+        <th>${TT('Sale','Salt')}</th>
+        <th style="text-align:right">${TT('Originale','Original')}</th>
+        <th style="text-align:right">${TT('Bilanciato','Balanced')}</th>
+        <th style="text-align:right">${TT('Variazione','Change')}</th>
+        <th>${TT('Ione','Ion')}</th>
       </tr></thead><tbody>`;
     deviations.forEach(d => {
       const col = d.pctChange < 0 ? 'var(--ro)' : 'var(--vc)';
@@ -4803,13 +4712,13 @@ function renderBilanciaReport(report, autoApplied){
     });
     html += `</tbody></table></div>`;
   } else {
-    html += `<div class="alert al-ok" style="margin-bottom:12px"><span>ℹ️</span><span>Nessun sale necessita di modifica — tutti gli SI erano già nella zona sicura.</span></div>`;
+    html += `<div class="alert al-ok" style="margin-bottom:12px"><span>ℹ️</span><span>${TT('Nessun sale necessita di modifica — tutti gli SI erano già nella zona sicura.','No salt needs modification — all SI were already in the safe zone.')}</span></div>`;
   }
 
   // ── Pulsanti azione ──
   html += `<div style="display:flex;gap:8px;flex-wrap:wrap">
     ${!autoApplied ? `<button class="btn btn-pr btn-sm" style="width:auto;background:var(--vc)" onclick="applicaBilanciamento()">
-      ✅ Applica bilanciamento alla ricetta
+      ${TT('✅ Applica bilanciamento alla ricetta','✅ Apply balancing to the recipe')}
     </button>` : ''}
     <button class="btn btn-se btn-sm" onclick="${autoApplied ? 'ripristinaDosiOriginali()' : 'ripristinaEricalcola()'}">
       ${t('js.ripristinaOriginali')}
@@ -4907,12 +4816,12 @@ function renderCatalogo(){
         <input type="checkbox" class="flag-check" ${disp?'checked':''} onchange="toggleScortaUI('${s.id}',this.checked)" style="margin-top:2px">
         <div style="flex:1;min-width:0">
           <div class="cat-nome">
-            <span class="bcat" style="background:${c.bg}">${c.label}</span> ${s.nome}
+            <span class="bcat" style="background:${c.bg}">${c.label}</span> ${salNome(s)}
             ${s.prezzo?`<span class="prezzo-badge">€${s.prezzo}/kg</span>`:''}
-            <span class="${disp?'badge-ok':'badge-no'}" id="badge-${s.id}">${disp?'✓ Ho':'✗ Manca'}</span>
+            <span class="${disp?'badge-ok':'badge-no'}" id="badge-${s.id}">${disp?t('js.hoBadge'):t('js.mancaBadge')}</span>
           </div>
           ${elStr?`<div class="cat-meta">${elStr}</div>`:''}
-          ${s.note?`<div class="cat-note">${s.note}</div>`:''}
+          ${salNote(s)?`<div class="cat-note">${salNote(s)}</div>`:''}
         </div>
       </label>
       <div class="cat-actions" style="margin-left:6px">
@@ -4931,7 +4840,7 @@ function toggleScortaUI(id, checked){
   const row=document.getElementById('cat-row-'+id);
   const badge=document.getElementById('badge-'+id);
   if(row){ row.className='cat-row '+(checked?'row-dispon':'row-manca'); }
-  if(badge){ badge.className=checked?'badge-ok':'badge-no'; badge.textContent=checked?'✓ Ho':'✗ Manca'; }
+  if(badge){ badge.className=checked?'badge-ok':'badge-no'; badge.textContent=checked?t('js.hoBadge'):t('js.mancaBadge'); }
   // Se c'è una ricetta caricata nel calcolatore, aggiorna le evidenziazioni
   if(calcRighe.length) renderCalcTabella();
 }
