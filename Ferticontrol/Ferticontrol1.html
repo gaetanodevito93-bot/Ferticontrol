@@ -888,7 +888,6 @@ const TRANSLATIONS = {
     'ricette.fasi': '📅 Fase di Crescita',
     'ricette.composizione': '🔬 Composizione',
     'ricette.modifica': '✏️ Modifica',
-    'ricette.clona': '✏️ Clona e modifica',
     'ricette.calcola': '→ Calcola',
     'ricette.noteTitle': '📋 Note Agronomiche',
     'calcola.params': '⚙️ Parametri Impianto',
@@ -918,7 +917,6 @@ const TRANSLATIONS = {
     'catalogo.macro': '🌱 MACRONUTRIENTI',
     'catalogo.micro': '🔬 MICRONUTRIENTI',
     'catalogo.ph': '⚗️ CORRETTORI pH / ADDITIVI',
-    'catalogo.nessuno': 'Nessun ingrediente nel catalogo.',
     'dati.title': '💾 Gestione Dati',
     'dati.esporta': '⬇ Esporta',
     'dati.esportaDesc': 'Scarica un file JSON con <strong>catalogo ingredienti</strong>, <strong>scorta magazzino</strong> e <strong>ricette personalizzate</strong>. Usalo per backup o per condividere la configurazione.',
@@ -1068,7 +1066,6 @@ const TRANSLATIONS = {
     'ricette.fasi': '📅 Growth Stage',
     'ricette.composizione': '🔬 Composition',
     'ricette.modifica': '✏️ Edit',
-    'ricette.clona': '✏️ Clone & edit',
     'ricette.calcola': '→ Calculate',
     'ricette.noteTitle': '📋 Agronomic Notes',
     'calcola.params': '⚙️ System Parameters',
@@ -1098,7 +1095,6 @@ const TRANSLATIONS = {
     'catalogo.macro': '🌱 MACRONUTRIENTS',
     'catalogo.micro': '🔬 MICRONUTRIENTS',
     'catalogo.ph': '⚗️ pH CORRECTORS / ADDITIVES',
-    'catalogo.nessuno': 'No ingredients in catalog.',
     'dati.title': '💾 Data Management',
     'dati.esporta': '⬇ Export',
     'dati.esportaDesc': 'Download a JSON file with <strong>ingredient catalog</strong>, <strong>warehouse stock</strong> and <strong>custom recipes</strong>. Use it for backup or to share the configuration.',
@@ -1675,10 +1671,10 @@ const PIANTE_BUILTIN = [
        sali:[{id:"CaN",g:971},{id:"KNO3",g:600},{id:"KH2PO4",g:189},{id:"MgNO3",g:547},{id:"MixCh",g:28}]},
       {nome:"Stretch / Early Flora",icon:"🌸",ec:[2.0,2.8],ph:[5.8,6.2],
        note:"Ca=155 K=295 P=46 Mg=50 N≈235 mg/L. Ridurre N, aumentare P e K.",
-       sali:[{id:"CaN",g:912},{id:"KNO3",g:525},{id:"KH2PO4",g:202},{id:"MgNO3",g:526},{id:"K2SO4",g:130},{id:"MixCh",g:26}]},
+       sali:[{id:"CaN",g:912},{id:"KNO3",g:525},{id:"KH2PO4",g:202},{id:"MgNO3",g:526},{id:"K2SO4",g:75},{id:"MixCh",g:26}]},
       {nome:"Fioritura piena (sett. 4-7)",icon:"🌺",ec:[2.5,3.2],ph:[5.8,6.2],
        note:"Ca=165 K=310 P=52 Mg=48 N≈235 mg/L. P e K alti, N moderato rispetto a K.",
-       sali:[{id:"CaN",g:971},{id:"KNO3",g:480},{id:"KH2PO4",g:228},{id:"MgNO3",g:505},{id:"K2SO4",g:200},{id:"MixCh",g:22}]},
+       sali:[{id:"CaN",g:971},{id:"KNO3",g:480},{id:"KH2PO4",g:228},{id:"MgNO3",g:505},{id:"K2SO4",g:131},{id:"MixCh",g:22}]},
       {nome:"Ripening / Flush",icon:"🏁",ec:[0.5,1.0],ph:[5.8,6.2],
        note:"EC 0.5-1.0. Lavaggio coco. Ca residuo + Mg per prevenire yellowing foglie.",
        sali:[{id:"CaN",g:250},{id:"KNO3",g:168},{id:"KH2PO4",g:80},{id:"MgNO3",g:158},{id:"FeEDTA",g:8}]},
@@ -2046,7 +2042,9 @@ function renderRicettaOut(pianta, fase, tipo){
 
   // Modalità target per ricette custom
   if(fase.modo==='target'){
-    const t=fase.targets||{};
+    // NON chiamare questa variabile "t": ombreggerebbe la funzione i18n t()
+    // usata qui sotto (era un TypeError che rompeva la preview target).
+    const tg=fase.targets||{};
     let html=`<div class="alert al-inf" style="margin-bottom:10px">🎯 <strong>${t('js.targetMode')}</strong> ${t('js.targetDesc')}</div>`;
     html+=`<div class="ri-grid">
       <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
@@ -2054,7 +2052,7 @@ function renderRicettaOut(pianta, fase, tipo){
       <div class="ri-box"><div class="ri-lbl">${currentLang==='en'?'Mode':'Modalità'}</div><div class="ri-val" style="font-size:.7rem">Target</div><div class="ri-sub">mg/L</div></div>
     </div>`;
     html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th></tr></thead><tbody>`;
-    Object.entries(t).filter(([,v])=>v>0).forEach(([el,v])=>{
+    Object.entries(tg).filter(([,v])=>v>0).forEach(([el,v])=>{
       html+=`<tr><td>${el}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td></tr>`;
     });
     html+=`</tbody></table></div>`;
@@ -2323,7 +2321,7 @@ function renderFasiEditor(){
           </div>
         </div>
         <div><label style="font-size:.65rem;font-weight:700;color:var(--ts)">${TT('Note fase','Stage notes')}</label>
-          <input type="text" value="${f.note||''}" onchange="fasiBozza[${fi}].note=this.value" style="padding:5px 8px;margin-top:3px;background:#fff">
+          <input type="text" value="${esc(f.note)}" onchange="fasiBozza[${fi}].note=this.value" style="padding:5px 8px;margin-top:3px;background:#fff">
         </div>
         ${targetsHtml}${saliHtml}
       </div>`;
@@ -2389,7 +2387,7 @@ function renderCalcTabella(){
         <select onchange="cambioSaleCalc(${i},this.value)" style="width:100%;font-size:.75rem;padding:5px 6px;background:#fff">
           ${buildSelectCalc(r.id||'__custom')}
         </select>
-        ${!info?`<input type="text" placeholder="${TT('Nome…','Name…')}" value="${r.nomeCustom||''}" onchange="calcRighe[${i}].nomeCustom=this.value" style="margin-top:4px;font-size:.75rem;padding:5px;background:#fff">`:``}
+        ${!info?`<input type="text" placeholder="${TT('Nome…','Name…')}" value="${esc(r.nomeCustom)}" onchange="calcRighe[${i}].nomeCustom=this.value" style="margin-top:4px;font-size:.75rem;padding:5px;background:#fff">`:``}
         ${info&&info.el?`<div class="el-txt">${Object.entries(info.el).map(([k,v])=>`${k} ${v}%`).join(', ')}</div>`:''}
       </td>
       <td style="vertical-align:top;padding-top:20px">
@@ -2568,7 +2566,7 @@ function solverTarget(targets, volA, volB, dil, aq){
     // opposto del peso 1/target puro — verificato in scratchpad/verify.js che 1/target
     // scaricava ~-40% sul Ca e rovinava ricette altrimenti esatte. Floor 10 mg/L evita
     // pesi esplosivi sugli elementi a target ~0 (es. S in coco).
-    // ponytail: esponente 0.5 e floor 10 sono calibrazioni della fedeltà.
+    // Nota: esponente 0.5 e floor 10 sono calibrazioni della fedeltà.
     const FLOOR_REL = 10;
     const w = EL_MACRO.map(el => 1 / Math.sqrt(Math.max(t[el] || 0, FLOOR_REL)));
     // Matrice A [EL_MACRO × macroSalts]: A[i][j] = (percentuale/100) × peso_i
@@ -2600,7 +2598,7 @@ function solverTarget(targets, volA, volB, dil, aq){
     gMixCh = Math.max(...doseDaMicro);
     feInMixCh = gMixCh * ((el.Fe||0) / 100);
     if (gMixCh > 0) righe.push({ id:'MixCh', nome:salNome(mixCh), dose:Math.round(gMixCh*10)/10, prezzo:mixCh.prezzo||0, fixed:true,
-      _nota:'Dose dal micro più esigente' });
+      _nota:TT('Dose dal micro più esigente','Dose from the most demanding micro') });
   }
   const feResiduo = Math.max(0, reqFe - feInMixCh);
   if (feResiduo > 0.05) {
@@ -2610,12 +2608,12 @@ function solverTarget(targets, volA, volB, dil, aq){
     if (best) {
       const gFe = dose1000(feResiduo, best.el.Fe);
       if (gFe > 0.1) righe.push({ id:best.id, nome:salNome(best), dose:Math.round(gFe*10)/10, prezzo:best.prezzo||0, fixed:true,
-        _nota:`Fe residuo dopo MixCh (${feInMixCh.toFixed(2)} mg/L coperti)` });
+        _nota:TT(`Fe residuo dopo MixCh (${feInMixCh.toFixed(2)} mg/L coperti)`,`Residual Fe after MixCh (${feInMixCh.toFixed(2)} mg/L covered)`) });
     }
   }
   if (gMixCh === 0) {
-    if (t.Cu && t.Cu > 0) righe.push({ id:'__custom', nome:'⚠️ Cu richiesto — aggiungi CuSO4 o MixCh manualmente', dose:0, prezzo:0, fixed:false,
-      _nota:`Target Cu = ${t.Cu} mg/L non coperto da sali singoli` });
+    if (t.Cu && t.Cu > 0) righe.push({ id:'__custom', nome:TT('⚠️ Cu richiesto — aggiungi CuSO4 o MixCh manualmente','⚠️ Cu required — add CuSO4 or MixCh manually'), dose:0, prezzo:0, fixed:false,
+      _nota:TT(`Target Cu = ${t.Cu} mg/L non coperto da sali singoli`,`Cu target = ${t.Cu} mg/L not covered by single salts`) });
     [['Mn','MnSO4'],['Zn','ZnSO4'],['B','H3BO3'],['Mo','NaMoO4']].forEach(([tid, sid]) => {
       const req = t[tid]||0; if (!req) return;
       const sale = catalogo.find(s => s.id === sid && s.el?.[tid] > 0);
@@ -3905,7 +3903,7 @@ function calcola(){
       <div class="ch" style="background:var(--az)">${t('js.solFin')}</div>
       <div class="cb" style="padding-bottom:6px">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
-          <div class="ri-box"><div class="ri-lbl">${TT('N tot.','N tot.')}</div><div class="ri-val">${(ioni2.N_total).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${TT('N tot.','N tot.')}</div><div class="ri-val">${(ioni2.N_total+(aq.no3||0)*(14.007/62.00)).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">Ca</div><div class="ri-val">${(ioni2.Ca+aq.ca).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">Mg</div><div class="ri-val">${(ioni2.Mg+aq.mg).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">K</div><div class="ri-val">${(ioni2.K+aq.k).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
@@ -4301,7 +4299,9 @@ function calcola(){
 
     // Note operative
     const operNotes=[];
-    if(profilo.NO3>(profilo.N+20)) operNotes.push(TT('Azoto nitrico sopra target: è l\'anione di bilanciamento, normale.','Nitric nitrogen above target: it is the balancing anion, normal.'));
+    // Confronto col target della ricetta (profilo.NO3 è incluso in profilo.N,
+    // quindi confrontare NO3 con N totale non scatterebbe mai).
+    if(targetRicetta && profilo.NO3>((targetRicetta.N||0)+20)) operNotes.push(TT('Azoto nitrico sopra target: è l\'anione di bilanciamento, normale.','Nitric nitrogen above target: it is the balancing anion, normal.'));
     if(si.CaSO4>-0.5&&si.CaSO4<=0) operNotes.push(TT('CaSO₄ prossimo a saturazione: monitorare EC e temperature.','CaSO₄ close to saturation: monitor EC and temperatures.'));
     if(si.CaHPO4>-0.5&&si.CaHPO4<=0) operNotes.push(TT('CaHPO₄ prossimo a saturazione: mantenere pH < 6.2.','CaHPO₄ close to saturation: keep pH < 6.2.'));
     if(operNotes.length){
@@ -5034,7 +5034,7 @@ function esportaDati(){
   document.body.appendChild(a);
   a.click();
   setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-  showToast('File JSON esportato');
+  showToast(TT('File JSON esportato','JSON file exported'));
 }
 
 function importaDati(input){
@@ -5070,7 +5070,7 @@ function importaDati(input){
         const scartati = custom.length - nuoviCustom.length;
         catalogo = [...base, ...nuoviCustom];
         saveCatalogo();
-        msg.push(`Catalogo: ${catalogo.length} ingredienti${scartati>0?` (${scartati} scartati: schema non valido)`:''}`);
+        msg.push(TT(`Catalogo: ${catalogo.length} ingredienti`,`Catalog: ${catalogo.length} ingredients`)+(scartati>0?TT(` (${scartati} scartati: schema non valido)`,` (${scartati} discarded: invalid schema)`):''));
       }
 
       if(Array.isArray(data.ricetteCustom)){
@@ -5086,16 +5086,16 @@ function importaDati(input){
         ricetteCustom = [...ricetteCustom, ...nuove];
         saveRicette();
         const rParts = [];
-        if(nuove.length) rParts.push(`${nuove.length} aggiunte`);
-        if(giàPresenti) rParts.push(`${giàPresenti} già presenti`);
-        msg.push(`Ricette: ${rParts.join(', ') || 'nessuna novità'}`);
+        if(nuove.length) rParts.push(TT(`${nuove.length} aggiunte`,`${nuove.length} added`));
+        if(giàPresenti) rParts.push(TT(`${giàPresenti} già presenti`,`${giàPresenti} already present`));
+        msg.push(TT('Ricette: ','Recipes: ')+(rParts.join(', ') || TT('nessuna novità','nothing new')));
       }
 
       if(Array.isArray(data.scorta)){
         // Union: keep all currently checked + those from backup
         data.scorta.forEach(id => scorta.add(id));
         saveScorta();
-        msg.push(`Scorta: ${scorta.size} ingredienti`);
+        msg.push(TT(`Scorta: ${scorta.size} ingredienti`,`Stock: ${scorta.size} ingredients`));
       }
 
       renderCatalogo();
@@ -5103,7 +5103,7 @@ function importaDati(input){
       if(calcRighe.length) renderCalcTabella();
       showToast(msg.join(' | '));
     } catch(err){
-      showToast('Errore import: '+err.message, false);
+      showToast(TT('Errore import: ','Import error: ')+err.message, false);
       console.error(err);
     }
     // reset input so same file can be re-imported
