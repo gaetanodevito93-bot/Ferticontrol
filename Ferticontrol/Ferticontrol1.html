@@ -1550,8 +1550,8 @@ let bilanciaReportData = null;
 
 // ─ RICETTE PREDEFINITE ─
 // ═══════════════════════════════════════════════════════════════════
-// RICETTE BUILT-IN — fabbisogni da Romano Tesi "Colture Fuori Suolo"
-// (Edagricole, 2010) e Sonneveld & Straver (2002) per colture orticole
+// RICETTE BUILT-IN — profili nutritivi per colture orticole
+// in substrato inerte. Dosi in g/1000L soluzione finale.
 // in substrato inerte (coco, perlite, lana di roccia).
 // Dosi in g/1000L soluzione finale. MixCh = mix micro chelati standard.
 // Risultante ioni (mg/L) annotata in note per trasparenza scientifica.
@@ -1559,19 +1559,19 @@ let bilanciaReportData = null;
 const PIANTE_BUILTIN = [
 
   // ─── POMODORO ──────────────────────────────────────────────────
-  // Romano Tesi: Ca 140-185, Mg 30-52, K 135-325, P 30-45 mg/L
-  // Sonneveld std: Ca=140, Mg=30, K=254, P=39, N=178 (vegetativo)
+  // Range tipici: Ca 140-185, Mg 30-52, K 135-325, P 30-45 mg/L
+  // Profilo standard: Ca=140, Mg=30, K=254, P=39, N=178 (vegetativo)
   { id:"pomodoro", nome:"Pomodoro", emoji:"🍅",
-    note:"Fabbisogni da Romano Tesi (2010) e Sonneveld & Straver (2002). Ca e K elevati in fruttificazione. pH 5.8-6.2. Drain EC = EC input + 0.5.",
+    note:"Ca e K elevati in fruttificazione. pH 5.8-6.2. Drain EC = EC input + 0.5.",
     fasi:[
       {nome:"Trapianto / Radicamento",icon:"🌱",ec:[1.0,1.2],ph:[5.8,6.2],
        note:"Ca=90 K=130 P=30 Mg=28 N≈124 mg/L. EC 1.0-1.2. Radici giovani, nessun NH₄.",
        sali:[{id:"CaN",g:530},{id:"KNO3",g:240},{id:"KH2PO4",g:132},{id:"MgNO3",g:295},{id:"MixCh",g:15}]},
       {nome:"Vegetativo (1°-3° truss)",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.2],
-       note:"Ca=140 K=254 P=39 Mg=30 N≈204 mg/L. Riferimento Sonneveld (2002) standard pomodoro.",
+       note:"Ca=140 K=254 P=39 Mg=30 N≈204 mg/L. Profilo standard pomodoro.",
        sali:[{id:"CaN",g:824},{id:"KNO3",g:530},{id:"KH2PO4",g:171},{id:"MgNO3",g:316},{id:"MixCh",g:25}]},
       {nome:"Fruttificazione (4°+ truss)",icon:"🍅",ec:[2.5,3.2],ph:[5.8,6.2],
-       note:"Ca=180 K=325 P=42 Mg=45 N≈250 mg/L. K/Ca = 1.8 (Romano Tesi: 1.5-2.0). Ca alto contro BER.",
+       note:"Ca=180 K=325 P=42 Mg=45 N≈250 mg/L. K/Ca = 1.8 (range 1.5-2.0). Ca alto contro BER.",
        sali:[{id:"CaN",g:1059},{id:"KNO3",g:529},{id:"KH2PO4",g:184},{id:"MgNO3",g:474},{id:"K2SO4",g:150},{id:"MixCh",g:28}]},
       {nome:"Fine ciclo / Lavaggio",icon:"🏁",ec:[0.5,1.0],ph:[5.8,6.2],
        note:"Ca=65 K=90 P=20 Mg=18 N≈89 mg/L. Ridurre EC. Lavare substrato con EC 0.5.",
@@ -1579,25 +1579,25 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── LATTUGA ───────────────────────────────────────────────────
-  // Romano Tesi: Ca 80-140, Mg 20-40, K 120-200, P 30-42, N 120-175 mg/L
+  // Range tipici: Ca 80-140, Mg 20-40, K 120-200, P 30-42, N 120-175 mg/L
   { id:"lattuga", nome:"Lattuga", emoji:"🥬",
-    note:"Romano Tesi (2010): EC 1.0-2.0. N alto per foglie. Ca contro tip-burn. pH 5.5-6.2.",
+    note:"EC 1.0-2.0. N alto per foglie. Ca contro tip-burn. pH 5.5-6.2.",
     fasi:[
       {nome:"Germinazione / Plantula",icon:"🌱",ec:[0.8,1.0],ph:[5.5,6.2],
        note:"Ca=70 K=100 P=22 Mg=20 N≈98 mg/L. Soluzione leggera.",
        sali:[{id:"CaN",g:412},{id:"KNO3",g:187},{id:"KH2PO4",g:96},{id:"MgNO3",g:211},{id:"MixCh",g:12}]},
       {nome:"Crescita vegetativa",icon:"🥬",ec:[1.5,2.0],ph:[5.5,6.2],
-       note:"Ca=125 K=175 P=38 Mg=35 N≈172 mg/L. Romano Tesi target per DFT/NFT.",
+       note:"Ca=125 K=175 P=38 Mg=35 N≈172 mg/L. Target per DFT/NFT.",
        sali:[{id:"CaN",g:735},{id:"KNO3",g:329},{id:"KH2PO4",g:167},{id:"MgNO3",g:368},{id:"MixCh",g:20}]},
       {nome:"Pre-raccolta (7 gg)",icon:"🏁",ec:[0.8,1.2],ph:[5.5,6.2],
-       note:"Ca=80 K=110 P=25 Mg=22 N≈109 mg/L. Ridurre EC per turgore e sapore (Romano Tesi).",
+       note:"Ca=80 K=110 P=25 Mg=22 N≈109 mg/L. Ridurre EC per turgore e sapore.",
        sali:[{id:"CaN",g:471},{id:"KNO3",g:202},{id:"KH2PO4",g:110},{id:"MgNO3",g:232},{id:"MixCh",g:12}]},
     ]},
 
   // ─── BASILICO ──────────────────────────────────────────────────
-  // Romano Tesi: Ca 100-140, Mg 30-45, K 140-200, P 32-42, N 130-170 mg/L
+  // Range tipici: Ca 100-140, Mg 30-45, K 140-200, P 32-42, N 130-170 mg/L
   { id:"basilico", nome:"Basilico", emoji:"🌿",
-    note:"Romano Tesi (2010): Mg elevato per sintesi oli essenziali. N moderato. pH 5.8-6.2.",
+    note:"Mg elevato per sintesi oli essenziali. N moderato. pH 5.8-6.2.",
     fasi:[
       {nome:"Germinazione",icon:"🌱",ec:[0.6,1.0],ph:[5.8,6.2],
        note:"Ca=65 K=90 P=20 Mg=20 N≈91 mg/L. Radici molto delicate.",
@@ -1611,9 +1611,9 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── PEPERONE ──────────────────────────────────────────────────
-  // Romano Tesi: Ca 120-170, Mg 35-55, K 190-280, P 38-48, N 140-200 mg/L
+  // Range tipici: Ca 120-170, Mg 35-55, K 190-280, P 38-48, N 140-200 mg/L
   { id:"peperone", nome:"Peperone", emoji:"🫑",
-    note:"Romano Tesi (2010): K alto in fruttificazione. Sensibile a carenza Ca (BER). pH 5.8-6.2.",
+    note:"K alto in fruttificazione. Sensibile a carenza Ca (BER). pH 5.8-6.2.",
     fasi:[
       {nome:"Trapianto",icon:"🌱",ec:[1.0,1.5],ph:[5.8,6.2],
        note:"Ca=95 K=140 P=32 Mg=28 N≈134 mg/L. Sensibile a NH₄ in fase giovane.",
@@ -1627,9 +1627,9 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── CETRIOLO ──────────────────────────────────────────────────
-  // Romano Tesi: Ca 130-180, Mg 40-55, K 220-310, P 40-50, N 160-235 mg/L
+  // Range tipici: Ca 130-180, Mg 40-55, K 220-310, P 40-50, N 160-235 mg/L
   { id:"cetriolo", nome:"Cetriolo", emoji:"🥒",
-    note:"Romano Tesi (2010): alta richiesta K. Crescita rapida. pH 5.8-6.0. Drenaggio ≥30%.",
+    note:"Alta richiesta K. Crescita rapida. pH 5.8-6.0. Drenaggio ≥30%.",
     fasi:[
       {nome:"Giovane",icon:"🌱",ec:[1.5,2.0],ph:[5.8,6.0],
        note:"Ca=120 K=200 P=38 Mg=38 N≈181 mg/L.",
@@ -1643,9 +1643,9 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── FRAGOLA ───────────────────────────────────────────────────
-  // Romano Tesi: Ca 80-160, Mg 25-50, K 120-240, P 28-42, N 90-190 mg/L
+  // Range tipici: Ca 80-160, Mg 25-50, K 120-240, P 28-42, N 90-190 mg/L
   { id:"fragola", nome:"Fragola", emoji:"🍓",
-    note:"Romano Tesi (2010): Ca alto per struttura frutto. EC media-bassa. pH 5.8-6.2.",
+    note:"Ca alto per struttura frutto. EC media-bassa. pH 5.8-6.2.",
     fasi:[
       {nome:"Radicamento",icon:"🌱",ec:[0.8,1.2],ph:[5.8,6.2],
        note:"Ca=68 K=120 P=26 Mg=25 N≈107 mg/L. Radici sensibili alla salinità.",
@@ -1681,15 +1681,15 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── MELANZANA ─────────────────────────────────────────────────
-  // Romano Tesi (2010): Ca 130-180, Mg 40-55, K 200-290, P 38-48, N 155-220 mg/L
+  // Range tipici: Ca 130-180, Mg 40-55, K 200-290, P 38-48, N 155-220 mg/L
   { id:"melanzana", nome:"Melanzana", emoji:"🍆",
-    note:"Romano Tesi (2010): simile al peperone ma più esigente in Ca. pH 5.8-6.5.",
+    note:"Simile al peperone ma più esigente in Ca. pH 5.8-6.5.",
     fasi:[
       {nome:"Trapianto",icon:"🌱",ec:[1.0,1.5],ph:[5.8,6.5],
        note:"Ca=95 K=140 P=30 Mg=28 N≈134 mg/L. Acclimatazione lenta.",
        sali:[{id:"CaN",g:559},{id:"KNO3",g:264},{id:"KH2PO4",g:132},{id:"MgNO3",g:295},{id:"MixCh",g:15}]},
       {nome:"Vegetativo",icon:"🌿",ec:[2.0,2.5],ph:[5.8,6.5],
-       note:"Ca=155 K=246 P=42 Mg=45 N≈229 mg/L. Romano Tesi: Ca critico per prevenire amare.",
+       note:"Ca=155 K=246 P=42 Mg=45 N≈229 mg/L. Ca critico per prevenire il sapore amaro.",
        sali:[{id:"CaN",g:912},{id:"KNO3",g:499},{id:"KH2PO4",g:184},{id:"MgNO3",g:474},{id:"MixCh",g:25}]},
       {nome:"Fruttificazione",icon:"🍆",ec:[2.5,3.2],ph:[5.8,6.5],
        note:"Ca=175 K=300 P=45 Mg=52 N≈244 mg/L. K/Ca = 1.7. Aumentare K per colore.",
@@ -1697,9 +1697,9 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── ZUCCHINA ──────────────────────────────────────────────────
-  // Romano Tesi (2010): Ca 130-185, Mg 35-52, K 220-310, P 38-50, N 160-255 mg/L
+  // Range tipici: Ca 130-185, Mg 35-52, K 220-310, P 38-50, N 160-255 mg/L
   { id:"zucchina", nome:"Zucchina", emoji:"🥒",
-    note:"Romano Tesi (2010): crescita rapida, alta richiesta N e K. Ciclo breve. pH 5.8-6.2.",
+    note:"Crescita rapida, alta richiesta N e K. Ciclo breve. pH 5.8-6.2.",
     fasi:[
       {nome:"Giovane",icon:"🌱",ec:[1.5,2.0],ph:[5.8,6.2],
        note:"Ca=120 K=200 P=38 Mg=36 N≈178 mg/L.",
@@ -1713,9 +1713,9 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── SPINACIO ──────────────────────────────────────────────────
-  // Romano Tesi (2010): N altissimo! Ca 100-165, Mg 30-50, K 180-280, P 35-55, N 200-280 mg/L
+  // Range tipici (N molto alto): Ca 100-165, Mg 30-50, K 180-280, P 35-55, N 200-280 mg/L
   { id:"spinacio", nome:"Spinacio", emoji:"🌱",
-    note:"Romano Tesi (2010): N altissimo tra le colture orticole. pH 5.5-6.5. EC 1.5-3.0.",
+    note:"N altissimo tra le colture orticole. pH 5.5-6.5. EC 1.5-3.0.",
     fasi:[
       {nome:"Germoglio / Plantula",icon:"🌱",ec:[0.8,1.5],ph:[5.5,6.5],
        note:"Ca=80 K=130 P=32 Mg=25 N≈117 mg/L. Soluzione leggera.",
@@ -1729,9 +1729,9 @@ const PIANTE_BUILTIN = [
     ]},
 
   // ─── RUCOLA ────────────────────────────────────────────────────
-  // Romano Tesi (2010): Ca 80-140, Mg 22-42, K 130-210, P 28-40, N 130-205 mg/L
+  // Range tipici: Ca 80-140, Mg 22-42, K 130-210, P 28-40, N 130-205 mg/L
   { id:"rucola", nome:"Rucola", emoji:"🥗",
-    note:"Romano Tesi (2010): ciclo brevissimo (25-35 gg). EC moderata. pH 5.8-6.2.",
+    note:"Ciclo brevissimo (25-35 gg). EC moderata. pH 5.8-6.2.",
     fasi:[
       {nome:"Crescita",icon:"🌿",ec:[1.2,2.0],ph:[5.8,6.2],
        note:"Ca=110 K=164 P=35 Mg=30 N≈153 mg/L. Ciclo unico, crescita rapida.",
@@ -1774,33 +1774,33 @@ const SALI_I18N = {
 };
 
 const RICETTE_I18N = {
-  pomodoro: {nome:"Tomato", note:"Requirements from Romano Tesi (2010) and Sonneveld & Straver (2002). High Ca and K in fruiting. pH 5.8-6.2. Drain EC = input EC + 0.5.", fasi:[
+  pomodoro: {nome:"Tomato", note:"High Ca and K in fruiting. pH 5.8-6.2. Drain EC = input EC + 0.5.", fasi:[
     {nome:"Transplant / Rooting", note:"Ca=90 K=130 P=30 Mg=28 N≈124 mg/L. EC 1.0-1.2. Young roots, no NH₄."},
-    {nome:"Vegetative (1st-3rd truss)", note:"Ca=140 K=254 P=39 Mg=30 N≈204 mg/L. Sonneveld (2002) standard tomato reference."},
-    {nome:"Fruiting (4th+ truss)", note:"Ca=180 K=325 P=42 Mg=45 N≈250 mg/L. K/Ca = 1.8 (Romano Tesi: 1.5-2.0). High Ca against BER."},
+    {nome:"Vegetative (1st-3rd truss)", note:"Ca=140 K=254 P=39 Mg=30 N≈204 mg/L. Standard tomato profile."},
+    {nome:"Fruiting (4th+ truss)", note:"Ca=180 K=325 P=42 Mg=45 N≈250 mg/L. K/Ca = 1.8 (range 1.5-2.0). High Ca against BER."},
     {nome:"End of cycle / Flush", note:"Ca=65 K=90 P=20 Mg=18 N≈89 mg/L. Reduce EC. Flush substrate at EC 0.5."},
   ]},
-  lattuga: {nome:"Lettuce", note:"Romano Tesi (2010): EC 1.0-2.0. High N for leaves. Ca against tip-burn. pH 5.5-6.2.", fasi:[
+  lattuga: {nome:"Lettuce", note:"EC 1.0-2.0. High N for leaves. Ca against tip-burn. pH 5.5-6.2.", fasi:[
     {nome:"Germination / Seedling", note:"Ca=70 K=100 P=22 Mg=20 N≈98 mg/L. Light solution."},
-    {nome:"Vegetative growth", note:"Ca=125 K=175 P=38 Mg=35 N≈172 mg/L. Romano Tesi target for DFT/NFT."},
-    {nome:"Pre-harvest (7 days)", note:"Ca=80 K=110 P=25 Mg=22 N≈109 mg/L. Reduce EC for turgor and flavor (Romano Tesi)."},
+    {nome:"Vegetative growth", note:"Ca=125 K=175 P=38 Mg=35 N≈172 mg/L. Target for DFT/NFT."},
+    {nome:"Pre-harvest (7 days)", note:"Ca=80 K=110 P=25 Mg=22 N≈109 mg/L. Reduce EC for turgor and flavor."},
   ]},
-  basilico: {nome:"Basil", note:"Romano Tesi (2010): high Mg for essential oil synthesis. Moderate N. pH 5.8-6.2.", fasi:[
+  basilico: {nome:"Basil", note:"High Mg for essential oil synthesis. Moderate N. pH 5.8-6.2.", fasi:[
     {nome:"Germination", note:"Ca=65 K=90 P=20 Mg=20 N≈91 mg/L. Very delicate roots."},
     {nome:"Vegetative growth", note:"Ca=115 K=165 P=38 Mg=38 N≈166 mg/L. High Mg for chlorophyll and oils."},
     {nome:"Pre-bolting / Harvest", note:"Ca=95 K=180 P=32 Mg=35 N≈156 mg/L. High K concentrates aromas. Reduce N."},
   ]},
-  peperone: {nome:"Pepper", note:"Romano Tesi (2010): high K in fruiting. Sensitive to Ca deficiency (BER). pH 5.8-6.2.", fasi:[
+  peperone: {nome:"Pepper", note:"High K in fruiting. Sensitive to Ca deficiency (BER). pH 5.8-6.2.", fasi:[
     {nome:"Transplant", note:"Ca=95 K=140 P=32 Mg=28 N≈134 mg/L. Sensitive to NH₄ at the young stage."},
     {nome:"Vegetative", note:"Ca=145 K=230 P=40 Mg=42 N≈213 mg/L. Balanced N and Ca."},
     {nome:"Flowering and Fruiting", note:"Ca=165 K=300 P=42 Mg=48 N≈235 mg/L. High K for fruit set. Ca against BER."},
   ]},
-  cetriolo: {nome:"Cucumber", note:"Romano Tesi (2010): high K demand. Fast growth. pH 5.8-6.0. Drainage ≥30%.", fasi:[
+  cetriolo: {nome:"Cucumber", note:"High K demand. Fast growth. pH 5.8-6.0. Drainage ≥30%.", fasi:[
     {nome:"Young", note:"Ca=120 K=200 P=38 Mg=38 N≈181 mg/L."},
     {nome:"Vegetative / Flowering", note:"Ca=155 K=265 P=43 Mg=48 N≈239 mg/L. High K. Ca against bitter tip."},
     {nome:"Full production", note:"Ca=170 K=300 P=46 Mg=52 N≈232 mg/L. Refresh every 7-10 days."},
   ]},
-  fragola: {nome:"Strawberry", note:"Romano Tesi (2010): high Ca for fruit structure. Medium-low EC. pH 5.8-6.2.", fasi:[
+  fragola: {nome:"Strawberry", note:"High Ca for fruit structure. Medium-low EC. pH 5.8-6.2.", fasi:[
     {nome:"Rooting", note:"Ca=68 K=120 P=26 Mg=25 N≈107 mg/L. Roots sensitive to salinity."},
     {nome:"Vegetative", note:"Ca=130 K=189 P=36 Mg=38 N≈185 mg/L. Balanced N and Ca."},
     {nome:"Flowering and Fruit", note:"Ca=150 K=234 P=38 Mg=44 N≈220 mg/L. High K for sugars. Ca against cracking."},
@@ -1812,22 +1812,22 @@ const RICETTE_I18N = {
     {nome:"Full flowering (weeks 4-7)", note:"Ca=165 K=310 P=52 Mg=48 N≈235 mg/L. High P and K, N moderate relative to K."},
     {nome:"Ripening / Flush", note:"EC 0.5-1.0. Coco flush. Residual Ca + Mg to prevent leaf yellowing."},
   ]},
-  melanzana: {nome:"Eggplant", note:"Romano Tesi (2010): similar to pepper but more demanding in Ca. pH 5.8-6.5.", fasi:[
+  melanzana: {nome:"Eggplant", note:"Similar to pepper but more demanding in Ca. pH 5.8-6.5.", fasi:[
     {nome:"Transplant", note:"Ca=95 K=140 P=30 Mg=28 N≈134 mg/L. Slow acclimatization."},
-    {nome:"Vegetative", note:"Ca=155 K=246 P=42 Mg=45 N≈229 mg/L. Romano Tesi: Ca critical to prevent bitterness."},
+    {nome:"Vegetative", note:"Ca=155 K=246 P=42 Mg=45 N≈229 mg/L. Ca critical to prevent bitterness."},
     {nome:"Fruiting", note:"Ca=175 K=300 P=45 Mg=52 N≈244 mg/L. K/Ca = 1.7. Increase K for color."},
   ]},
-  zucchina: {nome:"Zucchini", note:"Romano Tesi (2010): fast growth, high N and K demand. Short cycle. pH 5.8-6.2.", fasi:[
+  zucchina: {nome:"Zucchini", note:"Fast growth, high N and K demand. Short cycle. pH 5.8-6.2.", fasi:[
     {nome:"Young", note:"Ca=120 K=200 P=38 Mg=36 N≈178 mg/L."},
     {nome:"Production", note:"Ca=165 K=291 P=45 Mg=50 N≈255 mg/L. High N for fast growth."},
     {nome:"End of season", note:"Ca=68 K=118 P=20 Mg=20 N≈103 mg/L. Reduce EC to close the cycle."},
   ]},
-  spinacio: {nome:"Spinach", note:"Romano Tesi (2010): highest N among vegetable crops. pH 5.5-6.5. EC 1.5-3.0.", fasi:[
+  spinacio: {nome:"Spinach", note:"Highest N among vegetable crops. pH 5.5-6.5. EC 1.5-3.0.", fasi:[
     {nome:"Sprout / Seedling", note:"Ca=80 K=130 P=32 Mg=25 N≈117 mg/L. Light solution."},
     {nome:"Growth", note:"Ca=130 K=220 P=45 Mg=40 N≈194 mg/L. Very high N for leaf accumulation."},
     {nome:"Pre-harvest", note:"Ca=68 K=102 P=20 Mg=14 N≈95 mg/L. Reduce EC. Fe micronutrient maintained."},
   ]},
-  rucola: {nome:"Arugula", note:"Romano Tesi (2010): very short cycle (25-35 days). Moderate EC. pH 5.8-6.2.", fasi:[
+  rucola: {nome:"Arugula", note:"Very short cycle (25-35 days). Moderate EC. pH 5.8-6.2.", fasi:[
     {nome:"Growth", note:"Ca=110 K=164 P=35 Mg=30 N≈153 mg/L. Single cycle, fast growth."},
     {nome:"Pre-harvest (5 days)", note:"Ca=70 K=100 P=22 Mg=19 N≈97 mg/L. Reduce EC to intensify aromas."},
   ]},
@@ -2054,7 +2054,7 @@ function renderRicettaOut(pianta, fase, tipo){
     html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th><th style="text-align:right">mmol/L · µmol/L</th></tr></thead><tbody>`;
     Object.entries(tg).filter(([,v])=>v>0).forEach(([el,v])=>{
       const isMicroEl=MICRO_TARGET_ELS.includes(el);
-      html+=`<tr><td>${el}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} ${isMicroEl?'µmol':'mmol'}</td></tr>`;
+      html+=`<tr><td><strong>${el}</strong> <span style="color:var(--ts);font-size:.85em">${elName(el)}</span></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} ${isMicroEl?'µmol':'mmol'}</td></tr>`;
     });
     html+=`</tbody></table></div>`;
     document.getElementById('ricetta-out').innerHTML=html;
@@ -2270,10 +2270,20 @@ function aggiungiFase(){
   renderFasiEditor();
 }
 
+// ── NOMI ESTESI DEGLI ELEMENTI (accanto al simbolo, per chiarezza) ──
+const EL_NAME = {
+  N:['Azoto','Nitrogen'], P:['Fosforo','Phosphorus'], K:['Potassio','Potassium'],
+  Ca:['Calcio','Calcium'], Mg:['Magnesio','Magnesium'], S:['Zolfo','Sulfur'],
+  Fe:['Ferro','Iron'], Mn:['Manganese','Manganese'], Zn:['Zinco','Zinc'],
+  B:['Boro','Boron'], Cu:['Rame','Copper'], Mo:['Molibdeno','Molybdenum'],
+  Na:['Sodio','Sodium'], Cl:['Cloro','Chlorine']
+};
+function elName(el){ const n=EL_NAME[el]; return n ? (currentLang==='en'?n[1]:n[0]) : el; }
+
 // ── UNITÀ TARGET: mg/L ↔ mmol/L (macro) · µmol/L (micro) ─────────
 // Solo layer di INPUT/VISUALIZZAZIONE: i targets restano sempre in mg/L
 // nel dato salvato, quindi il motore di calcolo non è toccato.
-// Convenzione Hoagland: macro in mmol/L, micro in µmol/L (MM già nel file).
+// Macro in mmol/L, micro (Fe, Mn, Zn, B, Cu, Mo) in µmol/L (MM già nel file).
 const MICRO_TARGET_ELS = ['Fe','Mn','Zn','B','Cu','Mo'];
 function targetMgToMol(el, mgL){
   const mm = MM[el] || 1;
@@ -2316,7 +2326,7 @@ function renderFasiEditor(){
           const oc=isMol?`setTargetMol(${fi},'${el}',this.value)`:`setTargetMg(${fi},'${el}',this.value)`;
           return `
           <div class="tg-box">
-            <div class="tg-lbl">${el} <span class="tg-unit">${unitLbl}</span></div>
+            <div class="tg-lbl"><span>${el}<span class="tg-name">${elName(el)}</span></span> <span class="tg-unit">${unitLbl}</span></div>
             <input type="number" min="0" step="any" value="${val}" onchange="${oc}">
           </div>`;}).join('')}
       </div>`:'';
@@ -2485,7 +2495,7 @@ function syncDomCalc(){
 // ════════════════════════════════════════════════
 // ALGEBRA LINEARE — Gaussian elimination + NNLS
 // Usato da solverMatrix per trovare dosi ottimali
-// con qualsiasi combinazione di sali (approccio HydroBuddy).
+// con qualsiasi combinazione di sali.
 // ════════════════════════════════════════════════
 function gaussSolve(A, b) {
   const n = A.length;
@@ -2958,7 +2968,7 @@ function coppiaIncompatibile(saleA, saleB){
   return {incompat:false};
 }
 
-// Fonte: Ksp da letteratura + regole empiriche Sonneveld/Hoagland
+// Fonte: Ksp da letteratura + regole empiriche di compatibilità
 // ════════════════════════════════════════════════
 const INCOMPAT_MATRIX = [
   // [id1, id2, gravita, precipitato, spiegazione]
@@ -3600,7 +3610,7 @@ function verificaSicurezza(righe, dil, aq, phFinale){
   const microTox = [];
   if(ioni.Mn>2)    microTox.push(TT(`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (tossicità documentata oltre 2–5 mg/L)`,`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (toxicity documented above 2–5 mg/L)`));
   if(ioni.Zn>0.5) microTox.push(TT(`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (fitotossico in molte colture oltre 0.5 mg/L)`,`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (phytotoxic in many crops above 0.5 mg/L)`));
-  if(ioni.B>0.5)  microTox.push(TT(`B ${ioni.B.toFixed(2)} mg/L > 0.5 (tossicità a 0.5 mg/L per colture sensibili — Epstein & Bloom 2005)`,`B ${ioni.B.toFixed(2)} mg/L > 0.5 (toxicity at 0.5 mg/L for sensitive crops — Epstein & Bloom 2005)`));
+  if(ioni.B>0.5)  microTox.push(TT(`B ${ioni.B.toFixed(2)} mg/L > 0.5 (tossicità a 0.5 mg/L per colture sensibili)`,`B ${ioni.B.toFixed(2)} mg/L > 0.5 (toxicity at 0.5 mg/L for sensitive crops)`));
   if(ioni.Cu>0.15) microTox.push(TT(`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (tossicità in idroponica documentata a 0.1–0.3 mg/L)`,`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (hydroponic toxicity documented at 0.1–0.3 mg/L)`));
   audit.push({check:TT('Tossicità micronutrienti','Micronutrient toxicity'), esito: microTox.length===0?'OK':'AVVISO', dettaglio: microTox.length===0?TT('Tutti i micro sotto soglia','All micros below threshold'):microTox.join(', ')});
   // Se il MixCh è in ricetta, l'eccesso deriva quasi sempre dal suo dimensionamento
@@ -3974,7 +3984,7 @@ function calcola(){
           <div class="tbl-wrap"><table class="tbl" style="min-width:340px">
             <thead><tr><th>${TT('Elemento','Element')}</th><th style="text-align:right">${TT('Target','Target')}</th><th style="text-align:right">${TT('Ottenuto','Obtained')}</th><th style="text-align:right">Δ%</th></tr></thead>
             <tbody>${rows.map(r=>`<tr>
-              <td style="font-weight:600">${r.lbl}</td>
+              <td style="font-weight:600">${r.lbl} <span style="color:var(--ts);font-weight:400;font-size:.85em">${elName(r.lbl)}</span></td>
               <td style="text-align:right;font-family:'JetBrains Mono',monospace">${r.tg.toFixed(0)}</td>
               <td style="text-align:right;font-family:'JetBrains Mono',monospace">${r.ot.toFixed(0)}</td>
               <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:${r.tg>0?colDelta(r.dlt):'var(--ts)'}">${r.tg>0?`${r.dlt>=0?'+':''}${r.dlt.toFixed(0)}%`:'—'}</td>
@@ -4283,7 +4293,7 @@ function calcola(){
     const ntot=(profilo.NO3+profilo.NH4);
     const nh4frac=ntot>0?profilo.NH4/ntot:0;
     const nk=profilo.K>0?ntot/profilo.K:0;
-    // Conversione in meq/L per rapporti cationici (Sonneveld & Voogt 2009)
+    // Conversione in meq/L per rapporti cationici
     const kMeq  = profilo.K  / 39.10;   // K⁺ valenza 1
     const caMeq = profilo.Ca / 20.04;   // Ca²⁺ valenza 2 (PM/2=20.04)
     const mgMeq = profilo.Mg / 12.155;  // Mg²⁺ valenza 2 (PM/2=12.155)
@@ -4296,7 +4306,7 @@ function calcola(){
     const kCaNote  = kCa>1.5  ? TT('K eccessivo — rischio carenza Ca','Excess K — Ca deficiency risk') : kCa<0.3 ? TT('K basso','Low K') : TT('in range','in range');
     const kMgNote  = kMg>4 ? TT('K eccessivo — blocca Mg','Excess K — blocks Mg') : kMg<1 ? TT('Mg dominante','Mg dominant') : TT('in range','in range');
     const caMgNote = caMg<1.5 ? TT('Mg dominante — rischio carenza Ca','Mg dominant — Ca deficiency risk') : caMg>4.5 ? TT('Ca eccessivo','Excess Ca') : TT('in range','in range');
-    // Fe:Mn (rapporto micro da HydroBuddy — indica disponibilità relativa)
+    // Fe:Mn (rapporto micro — indica disponibilità relativa)
     const feMn = profilo.Mn > 0.01 ? profilo.Fe / profilo.Mn : null;
     const feMnColor = feMn!==null ? (feMn>=2&&feMn<=6 ? 'var(--vc)' : 'var(--ar)') : 'var(--ts)';
     const feMnNote  = feMn!==null ? (feMn<2 ? TT('Fe basso vs Mn','Low Fe vs Mn') : feMn>6 ? TT('Mn scarso — verifica','Low Mn — check') : TT('in range (2–6)','in range (2–6)')) : TT('Mn non misurato','Mn not measured');
