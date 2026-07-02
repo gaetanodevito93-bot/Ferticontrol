@@ -2051,10 +2051,11 @@ function renderRicettaOut(pianta, fase, tipo){
       <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${currentLang==='en'?'pH units':'unità pH'}</div></div>
       <div class="ri-box"><div class="ri-lbl">${currentLang==='en'?'Mode':'Modalità'}</div><div class="ri-val" style="font-size:.7rem">Target</div><div class="ri-sub">mg/L</div></div>
     </div>`;
-    html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th><th style="text-align:right">mmol/L · µmol/L</th></tr></thead><tbody>`;
+    html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th><th style="text-align:right">${TT('Equivalente molare','Molar equivalent')}</th></tr></thead><tbody>`;
     Object.entries(tg).filter(([,v])=>v>0).forEach(([el,v])=>{
       const isMicroEl=MICRO_TARGET_ELS.includes(el);
-      html+=`<tr><td><strong>${el}</strong> <span style="color:var(--ts);font-size:.85em">${elName(el)}</span></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} ${isMicroEl?'µmol':'mmol'}</td></tr>`;
+      const unitMol=isMicroEl?'µmol/L':'mmol/L';
+      html+=`<tr><td><strong>${el}</strong> <span style="color:var(--ts);font-size:.85em">${elName(el)}</span></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} <span style="font-weight:700;color:${isMicroEl?'var(--vi)':'var(--vc)'}">${unitMol}</span></td></tr>`;
     });
     html+=`</tbody></table></div>`;
     document.getElementById('ricetta-out').innerHTML=html;
