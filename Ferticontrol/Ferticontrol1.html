@@ -2045,7 +2045,7 @@ function renderRicettaOut(pianta, fase, tipo){
     // NON chiamare questa variabile "t": ombreggerebbe la funzione i18n t()
     // usata qui sotto (era un TypeError che rompeva la preview target).
     const tg=fase.targets||{};
-    let html=`<div class="alert al-inf" style="margin-bottom:10px">🎯 <strong>${t('js.targetMode')}</strong> ${t('js.targetDesc')}</div>`;
+    let html=`<div class="alert al-inf" style="margin-bottom:10px"><strong>${t('js.targetMode')}</strong> ${t('js.targetDesc')}</div>`;
     html+=`<div class="ri-grid">
       <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
       <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${currentLang==='en'?'pH units':'unità pH'}</div></div>
@@ -2092,7 +2092,7 @@ function renderRicettaOut(pianta, fase, tipo){
   html+=`</div>`;
 
   const totCosto=cA+cB;
-  if(totCosto>0) html+=`<div class="alert al-inf">💰 <strong>${t('js.costoPer1000')}</strong> ${fmtEuro(totCosto)} ${t('js.prezziDa')}</div>`;
+  if(totCosto>0) html+=`<div class="alert al-inf"><strong>${t('js.costoPer1000')}</strong> ${fmtEuro(totCosto)} ${t('js.prezziDa')}</div>`;
   if((fase.sali||[]).some(s=>s.id==='K2SiO3'))
     html+=`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span>${t('js.silicatoWarn')}</span></div>`;
 
@@ -3565,7 +3565,14 @@ function verificaSicurezza(righe, dil, aq, phFinale){
   if(ioni.B>0.5)  microTox.push(TT(`B ${ioni.B.toFixed(2)} mg/L > 0.5 (tossicità a 0.5 mg/L per colture sensibili — Epstein & Bloom 2005)`,`B ${ioni.B.toFixed(2)} mg/L > 0.5 (toxicity at 0.5 mg/L for sensitive crops — Epstein & Bloom 2005)`));
   if(ioni.Cu>0.15) microTox.push(TT(`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (tossicità in idroponica documentata a 0.1–0.3 mg/L)`,`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (hydroponic toxicity documented at 0.1–0.3 mg/L)`));
   audit.push({check:TT('Tossicità micronutrienti','Micronutrient toxicity'), esito: microTox.length===0?'OK':'AVVISO', dettaglio: microTox.length===0?TT('Tutti i micro sotto soglia','All micros below threshold'):microTox.join(', ')});
-  microTox.forEach(t=>conflitti.push({gravita:'A', titolo:TT('Micronutriente in eccesso','Micronutrient in excess'), dettaglio:t+TT(' — ridurre la dose manualmente.',' — reduce the dose manually.')}));
+  // Se il MixCh è in ricetta, l'eccesso deriva quasi sempre dal suo dimensionamento
+  // sul micro più esigente (es. Cu): il consiglio giusto è ridurre il Mix e integrare
+  // con sali singoli, non "ridurre la dose" generico.
+  const hasMixCh = righe.some(r=>r.id==='MixCh');
+  const consiglioMicro = hasMixCh
+    ? TT(' — la dose del Mix Chelati è dimensionata sul micro più esigente: riduci il Mix e integra il micro carente con un sale singolo.',' — the Chelate Mix dose is sized on the most demanding micro: reduce the Mix and supplement the deficient micro with a single salt.')
+    : TT(' — ridurre la dose manualmente.',' — reduce the dose manually.');
+  microTox.forEach(msgTox=>conflitti.push({gravita:'A', titolo:TT('Micronutriente in eccesso','Micronutrient in excess'), dettaglio:msgTox+consiglioMicro}));
 
   // ── CHECK 7: Na/Cl acqua ──
   if(aq){
@@ -3932,10 +3939,10 @@ function calcola(){
               <td style="font-weight:600">${r.lbl}</td>
               <td style="text-align:right;font-family:'JetBrains Mono',monospace">${r.tg.toFixed(0)}</td>
               <td style="text-align:right;font-family:'JetBrains Mono',monospace">${r.ot.toFixed(0)}</td>
-              <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:${colDelta(r.dlt)}">${r.dlt>=0?'+':''}${r.dlt.toFixed(0)}%</td>
+              <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:${r.tg>0?colDelta(r.dlt):'var(--ts)'}">${r.tg>0?`${r.dlt>=0?'+':''}${r.dlt.toFixed(0)}%`:'—'}</td>
             </tr>`).join('')}</tbody>
           </table></div>
-          <div style="font-size:.7rem;color:var(--ts);padding:8px 14px">${TT('mg/L finali (sali + acqua). Δ% = scostamento dal target. Verde ≤5%, giallo ≤15%, rosso oltre.','Final mg/L (salts + water). Δ% = deviation from target. Green ≤5%, yellow ≤15%, red above.')}</div>
+          <div style="font-size:.7rem;color:var(--ts);padding:8px 14px">${TT('mg/L finali (sali + acqua). Δ% = scostamento dal target. Verde ≤5%, giallo ≤15%, rosso oltre. — = elemento senza target: apporto residuo, tipicamente dall\'acqua di partenza.','Final mg/L (salts + water). Δ% = deviation from target. Green ≤5%, yellow ≤15%, red above. — = element with no target: residual input, typically from the source water.')}</div>
         </div>
       </div>`;
     }
