@@ -2282,10 +2282,17 @@ function targetMgToMol(el, mgL){
 }
 function setTargetMol(fi, el, v){
   const mm = MM[el] || 1;
-  const mol = +v || 0;
+  const mol = Math.max(0, +v || 0); // min=0 sull'input non blocca un negativo digitato
   const mgL = MICRO_TARGET_ELS.includes(el) ? mol*mm/1000 : mol*mm;
+  // Fasi legacy/importate possono non avere il campo targets
+  if(!fasiBozza[fi].targets) fasiBozza[fi].targets={};
   // round a 4 decimali: mantiene stabile il roundtrip mol→mg→mol a video
   fasiBozza[fi].targets[el] = Math.round(mgL*10000)/10000;
+}
+// Scrittura diretta in mg/L con lo stesso guard (usata dagli onchange dell'editor)
+function setTargetMg(fi, el, v){
+  if(!fasiBozza[fi].targets) fasiBozza[fi].targets={};
+  fasiBozza[fi].targets[el] = Math.max(0, +v || 0);
 }
 
 function renderFasiEditor(){
@@ -2306,7 +2313,7 @@ function renderFasiEditor(){
           const mgVal=(f.targets&&f.targets[el])||0;
           const unitLbl=isMol?(MICRO_TARGET_ELS.includes(el)?'µmol/L':'mmol/L'):'mg/L';
           const val=isMol?targetMgToMol(el,mgVal):mgVal;
-          const oc=isMol?`setTargetMol(${fi},'${el}',this.value)`:`fasiBozza[${fi}].targets['${el}']=+this.value`;
+          const oc=isMol?`setTargetMol(${fi},'${el}',this.value)`:`setTargetMg(${fi},'${el}',this.value)`;
           return `
           <div class="tg-box">
             <div class="tg-lbl">${el} <span class="tg-unit">${unitLbl}</span></div>
