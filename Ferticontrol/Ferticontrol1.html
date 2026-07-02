@@ -10,7 +10,7 @@
   gtag('config', 'G-YZF8S37JKX');
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="FertiControl — Calcolatore professionale per soluzioni nutritive in fertirrigazione. Ricette scientifiche per pomodoro, lattuga, cetriolo, fragola e altre colture in coco coir. Calcolo dosi, verifica chimica, compatibilità serbatoi.">
 <meta name="theme-color" content="#2d5a3d">
 <meta property="og:title" content="FertiControl — Calcolatore Fertirrigazione">
@@ -530,15 +530,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 </div>
 
 <div class="tabs" role="tablist" aria-label="Menu principale">
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-acqua" tabindex="0" onclick="showTab('acqua')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('acqua');event.preventDefault()}" data-i18n="tab.acqua">💧 Acqua</div>
-  <div class="tab active" role="tab" aria-selected="true" aria-controls="tab-ricette" tabindex="0" onclick="showTab('ricette')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('ricette');event.preventDefault()}" data-i18n="tab.ricette">🌿 Ricette</div>
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-calcola" tabindex="0" onclick="showTab('calcola')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('calcola');event.preventDefault()}" data-i18n="tab.calcola">⚗️ Calcola</div>
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-catalogo" tabindex="0" onclick="showTab('catalogo')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('catalogo');event.preventDefault()}" data-i18n="tab.catalogo">📦 Catalogo</div>
-  <div class="tab" role="tab" aria-selected="false" aria-controls="tab-dati" tabindex="0" onclick="showTab('dati')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('dati');event.preventDefault()}" data-i18n="tab.dati">💾 Dati</div>
+  <div class="tab" role="tab" id="tabbtn-acqua" aria-selected="false" aria-controls="tab-acqua" tabindex="0" onclick="showTab('acqua')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('acqua');event.preventDefault()}" data-i18n="tab.acqua">💧 Acqua</div>
+  <div class="tab active" role="tab" id="tabbtn-ricette" aria-selected="true" aria-controls="tab-ricette" tabindex="0" onclick="showTab('ricette')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('ricette');event.preventDefault()}" data-i18n="tab.ricette">🌿 Ricette</div>
+  <div class="tab" role="tab" id="tabbtn-calcola" aria-selected="false" aria-controls="tab-calcola" tabindex="0" onclick="showTab('calcola')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('calcola');event.preventDefault()}" data-i18n="tab.calcola">⚗️ Calcola</div>
+  <div class="tab" role="tab" id="tabbtn-catalogo" aria-selected="false" aria-controls="tab-catalogo" tabindex="0" onclick="showTab('catalogo')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('catalogo');event.preventDefault()}" data-i18n="tab.catalogo">📦 Catalogo</div>
+  <div class="tab" role="tab" id="tabbtn-dati" aria-selected="false" aria-controls="tab-dati" tabindex="0" onclick="showTab('dati')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('dati');event.preventDefault()}" data-i18n="tab.dati">💾 Dati</div>
 </div>
 
 <!-- ═══ TAB ACQUA ═══ -->
-<div class="panel" id="tab-acqua" role="tabpanel" aria-labelledby="tab-acqua">
+<div class="panel" id="tab-acqua" role="tabpanel" aria-labelledby="tabbtn-acqua">
   <div class="card">
     <div class="ch"><span data-i18n="acqua.title">💧 Acqua di Partenza</span> <span style="font-size:.65rem;font-weight:400;opacity:.75" data-i18n="acqua.subtitle">(acquedotto / pozzo / osmosi)</span></div>
     <div class="cb">
@@ -580,7 +580,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 </div>
 
 <!-- ═══ TAB RICETTE ═══ -->
-<div class="panel active" id="tab-ricette" role="tabpanel" aria-labelledby="tab-ricette">
+<div class="panel active" id="tab-ricette" role="tabpanel" aria-labelledby="tabbtn-ricette">
 
   <!-- HEADER sezione con tasto nuova ricetta -->
   <div class="sec-h">
@@ -620,7 +620,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 </div>
 
 <!-- ═══ TAB CALCOLA ═══ -->
-<div class="panel" id="tab-calcola" role="tabpanel" aria-labelledby="tab-calcola">
+<div class="panel" id="tab-calcola" role="tabpanel" aria-labelledby="tabbtn-calcola">
   <div class="card">
     <div class="ch" data-i18n="calcola.params">⚙️ Parametri Impianto</div>
     <div class="cb">
@@ -704,7 +704,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 </div>
 
 <!-- ═══ TAB CATALOGO ═══ -->
-<div class="panel" id="tab-catalogo" role="tabpanel" aria-labelledby="tab-catalogo">
+<div class="panel" id="tab-catalogo" role="tabpanel" aria-labelledby="tabbtn-catalogo">
   <div class="sec-h">
     <h4 data-i18n="catalogo.title">📦 Catalogo Ingredienti</h4>
     <div style="display:flex;gap:6px">
@@ -719,7 +719,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 </div>
 
 <!-- ═══ TAB DATI ═══ -->
-<div class="panel" id="tab-dati" role="tabpanel" aria-labelledby="tab-dati">
+<div class="panel" id="tab-dati" role="tabpanel" aria-labelledby="tabbtn-dati">
   <div class="sec-h"><h4 data-i18n="dati.title">💾 Gestione Dati</h4></div>
 
   <div class="card">
@@ -1364,7 +1364,9 @@ function profiloDaRighe(righe, aq){
   // Aggiungi ioni dell'acqua di partenza
   if(aq){
     p.Ca+=aq.ca||0; p.Mg+=aq.mg||0; p.K+=aq.k||0; p.Na+=aq.na||0;
-    p.S+=(aq.so4||0)*(32.07/96.06); p.Cl+=aq.cl||0; p.NO3+=aq.no3||0; p.Fe+=aq.fe||0;
+    // NO3 acqua è in mg/L di ione NO₃⁻ → converti in mg/L di N (come i sali) prima di sommarlo
+    const nNitricoAcqua=(aq.no3||0)*(14.007/62.00);
+    p.S+=(aq.so4||0)*(32.07/96.06); p.Cl+=aq.cl||0; p.NO3+=nNitricoAcqua; p.N+=nNitricoAcqua; p.Fe+=aq.fe||0;
     p.HCO3meq=(aq.hco3||0)/61.0;
   }
   return p;
@@ -1495,10 +1497,45 @@ const CALCIO_IDS=["CaN","CaCl2"];
 const INCOMPAT_CON_CA=["KH2PO4","MAP","MgSO4","K2SO4","FeSO4","MnSO4","ZnSO4","FeEDTA","FeDTPA","FeEDDHA","MixCh","H3PO4"];
 
 // ─ STATO ─
-let catalogo = JSON.parse(localStorage.getItem('fc_catalogo')||'null') || SALI_DEFAULT.map(s=>({...s}));
-let ricetteCustom = JSON.parse(localStorage.getItem('fc_ricette')||'[]');
+// Queste parse girano a livello top-level: un valore corrotto in localStorage
+// senza try/catch bloccherebbe l'intero script e l'app resterebbe vuota.
+function safeParse(key, fallback){
+  try{ const v = JSON.parse(localStorage.getItem(key)||'null'); return v===null ? fallback : v; }
+  catch(e){ console.warn('Dati corrotti in '+key+', uso i default:', e.message); return fallback; }
+}
+// Pulizia dati salvati PRIMA dell'introduzione di sanitizeName: solo caratteri
+// pericolosi per innerHTML/attributi, senza troncare (le note default sono lunghe).
+function stripTags(s){ return typeof s==='string' ? s.replace(/[<>"]/g,'') : s; }
+
+// Bump quando cambia la CHIMICA di SALI_DEFAULT: al primo load dopo l'aggiornamento
+// il catalogo salvato viene ri-basato sui default correnti (i fix di composizione
+// raggiungono gli utenti esistenti invece di restare congelati in localStorage),
+// conservando prezzo/note/dose personalizzati e i sali custom — stessa politica
+// "chimica dei default autoritativa" già usata in importaDati().
+const CATALOG_VERSION = 1;
+function mergeCatalogoDefaults(saved){
+  const defaultIds = new Set(SALI_DEFAULT.map(s=>s.id));
+  const base = SALI_DEFAULT.map(d=>{
+    const s = saved.find(x=>x && x.id===d.id);
+    return s ? {...d, prezzo:s.prezzo??d.prezzo, note:s.note!=null?stripTags(s.note):d.note, dose:s.dose??d.dose} : {...d};
+  });
+  const custom = saved.filter(s=>s && typeof s.id==='string' && !defaultIds.has(s.id) && s.el && typeof s.el==='object');
+  return [...base, ...custom];
+}
+
+let catalogo = safeParse('fc_catalogo', null);
+if(!Array.isArray(catalogo)) catalogo = SALI_DEFAULT.map(s=>({...s}));
+else if(safeParse('fc_catalogo_v', 0) !== CATALOG_VERSION) catalogo = mergeCatalogoDefaults(catalogo);
+try{ localStorage.setItem('fc_catalogo_v', JSON.stringify(CATALOG_VERSION)); }catch(e){}
+catalogo = catalogo.map(s=>({...s, nome:stripTags(s.nome), note:stripTags(s.note)}));
+
+let ricetteCustom = safeParse('fc_ricette', []);
+ricetteCustom = (Array.isArray(ricetteCustom)?ricetteCustom:[])
+  .filter(r=>r && Array.isArray(r.fasi))
+  .map(r=>({...r, nome:stripTags(r.nome), note:stripTags(r.note),
+    fasi:r.fasi.map(f=>f ? {...f, nome:stripTags(f.nome), note:stripTags(f.note)} : f)}));
 // scorta: Set di id degli ingredienti disponibili in magazzino
-let scorta = new Set(JSON.parse(localStorage.getItem('fc_scorta')||'null') || SALI_DEFAULT.map(s=>s.id));
+let scorta = new Set(safeParse('fc_scorta', null) || SALI_DEFAULT.map(s=>s.id));
 function saveScorta(){ try{ localStorage.setItem('fc_scorta', JSON.stringify([...scorta])); }catch(e){ console.warn('Salvataggio scorta fallito:', e.message); } }
 function isDisponibile(id){ return scorta.has(id); }
 function toggleScorta(id){
@@ -1665,13 +1702,13 @@ const PIANTE_BUILTIN = [
 
   // ─── ZUCCHINA ──────────────────────────────────────────────────
   // Romano Tesi (2010): Ca 130-185, Mg 35-52, K 220-310, P 38-50, N 160-255 mg/L
-  { id:"zucchina", nome:"Zucchina", emoji:"🥦",
+  { id:"zucchina", nome:"Zucchina", emoji:"🥒",
     note:"Romano Tesi (2010): crescita rapida, alta richiesta N e K. Ciclo breve. pH 5.8-6.2.",
     fasi:[
       {nome:"Giovane",icon:"🌱",ec:[1.5,2.0],ph:[5.8,6.2],
        note:"Ca=120 K=200 P=38 Mg=36 N≈178 mg/L.",
        sali:[{id:"CaN",g:706},{id:"KNO3",g:394},{id:"KH2PO4",g:167},{id:"MgNO3",g:379},{id:"MixCh",g:20}]},
-      {nome:"Produzione",icon:"🥦",ec:[2.5,3.2],ph:[5.8,6.2],
+      {nome:"Produzione",icon:"🥒",ec:[2.5,3.2],ph:[5.8,6.2],
        note:"Ca=165 K=291 P=45 Mg=50 N≈255 mg/L. N alto per crescita rapida.",
        sali:[{id:"CaN",g:971},{id:"KNO3",g:604},{id:"KH2PO4",g:197},{id:"MgNO3",g:526},{id:"MixCh",g:28}]},
       {nome:"Fine stagione",icon:"🏁",ec:[1.0,1.5],ph:[5.8,6.2],
@@ -1888,6 +1925,12 @@ function closeModal(id){ document.getElementById(id).classList.remove('open') }
 function esc(s){
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+// Nomi/note inseriti o importati dall'utente finiscono in molti punti via innerHTML.
+// Sanificare alla FONTE (creazione + import) è più robusto che ricordare esc() in
+// ogni render: i nomi legittimi dei sali non contengono < > ". La " va rimossa
+// perché chiude gli attributi HTML (es. value="${nome}") e permetterebbe di
+// iniettare handler. Limita anche la lunghezza.
+function sanitizeName(s){ return String(s==null?'':s).replace(/[<>"]/g,'').slice(0,120); }
 
 function fmtGram(g){
   g = Math.max(0, g); // protezione valori negativi
@@ -1962,7 +2005,7 @@ function selPianta(id, tipo){
     piantaSel.fasi.forEach((f,i)=>{
       const d=document.createElement('div');
       d.className='fase-btn'; d.dataset.i=i;
-      d.innerHTML=`${f.icon||'🌿'}<br>${f.nome}`;
+      d.innerHTML=`${esc(f.icon)||'🌿'}<br>${esc(f.nome)}`;
       d.onclick=()=>selFase(i);
       fr.appendChild(d);
     });
@@ -2262,8 +2305,8 @@ function renderFasiEditor(){
     card.style.cssText='border:1.5px solid var(--bo);border-radius:6px;margin-bottom:10px;overflow:hidden';
     card.innerHTML=`
       <div style="background:var(--cs);padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <input type="text" value="${f.icon||'🌿'}" onchange="fasiBozza[${fi}].icon=this.value" style="width:38px;padding:4px;text-align:center;font-size:1rem;background:#fff">
-        <input type="text" value="${f.nome}" onchange="fasiBozza[${fi}].nome=this.value" style="flex:1;min-width:100px;padding:5px 8px;background:#fff;font-weight:600">
+        <input type="text" value="${esc(f.icon)||'🌿'}" onchange="fasiBozza[${fi}].icon=this.value" style="width:38px;padding:4px;text-align:center;font-size:1rem;background:#fff">
+        <input type="text" value="${esc(f.nome)}" onchange="fasiBozza[${fi}].nome=this.value" style="flex:1;min-width:100px;padding:5px 8px;background:#fff;font-weight:600">
         <button class="btn btn-del btn-sm" onclick="fasiBozza.splice(${fi},1);renderFasiEditor()">✕</button>
       </div>
       <div style="padding:10px 12px">
@@ -2305,10 +2348,11 @@ function buildSelectOpts(selId){
 }
 
 function salvaRicetta(){
-  const nome=document.getElementById('ric-nome').value.trim();
+  const nome=sanitizeName(document.getElementById('ric-nome').value.trim());
   if(!nome){ alert(t('js.nomeRicetta')); return; }
   if(!fasiBozza.length){ alert(t('js.nomeFase')); return; }
-  const ric={nome, emoji:document.getElementById('ric-emoji').value, note:document.getElementById('ric-note').value.trim(), fasi:JSON.parse(JSON.stringify(fasiBozza))};
+  const fasi=JSON.parse(JSON.stringify(fasiBozza)).map(f=>({...f, nome:sanitizeName(f.nome), note:sanitizeName(f.note)}));
+  const ric={nome, emoji:document.getElementById('ric-emoji').value, note:sanitizeName(document.getElementById('ric-note').value.trim()), fasi};
   let savedRi;
   if(editRicId!==null){ ricetteCustom[editRicId]=ric; savedRi=editRicId; } else { ricetteCustom.push(ric); savedRi=ricetteCustom.length-1; }
   saveRicette(); renderRicetteCustom(); closeModal('modal-ricetta');
@@ -2519,9 +2563,17 @@ function solverTarget(targets, volA, volB, dil, aq){
   const righe = [];
 
   if (macroSalts.length > 0) {
-    // Matrice A [EL_MACRO × macroSalts]: A[i][j] = percentuale/100
-    const A = EL_MACRO.map(el => macroSalts.map(s => (s.el[el]||0) / 100));
-    const b = EL_MACRO.map(el => t[el] || 0);
+    // Pesi "variance-stabilizing" 1/√target: bilanciano l'errore tra elementi a
+    // scala diversa (così N/K a target grande non schiacciano P/Mg) SENZA l'effetto
+    // opposto del peso 1/target puro — verificato in scratchpad/verify.js che 1/target
+    // scaricava ~-40% sul Ca e rovinava ricette altrimenti esatte. Floor 10 mg/L evita
+    // pesi esplosivi sugli elementi a target ~0 (es. S in coco).
+    // ponytail: esponente 0.5 e floor 10 sono calibrazioni della fedeltà.
+    const FLOOR_REL = 10;
+    const w = EL_MACRO.map(el => 1 / Math.sqrt(Math.max(t[el] || 0, FLOOR_REL)));
+    // Matrice A [EL_MACRO × macroSalts]: A[i][j] = (percentuale/100) × peso_i
+    const A = EL_MACRO.map((el,i) => macroSalts.map(s => (s.el[el]||0) / 100 * w[i]));
+    const b = EL_MACRO.map((el,i) => (t[el] || 0) * w[i]);
 
     // NNLS → dosi in g/1000L, tutte ≥ 0
     const doses = nnls(A, b);
@@ -2588,8 +2640,9 @@ function ricalcolaConDisponibili(){
     const info = getSale(r.id);
     if(!info){ nonSostituibili.push({nome:r.nome||r.id,motivo:TT('Ingrediente non trovato nel catalogo','Ingredient not found in the catalog')}); return; }
 
-    // Cerca alternative: stesso elemento chiave, disponibile (serb rimosso: assegnato dal motore)
-    const elChiave = Object.keys(info.el||{})[0];
+    // Cerca alternative sull'elemento DOMINANTE del sale (% più alta), non sul primo
+    // della lista: per KNO3 {N:13.8,K:38.7} l'elemento qualificante è K, non N.
+    const elChiave = Object.entries(info.el||{}).sort((a,b)=>(b[1]||0)-(a[1]||0)).map(e=>e[0])[0];
     const alternative = catalogo.filter(s =>
       s.id !== r.id &&
       isDisponibile(s.id) &&
@@ -2988,9 +3041,11 @@ function autoRisolvi(righeInput, dil, aq){
     const si = serbSIs(righeS, aq, dil);
     if (si.CaSO4 <= -0.5) return; // ampio margine in questo serbatoio
 
-    // Sposta i solfati fuori da questo serb
+    // Sposta i solfati fuori da questo serb, scegliendo un tank SENZA Ca
+    // (altrimenti li sposteremmo proprio dove forma il gesso → peggio del problema).
     righeS.filter(r => ['MgSO4','K2SO4'].includes(r.id)).forEach(r => {
-      const dest = ['A','B','C'].find(x => x !== s && (usaSerbC || x !== 'C'));
+      const candidati = (usaSerbC ? ['A','B','C'] : ['A','B']).filter(x => x !== s);
+      const dest = candidati.find(x => !righe.some(rr => rr.serb===x && CALCIO_IDS.includes(rr.id))) || candidati[0];
       if (dest) {
         righe = righe.map(rr => rr.id === r.id ? {...rr, serb:dest} : rr);
         interventi.push({tipo:'sposta', icona:'🔀',
@@ -3625,8 +3680,10 @@ function calcola(){
 
   // MODALITÀ TARGET
   let _fromSolver = false;
+  let targetRicetta = null; // catturato qui: window._targetAttivo viene azzerato sotto
   if(window._targetAttivo){
-    const solved=solverTarget(window._targetAttivo.targets, volA, volB, dil, aq);
+    targetRicetta = window._targetAttivo.targets;
+    const solved=solverTarget(targetRicetta, volA, volB, dil, aq);
     calcRighe=solved; righe=solved; renderCalcTabella();
     window._targetAttivo=null;
     _fromSolver = true; // aq già sottratta nel solver → salta correggiDosi
@@ -3856,6 +3913,34 @@ function calcola(){
         <div style="font-size:.7rem;color:var(--ts);margin-top:6px">EC totale: <strong>${ecFin2.toFixed(2)} mS/cm</strong> | Na ${aq.na||0} | Cl ${aq.cl||0} | HCO₃⁻ ${aq.hco3||0} mg/L</div>
       </div>
     </div>`;
+  }
+
+  // ── FEDELTÀ ALLA RICETTA: target vs ottenuto (solo in modalità target) ──
+  // Il solver sottrae l'acqua dai target, quindi profiloDaRighe(sali+acqua) deve
+  // tornare ≈ target: il Δ% mostra quanto i sali disponibili + NNLS si discostano.
+  if(_fromSolver && targetRicetta){
+    const profFin = profiloDaRighe(wRighe, aq);
+    const rows = [['N','N'],['P','P'],['K','K'],['Ca','Ca'],['Mg','Mg'],['S','S']]
+      .map(([lbl,k])=>{ const tg=targetRicetta[k]||0, ot=profFin[k]||0; return {lbl, tg, ot, dlt: tg>0?(ot-tg)/tg*100:(ot>0.5?100:0)}; })
+      .filter(r=>r.tg>0 || r.ot>0.5);
+    if(rows.length){
+      const colDelta = d => Math.abs(d)<=5 ? 'var(--vc)' : Math.abs(d)<=15 ? 'var(--ar)' : 'var(--ro)';
+      html+=`<div class="card" style="margin-bottom:12px">
+        <div class="ch" style="background:#0c7b8e">${TT('🎯 Fedeltà alla ricetta (target → ottenuto)','🎯 Recipe fidelity (target → obtained)')}</div>
+        <div class="cb" style="padding:0">
+          <div class="tbl-wrap"><table class="tbl" style="min-width:340px">
+            <thead><tr><th>${TT('Elemento','Element')}</th><th style="text-align:right">${TT('Target','Target')}</th><th style="text-align:right">${TT('Ottenuto','Obtained')}</th><th style="text-align:right">Δ%</th></tr></thead>
+            <tbody>${rows.map(r=>`<tr>
+              <td style="font-weight:600">${r.lbl}</td>
+              <td style="text-align:right;font-family:'JetBrains Mono',monospace">${r.tg.toFixed(0)}</td>
+              <td style="text-align:right;font-family:'JetBrains Mono',monospace">${r.ot.toFixed(0)}</td>
+              <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:${colDelta(r.dlt)}">${r.dlt>=0?'+':''}${r.dlt.toFixed(0)}%</td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+          <div style="font-size:.7rem;color:var(--ts);padding:8px 14px">${TT('mg/L finali (sali + acqua). Δ% = scostamento dal target. Verde ≤5%, giallo ≤15%, rosso oltre.','Final mg/L (salts + water). Δ% = deviation from target. Green ≤5%, yellow ≤15%, red above.')}</div>
+        </div>
+      </div>`;
+    }
   }
 
   // ── SERBATOI ──
@@ -4870,7 +4955,7 @@ function editIngrediente(id){
 }
 
 function salvaIngrediente(){
-  const nome=document.getElementById('ing-nome').value.trim();
+  const nome=sanitizeName(document.getElementById('ing-nome').value.trim());
   if(!nome){ alert(t('js.nomeIngrediente')); return; }
   const el={};
   ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(f=>{ const v=parseFloat(document.getElementById('ing-'+f).value)||0; if(v>0)el[f]=v; });
@@ -4879,7 +4964,7 @@ function salvaIngrediente(){
   const s={
     id: editIngId || ('custom_'+Date.now()),
     nome, cat:document.getElementById('ing-cat').value,
-    serb, el, note:document.getElementById('ing-note').value.trim(),
+    serb, el, note:sanitizeName(document.getElementById('ing-note').value.trim()),
     prezzo:parseFloat(document.getElementById('ing-prezzo').value)||0,
     dose:parseFloat(document.getElementById('ing-dose').value)||0,
     ecC:0
@@ -4974,20 +5059,30 @@ function importaDati(input){
         const base = SALI_DEFAULT.map(d=>{
           const importato = data.catalogo.find(s=>s.id===d.id);
           // Se il file importato ha lo stesso sale, aggiorna solo prezzo e note (non la chimica)
-          return importato ? {...d, prezzo:importato.prezzo??d.prezzo, note:importato.note??d.note, dose:importato.dose??d.dose} : d;
+          return importato ? {...d, prezzo:importato.prezzo??d.prezzo, note:importato.note?sanitizeName(importato.note):d.note, dose:importato.dose??d.dose} : d;
         });
-        // Aggiungi ingredienti custom (non presenti nei default)
-        const nuoviCustom = data.catalogo.filter(s=>!defaultIds.has(s.id));
+        // Aggiungi SOLO ingredienti custom validi (id stringa + el oggetto): uno
+        // schema malformato romperebbe il solver. Sanifica nome/note importati.
+        const custom = data.catalogo.filter(s=>!defaultIds.has(s.id));
+        const nuoviCustom = custom
+          .filter(s=>s && typeof s.id==='string' && s.el && typeof s.el==='object')
+          .map(s=>({...s, nome:sanitizeName(s.nome), note:sanitizeName(s.note)}));
+        const scartati = custom.length - nuoviCustom.length;
         catalogo = [...base, ...nuoviCustom];
         saveCatalogo();
-        msg.push(`Catalogo: ${catalogo.length} ingredienti`);
+        msg.push(`Catalogo: ${catalogo.length} ingredienti${scartati>0?` (${scartati} scartati: schema non valido)`:''}`);
       }
 
       if(Array.isArray(data.ricetteCustom)){
-        // Merge: keep existing recipes, add from JSON only those with a new name
+        // Merge: keep existing recipes, add from JSON only those with a new name.
+        // Tieni solo ricette valide (nome + fasi array) e sanifica i testi (anche le fasi).
+        const valide = data.ricetteCustom
+          .filter(r => r && typeof r.nome==='string' && Array.isArray(r.fasi))
+          .map(r => ({...r, nome:sanitizeName(r.nome), note:sanitizeName(r.note),
+            fasi:r.fasi.map(f=>({...f, nome:sanitizeName(f&&f.nome), note:sanitizeName(f&&f.note)}))}));
         const existingNames = new Set(ricetteCustom.map(r => r.nome));
-        const nuove = data.ricetteCustom.filter(r => !existingNames.has(r.nome));
-        const giàPresenti = data.ricetteCustom.length - nuove.length;
+        const nuove = valide.filter(r => !existingNames.has(r.nome));
+        const giàPresenti = valide.length - nuove.length;
         ricetteCustom = [...ricetteCustom, ...nuove];
         saveRicette();
         const rParts = [];
