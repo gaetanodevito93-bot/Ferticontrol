@@ -246,7 +246,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .tg-box{background:var(--cs);border-radius:var(--r);padding:10px;transition:var(--transition)}
 .tg-box:hover{background:#e8e1d4}
 .tg-lbl{font-size:.62rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
-.tg-unit{font-weight:400;font-size:.58rem;color:var(--ts);opacity:.7}
+/* text-transform:none è essenziale: in uppercase il segno micro µ (U+00B5) diventa
+   Μ mu greco (U+039C), indistinguibile da M → "µmol/L" appariva come "MMOL/L".
+   Le unità SI (mg/L, mmol/L, µmol/L, mS/cm) vanno comunque in minuscolo. */
+.tg-unit{font-weight:400;font-size:.58rem;color:var(--ts);opacity:.7;text-transform:none}
 .tg-name{font-weight:500;font-size:.56rem;color:var(--ts);opacity:.85;text-transform:none;letter-spacing:0;margin-left:4px}
 .tg-box input{padding:6px 8px;font-size:.82rem;text-align:right;background:#fff;border-radius:6px}
 
