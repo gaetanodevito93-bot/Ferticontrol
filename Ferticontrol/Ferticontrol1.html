@@ -40,7 +40,7 @@ html{scroll-behavior:smooth}
 ::-webkit-scrollbar-track{background:var(--cs);border-radius:4px}
 ::-webkit-scrollbar-thumb{background:var(--bo);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--ts)}
-html,body{width:100%;max-width:100%;overflow-x:hidden}
+html,body{width:100%;max-width:100%;overflow-x:clip} /* clip>hidden: blocca hairline scroll orizz. mobile (iOS: sticky+backdrop-filter .tabs) senza creare scroll container */
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--cr) 0%,#f0ece4 100%);color:var(--tx);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 
 /* ── HEADER ── */
@@ -366,7 +366,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 /* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-html,body{width:100%;max-width:100%;overflow-x:hidden}
+html,body{width:100%;max-width:100%;overflow-x:clip} /* clip>hidden: blocca hairline scroll orizz. mobile (iOS: sticky+backdrop-filter .tabs) senza creare scroll container */
 body{
   font-family:var(--sans);color:var(--tx);min-height:100vh;font-size:14px;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
@@ -515,7 +515,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .lang-btn:hover:not(.active){background:rgba(255,255,255,.1);color:rgba(255,255,255,.85)}
 
 /* ── SPLASH SCREEN ── */
-#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 38%,#2d5a3d 0%,#1a3a2a 65%,#122a1e 100%);opacity:1;transition:opacity .45s ease}
+#splash{position:fixed;inset:0;z-index:9999;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 38%,#2d5a3d 0%,#1a3a2a 65%,#122a1e 100%);opacity:1;transition:opacity .45s ease}
 #splash.splash-hide{opacity:0;pointer-events:none}
 #splash svg{width:132px;height:132px;animation:splash-pop .5s cubic-bezier(.2,.8,.3,1.2) both}
 #splash .splash-liquid{transform:scaleY(0);transform-box:fill-box;transform-origin:bottom;animation:splash-fill .9s ease-out forwards}
