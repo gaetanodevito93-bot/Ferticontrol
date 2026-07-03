@@ -383,6 +383,11 @@ body{
 ::-webkit-scrollbar-track{background:var(--cs);border-radius:4px}
 ::-webkit-scrollbar-thumb{background:var(--bo);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--ts)}
+/* Scrollbar di PAGINA nascosta: la ::-webkit-scrollbar globale (track crema --cs)
+   su Android/Chrome riservava un gutter visibile a destra (la "striscia" segnalata).
+   Lo scroll resta attivo (touch/overlay); le scrollbar interne (tabelle) restano. */
+html,body{scrollbar-width:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 
 /* ── HEADER ── */
 header{
