@@ -1406,6 +1406,7 @@ function profiloDaRighe(righe, aq){
     if(el.K)  p.K+=g*el.K/100;
     if(el.P)  p.P+=g*el.P/100;
     if(el.S)  p.S+=g*el.S/100;
+    if(el.Cl) p.Cl+=g*el.Cl/100;   // es. CaCl₂: senza questo il Cl era invisibile in ioni/EC/bilancio
     if(el.Fe) p.Fe+=g*el.Fe/100;
     if(el.Mn) p.Mn+=g*el.Mn/100;
     if(el.Zn) p.Zn+=g*el.Zn/100;
@@ -1499,7 +1500,7 @@ const SALI_DEFAULT = [
    el:{N:35},           ecC:0.58, dose:80,  prezzo:0.7,
    note:"NH₄ max 5% N totale in coco. Evitare in estate."},
   {id:"CaCl2", nome:"Cloruro di Calcio CaCl₂·2H₂O",      cat:"macro",serb:"B",
-   el:{Ca:27.3},        ecC:0.72, dose:0,   prezzo:0.6,
+   el:{Ca:27.3,Cl:48.2}, ecC:0.72, dose:0,  prezzo:0.6,
    note:"Supplemento Ca alternativo. Cl in eccesso danneggia radici: solo per carenza Ca specifica."},
   {id:"FeEDTA",nome:"Chelato Ferro Fe-EDTA 13%",          cat:"micro",serb:"A",
    el:{Fe:13},          ecC:0,    dose:25,  prezzo:8.0,
@@ -1564,7 +1565,7 @@ function stripTags(s){ return typeof s==='string' ? s.replace(/[<>"]/g,'') : s; 
 // raggiungono gli utenti esistenti invece di restare congelati in localStorage),
 // conservando prezzo/note/dose personalizzati e i sali custom — stessa politica
 // "chimica dei default autoritativa" già usata in importaDati().
-const CATALOG_VERSION = 1;
+const CATALOG_VERSION = 2;
 function mergeCatalogoDefaults(saved){
   const defaultIds = new Set(SALI_DEFAULT.map(s=>s.id));
   const base = SALI_DEFAULT.map(d=>{
@@ -2659,9 +2660,12 @@ function solverTarget(targets, volA, volB, dil, aq){
     Object.assign(t, targets);
   }
 
-  // Sali macro disponibili nel catalogo (categoria 'macro' con almeno un elemento macro)
+  // Sali macro disponibili nel catalogo (categoria 'macro' con almeno un elemento macro).
+  // CaCl2 escluso: è un supplemento manuale "solo per carenza Ca specifica" (vedi sua nota)
+  // e la NNLS lo sceglierebbe sistematicamente come Ca senza N, scaricando ~150-200 mg/L di
+  // cloruro fitotossico nella soluzione finale. Il Ca viene coperto dal nitrato di calcio.
   const macroSalts = catalogo.filter(s =>
-    s.cat === 'macro' && s.el && EL_MACRO.some(e => (s.el[e]||0) > 0));
+    s.cat === 'macro' && s.id !== 'CaCl2' && s.el && EL_MACRO.some(e => (s.el[e]||0) > 0));
 
   const righe = [];
 
@@ -2885,7 +2889,7 @@ function toggleSerbC(checked){
 
 // ── HELPER: calcola ioni da lista righe (serbatoi A, B, C) ──
 function calcolaIoniDaSali(righe){
-  const c = {Ca:0,Mg:0,K:0,N_total:0,N_NH4:0,P:0,SO4:0,Fe:0,Mn:0,Zn:0,B:0,Cu:0,Mo:0,EC_finale:0};
+  const c = {Ca:0,Mg:0,K:0,N_total:0,N_NH4:0,P:0,SO4:0,Cl:0,Fe:0,Mn:0,Zn:0,B:0,Cu:0,Mo:0,EC_finale:0};
   c._serbConflitti = {}; // per serb → {hasCa, hasP, hasMg, hasFe, hasSo4}
 
   righe.forEach(r=>{
@@ -2899,6 +2903,7 @@ function calcolaIoniDaSali(righe){
     if(el.K)  c.K  += g*el.K/100;
     if(el.P)  c.P  += g*el.P/100;
     if(el.S)  c.SO4+= g*el.S/100*(96.06/32.07);
+    if(el.Cl) c.Cl += g*el.Cl/100;
     if(el.Fe) c.Fe += g*el.Fe/100;
     if(el.Mn) c.Mn += g*el.Mn/100;
     if(el.Zn) c.Zn += g*el.Zn/100;
@@ -3679,16 +3684,23 @@ function verificaSicurezza(righe, dil, aq, phFinale){
     : TT(' — ridurre la dose manualmente.',' — reduce the dose manually.');
   microTox.forEach(msgTox=>conflitti.push({gravita:'A', titolo:TT('Micronutriente in eccesso','Micronutrient in excess'), dettaglio:msgTox+consiglioMicro}));
 
-  // ── CHECK 7: Na/Cl acqua ──
-  if(aq){
+  // ── CHECK 7: Na/Cl totali (acqua + sali) ──
+  // Il Cl include quello dei sali (es. CaCl₂), non solo l'acqua: prima era un punto cieco.
+  {
+    const clSali = ioni.Cl||0;
+    const clTot  = clSali + (aq?(aq.cl||0):0);
+    const naTot  = aq?(aq.na||0):0;
     const sale=[];
-    if(aq.na>50) sale.push(TT(`Na⁺ ${aq.na} mg/L (limite coco ~50)`,`Na⁺ ${aq.na} mg/L (coco limit ~50)`));
-    if(aq.cl>100) sale.push(TT(`Cl⁻ ${aq.cl} mg/L (limite coco ~100)`,`Cl⁻ ${aq.cl} mg/L (coco limit ~100)`));
+    if(naTot>50) sale.push(TT(`Na⁺ ${naTot} mg/L (limite coco ~50)`,`Na⁺ ${naTot} mg/L (coco limit ~50)`));
+    if(clTot>100) sale.push(TT(`Cl⁻ ${clTot.toFixed(0)} mg/L (limite coco ~100)`,`Cl⁻ ${clTot.toFixed(0)} mg/L (coco limit ~100)`));
     if(sale.length){
-      audit.push({check:TT('Salinità acqua (Na/Cl)','Water salinity (Na/Cl)'), esito:'AVVISO', dettaglio:sale.join(', ')});
-      sale.forEach(t=>conflitti.push({gravita:'A', titolo:TT('Salinità acqua di partenza','Source water salinity'), dettaglio:t+TT(' — valutare osmosi inversa.',' — consider reverse osmosis.')}));
+      audit.push({check:TT('Salinità Na/Cl','Na/Cl salinity'), esito:'AVVISO', dettaglio:sale.join(', ')});
+      const advCl = clSali>50
+        ? TT(' — gran parte del Cl viene dal CaCl₂: sostituiscilo col nitrato di calcio.',' — most of the Cl comes from CaCl₂: replace it with calcium nitrate.')
+        : TT(' — valutare osmosi inversa.',' — consider reverse osmosis.');
+      sale.forEach(t=>conflitti.push({gravita:'A', titolo:TT('Salinità (Na/Cl)','Salinity (Na/Cl)'), dettaglio:t+advCl}));
     } else {
-      audit.push({check:TT('Salinità acqua (Na/Cl)','Water salinity (Na/Cl)'), esito:'OK', dettaglio:TT('Na e Cl nei limiti','Na and Cl within limits')});
+      audit.push({check:TT('Salinità Na/Cl','Na/Cl salinity'), esito:'OK', dettaglio:TT('Na e Cl nei limiti','Na and Cl within limits')});
     }
   }
 
@@ -4020,7 +4032,7 @@ function calcola(){
           <div class="ri-box"><div class="ri-lbl">Mg</div><div class="ri-val">${(ioni2.Mg+aq.mg).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
           <div class="ri-box"><div class="ri-lbl">K</div><div class="ri-val">${(ioni2.K+aq.k).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
         </div>
-        <div style="font-size:.7rem;color:var(--ts);margin-top:6px">EC totale: <strong>${ecFin2.toFixed(2)} mS/cm</strong> | Na ${aq.na||0} | Cl ${aq.cl||0} | HCO₃⁻ ${aq.hco3||0} mg/L</div>
+        <div style="font-size:.7rem;color:var(--ts);margin-top:6px">EC totale: <strong>${ecFin2.toFixed(2)} mS/cm</strong> | Na ${aq.na||0} | Cl ${((ioni2.Cl||0)+(aq.cl||0)).toFixed(0)} | HCO₃⁻ ${aq.hco3||0} mg/L</div>
       </div>
     </div>`;
   }
