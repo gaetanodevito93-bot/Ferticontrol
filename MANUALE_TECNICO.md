@@ -115,7 +115,7 @@ Elementi trasversali dell'interfaccia:
 
 L'analisi dell'acqua di partenza (acquedotto, pozzo, osmosi):
 
-- **EC** (mS/cm) e **pH**;
+- **EC** (mS/cm), **pH** e **temperatura** (°C, default 20);
 - ioni in mg/L: **Ca²⁺, Mg²⁺, K⁺, Na⁺, SO₄²⁻, Cl⁻, HCO₃⁻, NO₃⁻, Fe**.
 
 ### 4.2 Preset rapidi e profili personali
@@ -132,6 +132,7 @@ L'acqua non è un semplice dato informativo — entra in quattro punti del motor
 2. **Neutralizzazione dei bicarbonati**: se HCO₃⁻ > 50 mg/L il motore prescrive i **mL/L di acido** (HNO₃ 38% o H₃PO₄ 75%) da aggiungere all'acqua di diluizione, calcolati dalle molarità reali dei prodotti commerciali (`calcAcidVolume`). La dose è **dimensionata sul pH target scelto** nel calcolatore: la frazione di alcalinità da neutralizzare segue Henderson-Hasselbalch sul pKa₁ del sistema carbonato (6.35) — a pH 5.8 si neutralizza ~78% dell'HCO₃⁻, a pH 6.5 ~41%, a pH 7.0 ~18% — sempre con un residuo tampone minimo di 0.5 meq/L (`RESID_HCO3_MEQ`) contro i crolli di pH. Se l'acqua è già al pH target, l'acido è zero. Cambiando il pH nel calcolatore la prescrizione si aggiorna in tempo reale.
 3. **Rischio calcite (CaCO₃)**: il Ca totale e i carbonati dell'acqua (speciati con Henderson-Hasselbalch al pH dell'acqua) vengono confrontati col Ksp della calcite dipendente dalla temperatura.
 4. **EC e bilancio ionico finali**: l'EC dell'acqua si somma a quella dei sali; Na e Cl dell'acqua entrano nei controlli di salinità (limiti coco: Na ~50 mg/L, Cl ~100 mg/L).
+5. **Temperatura operativa** (`tcAcqua`): tutti gli indici di saturazione — per serbatoio, nel concentrato e nella soluzione finale — e il Ksp della calcite usano la temperatura dell'acqua invece del valore fisso 20 °C. L'effetto è rilevante: brushite (CaHPO₄), struvite e calcite hanno entalpia di dissoluzione negativa, quindi **a caldo sono meno solubili** — la stessa ricetta può essere sicura a 10 °C e sovrasatura a 30 °C. Valori fuori range (1–45 °C) degradano al default 20 °C; la temperatura viene salvata anche nei profili acqua.
 
 ### 4.4 Persistenza
 
@@ -263,7 +264,7 @@ Per ogni sale a rischio: `SI = log₁₀(IAP / Ksp)` dove IAP è il prodotto del
 - **−0.5 ≤ SI < 0** → metastabile, avviso;
 - **SI > 0** → sovrasaturo, precipita.
 
-Il SI viene calcolato **in tre contesti distinti**: (a) per singolo serbatoio concentrato (`serbSIs` — solo i sali di quel serbatoio × diluizione, pH 6, 20 °C; l'acqua di processo non c'entra, entra solo nella finale); (b) il peggiore tra i serbatoi (`worstSerbSI`); (c) nella **soluzione finale diluita** al pH operativo scelto (`siFinaleSoluzione`). Questa separazione è concettualmente importante: un composto può essere a rischio nel concentrato ma non nella finale (gestibile con pulizia tank o 3° serbatoio) o viceversa (grave: precipita nei gocciolatori).
+Il SI viene calcolato **in tre contesti distinti**: (a) per singolo serbatoio concentrato (`serbSIs` — solo i sali di quel serbatoio × diluizione, pH 6, temperatura dell'acqua; gli ioni dell'acqua di processo non c'entrano, entrano solo nella finale); (b) il peggiore tra i serbatoi (`worstSerbSI`); (c) nella **soluzione finale diluita** al pH operativo scelto (`siFinaleSoluzione`), sempre alla temperatura impostata. Questa separazione è concettualmente importante: un composto può essere a rischio nel concentrato ma non nella finale (gestibile con pulizia tank o 3° serbatoio) o viceversa (grave: precipita nei gocciolatori).
 
 ### 7.6 EC e bilancio ionico
 
@@ -457,7 +458,7 @@ La lingua scelta persiste in `fc_lang` e si cambia dall'header senza ricaricare.
 ## Capitolo 16 — Limiti, assunzioni e avvertenze
 
 - **Orientamento coco coir**: le soglie (NH₄ ≤ 10% dell'N, Na ~50 mg/L, Cl ~100 mg/L, note sull'accumulo di solfati) e le ricette sono calibrate per coco. Per NFT/lana di roccia/suolo i profili vanno adattati.
-- **SI nel concentrato a condizioni fisse**: pH 6.0 e 20 °C (`SERB_SI_PH`, `SERB_SI_TC`). Temperature molto diverse nel locale tecnico cambiano i margini reali (i Ksp sono T-dipendenti, ma la T del serbatoio non è un input utente).
+- **SI nel concentrato a pH fisso 6.0** (`SERB_SI_PH`): il pH reale delle madri varia col contenuto. La **temperatura** invece è un input (scheda Acqua) e alimenta tutti i Ksp; resta l'assunzione che serbatoi e soluzione finale siano alla stessa temperatura dell'acqua dichiarata.
 - **La cinetica non è modellata**: SI > 0 indica sovrasaturazione termodinamica; i tempi reali di precipitazione dipendono da nucleazione, agitazione e impurezze. Il margine −0.5 esiste proprio per questo.
 - **EC stimata**: i coefficienti (tabellati per i sali di fabbrica, stimati dalla composizione per i custom) sono accurati per le miscele tipiche ma l'EC reale va sempre verificata col conduttimetro.
 - **Distinzione NH₄/NO₃**: per i sali di fabbrica la ripartizione è nota per ID (NH₄NO₃ 50%, MAP 100%); per i sali custom vale il campo "% N ammoniacale" dichiarato dall'utente — se lasciato a 0, l'N viene trattato come nitrico.
