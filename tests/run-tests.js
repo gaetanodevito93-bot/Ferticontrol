@@ -453,6 +453,70 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check('UI: la card acido cita il pH target scelto', acidoUI.a58.menzionaPh && acidoUI.a65.menzionaPh);
 
   // ────────────────────────────────────────────────
+  console.log('\n═══ S15. Temperatura acqua negli indici di saturazione ═══');
+  const temp = await page.evaluate(() => {
+    // Fisica dei Ksp: CaHPO4 e struvite hanno ΔH<0 → meno solubili a caldo;
+    // la calcite pure. Il gesso (ΔH≈+1) è quasi T-indipendente.
+    const fis = {
+      brushite: kspCaHPO4(10) > kspCaHPO4(30),
+      struvite: kspStruvite(10) > kspStruvite(30),
+      calcite: kspCalcite(10) > kspCalcite(30),
+    };
+    // SI della stessa soluzione a 10°C vs 30°C (profilo ricco di Ca e P)
+    const righe = [{ id: 'CaN', dose: 900 }, { id: 'KH2PO4', dose: 200 }, { id: 'MgNO3', dose: 400 }];
+    const si10 = siFinaleSoluzione(righe, { ph: 7, temp: 10, ca: 0 }, 6.2);
+    const si30 = siFinaleSoluzione(righe, { ph: 7, temp: 30, ca: 0 }, 6.2);
+    // getAcqua legge il campo; valori assurdi → default 20
+    document.getElementById('aq-temp').value = 30;
+    const t30 = getAcqua().temp;
+    document.getElementById('aq-temp').value = 999;
+    const tInvalid = getAcqua().temp;
+    document.getElementById('aq-temp').value = 20;
+    return { fis, si10: +si10.CaHPO4.toFixed(3), si30: +si30.CaHPO4.toFixed(3), t30, tInvalid };
+  });
+  check('Ksp fisicamente coerenti (brushite/struvite/calcite meno solubili a caldo)',
+    temp.fis.brushite && temp.fis.struvite && temp.fis.calcite);
+  check(`SI CaHPO₄ a 30°C (${temp.si30}) > a 10°C (${temp.si10})`, temp.si30 > temp.si10);
+  check('getAcqua legge la temperatura (30)', temp.t30 === 30);
+  check('temperatura non plausibile (999) → default 20', temp.tInvalid === 20);
+
+  // End-to-end: la temperatura cambia l'output del calcolo
+  const tempUI = await page.evaluate(() => {
+    presetAcqua('media');
+    document.getElementById('diluizione').value = 100;
+    selPianta('pomodoro', 'builtin'); selFase(2); caricaRicettaCorrente();
+    const leggi = (t) => {
+      document.getElementById('aq-temp').value = t;
+      calcola();
+      const out = document.getElementById('calc-out').innerText;
+      const m = out.match(/indici di saturazione a ([\d.]+)°c/i) || out.match(/a ([\d.]+)°C e pH/i);
+      const siM = out.match(/CaHPO₄[^\n]*\n?[^\n]*SI ([+\-][\d.]+)/i);
+      return { tMostrata: m ? m[1] : null, siTxt: siM ? siM[1] : null, out: out.length };
+    };
+    const a = leggi(10), b = leggi(30);
+    document.getElementById('aq-temp').value = 20;
+    return { a, b };
+  });
+  check(`UI: la card SI mostra la temperatura scelta (10°C → "${tempUI.a.tMostrata}", 30°C → "${tempUI.b.tMostrata}")`,
+    tempUI.a.tMostrata === '10' && tempUI.b.tMostrata === '30');
+  check(`UI: il SI CaHPO₄ cambia con la temperatura (${tempUI.a.siTxt} vs ${tempUI.b.siTxt})`,
+    tempUI.a.siTxt !== null && tempUI.b.siTxt !== null && tempUI.a.siTxt !== tempUI.b.siTxt);
+
+  // La temperatura segue i profili acqua salvati
+  const tempProfilo = await page.evaluate(() => {
+    document.getElementById('aq-temp').value = 28; saveAcqua();
+    document.getElementById('acqua-profilo-nome').value = 'Serra Estate';
+    salvaProfiloAcqua();
+    document.getElementById('aq-temp').value = 12; saveAcqua();
+    caricaProfiloAcqua(acquaProfili.length - 1);
+    const t = document.getElementById('aq-temp').value;
+    eliminaProfiloAcqua(acquaProfili.length - 1); eseguiElimina();
+    document.getElementById('aq-temp').value = 20; saveAcqua();
+    return t;
+  });
+  check(`la temperatura è salvata nei profili acqua (28 → 12 → ricarica → ${tempProfilo})`, tempProfilo === '28');
+
+  // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
   if (failures.length) { console.log('\nFallimenti:'); failures.forEach(f => console.log('  • ' + f)); }

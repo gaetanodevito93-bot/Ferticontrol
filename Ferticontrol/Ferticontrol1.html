@@ -597,7 +597,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
       <div class="alert al-blu" style="margin-bottom:12px">
         <span>ℹ️</span><span data-i18n="acqua.info">Inserisci l'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.</span>
       </div>
-      <div class="row2" style="margin-bottom:8px">
+      <div class="row3" style="margin-bottom:8px">
         <div class="tg-box">
           <div class="tg-lbl"><span data-i18n="acqua.ec">EC acqua</span> <span class="tg-unit">mS/cm</span></div>
           <input type="number" id="aq-ec" value="0.3" min="0" step="0.01">
@@ -605,6 +605,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <div class="tg-box">
           <div class="tg-lbl" data-i18n="acqua.ph">pH acqua</div>
           <input type="number" id="aq-ph" value="7.2" min="0" max="14" step="0.1">
+        </div>
+        <div class="tg-box">
+          <div class="tg-lbl"><span data-i18n="acqua.temp">Temperatura</span> <span class="tg-unit">°C</span></div>
+          <input type="number" id="aq-temp" value="20" min="1" max="45" step="0.5">
         </div>
       </div>
       <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" data-i18n="acqua.ions">Ioni presenti (mg/L)</div>
@@ -948,6 +952,7 @@ const TRANSLATIONS = {
     'acqua.info': 'Inserisci l\'analisi della tua acqua. FertiControl sottrarrà automaticamente i minerali già presenti e segnala rischi di precipitazione anche nel concentrato.',
     'acqua.ec': 'EC acqua',
     'acqua.ph': 'pH acqua',
+    'acqua.temp': 'Temperatura',
     'acqua.ions': 'Ioni presenti (mg/L)',
     'preset.ottima': '💧 Ottima (EC 0.1)',
     'preset.media': '🚰 Acquedotto medio',
@@ -1138,6 +1143,7 @@ const TRANSLATIONS = {
     'acqua.info': 'Enter your water analysis. FertiControl will automatically subtract minerals already present and flag precipitation risks in the concentrate.',
     'acqua.ec': 'Water EC',
     'acqua.ph': 'Water pH',
+    'acqua.temp': 'Temperature',
     'acqua.ions': 'Ions present (mg/L)',
     'preset.ottima': '💧 Excellent (EC 0.1)',
     'preset.media': '🚰 Average tap water',
@@ -1522,14 +1528,19 @@ function calcAcidVolume(aq, prodL, phTarget){
 // attività di Davies, unificati col motore globale siForIons.
 // ════════════════════════════════════════════════
 const SERB_SI_PH = 6.0, SERB_SI_TC = 20;
+// Temperatura operativa: dall'analisi acqua (aq.temp) se disponibile,
+// altrimenti il default storico 20°C. I Ksp sono T-dipendenti: a 10°C il
+// gesso è meno solubile, a 30°C brushite e struvite peggiorano (ΔH<0).
+function tcAcqua(aq){ return (aq && isFinite(aq.temp) && aq.temp>=1 && aq.temp<=45) ? aq.temp : SERB_SI_TC; }
 function serbSIs(righeSerb, aq, dil){
   // I serbatoi concentrati contengono SOLO i sali disciolti, non l'acqua di
   // processo (quella entra solo nella soluzione finale diluita). Passare aq
   // provocava falsi allarmi: Ca dell'acqua×dil appariva nel tank A (fosfati).
+  // Da aq si usa SOLO la temperatura (proprietà dell'ambiente, non degli ioni).
   const p = profiloDaRighe(righeSerb, null);
   const pc = {};
   for(const k in p) pc[k] = (p[k]||0) * (dil||1);
-  return siForIons(pc, SERB_SI_PH, SERB_SI_TC);
+  return siForIons(pc, SERB_SI_PH, tcAcqua(aq));
 }
 // Peggior SI per ciascun composto tra tutti i serbatoi attivi
 function worstSerbSI(workingRighe, aq, dil){
@@ -2070,8 +2081,8 @@ function numInput(id, fallback){
 // ── Persistenza analisi acqua (localStorage 'fc_acqua') ──
 // L'analisi dell'acqua è il dato più laborioso da reinserire: viene salvata
 // automaticamente a ogni modifica e inclusa nel backup JSON (esporta/importa).
-const AQ_FIELDS=['ec','ph','ca','mg','k','na','so4','cl','hco3','no3','fe'];
-const AQ_MAX={ec:10,ph:14,ca:1000,mg:500,k:500,na:2000,so4:2000,cl:2000,hco3:1000,no3:500,fe:50};
+const AQ_FIELDS=['ec','ph','temp','ca','mg','k','na','so4','cl','hco3','no3','fe'];
+const AQ_MAX={ec:10,ph:14,temp:45,ca:1000,mg:500,k:500,na:2000,so4:2000,cl:2000,hco3:1000,no3:500,fe:50};
 function collectAcqua(){
   const o={};
   AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el) o[k]=cleanNum(el.value,0,0,AQ_MAX[k]||1e6); });
@@ -3040,8 +3051,11 @@ function getAcqua(){
   const hco3 = parseFloat(document.getElementById('aq-hco3')?.value)||0;
   const no3  = parseFloat(document.getElementById('aq-no3')?.value) ||0;
   const fe   = parseFloat(document.getElementById('aq-fe')?.value)  ||0;
+  // Temperatura: default 20°C, clamp al range plausibile (campo vuoto/0 → 20)
+  let temp = parseFloat(document.getElementById('aq-temp')?.value);
+  if(!isFinite(temp) || temp<1 || temp>45) temp = 20;
   if(!ec && !ca && !mg && !k && !na && !so4 && !cl && !hco3 && !no3 && !fe) return null;
-  return {ec, ph, ca, mg, k, na, so4, cl, hco3, no3, fe};
+  return {ec, ph, temp, ca, mg, k, na, so4, cl, hco3, no3, fe};
 }
 
 function toggleAcquaPanel(){ /* rimosso: acqua ora nel tab dedicato */ }
@@ -3592,7 +3606,7 @@ function autoRisolvi(righeInput, dil, aq, phFinale){
 // Nelle taniche madri il rischio è gestito dalla separazione A/B (worstSerbSI).
 // ════════════════════════════════════════════════
 function siFinaleSoluzione(righe, aq, ph){
-  return siForIons(profiloDaRighe(righe, aq), ph, 20);
+  return siForIons(profiloDaRighe(righe, aq), ph, tcAcqua(aq));
 }
 // pH più alto (≤ phMax, min 4.8) che mantiene fosfato di calcio e struvite della
 // soluzione finale sotto saturazione (SI<0), SENZA ridurre le dosi. Restituisce
@@ -3600,10 +3614,11 @@ function siFinaleSoluzione(righe, aq, ph){
 // problema è CaSO₄ (che NON dipende dal pH → il pH non lo risolve, serve ridurre).
 function phSicuroFinale(righe, aq, phMax){
   const prof = profiloDaRighe(righe, aq);
-  if(siForIons(prof, 6.0, 20).CaSO4 > 0) return null; // CaSO₄ pH-indipendente
+  const tc = tcAcqua(aq);
+  if(siForIons(prof, 6.0, tc).CaSO4 > 0) return null; // CaSO₄ pH-indipendente
   const lim = Math.min(phMax, 6.3);
   for(let ph=lim; ph>=4.8; ph=Math.round((ph-0.1)*10)/10){
-    const s = siForIons(prof, ph, 20);
+    const s = siForIons(prof, ph, tc);
     if(s.CaHPO4 < 0 && s.struvite < 0 && s.CaCO3 < 0) return ph;
   }
   return null;
@@ -3805,6 +3820,7 @@ function checkNeedSerbC(righe, dil, aq){
 // ════════════════════════════════════════════════
 function verificaSicurezza(righe, dil, aq, phFinale){
   phFinale = phFinale || 6.0;
+  const tcOper = tcAcqua(aq); // temperatura operativa dall'analisi acqua
   const audit = [];   // log di ogni controllo: {check, esito, dettaglio}
   const conflitti = []; // problemi NON risolti (bloccanti)
   const serbs = usaSerbC ? ['A','B','C'] : ['A','B'];
@@ -3843,7 +3859,7 @@ function verificaSicurezza(righe, dil, aq, phFinale){
     const si = serbSIs(righeS, aq, dil);
     if(si.CaSO4 > -0.5){
       caso4Problemi++;
-      conflitti.push({gravita: si.CaSO4>0?'C':'A', titolo:TT(`CaSO₄ nel Serb. ${s}`,`CaSO₄ in Tank ${s}`), dettaglio:TT(`SI = ${si.CaSO4.toFixed(2)} nel concentrato (×${dil}, pH 6, 20°C, Davies). Ca e solfati ancora insieme in questo serbatoio.`,`SI = ${si.CaSO4.toFixed(2)} in the concentrate (×${dil}, pH 6, 20°C, Davies). Ca and sulfates still together in this tank.`)});
+      conflitti.push({gravita: si.CaSO4>0?'C':'A', titolo:TT(`CaSO₄ nel Serb. ${s}`,`CaSO₄ in Tank ${s}`), dettaglio:TT(`SI = ${si.CaSO4.toFixed(2)} nel concentrato (×${dil}, pH 6, ${tcOper}°C, Davies). Ca e solfati ancora insieme in questo serbatoio.`,`SI = ${si.CaSO4.toFixed(2)} in the concentrate (×${dil}, pH 6, ${tcOper}°C, Davies). Ca and sulfates still together in this tank.`)});
     }
   });
   audit.push({check:TT('Prodotto solubilità CaSO₄ (per serbatoio)','CaSO₄ solubility product (per tank)'), esito: caso4Problemi===0?'OK':'CONFLITTO', dettaglio: caso4Problemi===0?TT(`Nessun rischio gesso in ${serbs.length} serbatoi`,`No gypsum risk in ${serbs.length} tanks`):TT(`${caso4Problemi} serbatoi a rischio`,`${caso4Problemi} tanks at risk`)});
@@ -3917,7 +3933,7 @@ function verificaSicurezza(righe, dil, aq, phFinale){
     //FIX: caMM e co3 sono in mmol/L → IAP in mmol²/L²; Ksp è in mol²/L².
     //     Riportiamo IAP in mol²/L² prima del confronto (fattore 1e6).
     const IAP_mol = (caMM/1000)*(co3/1000);
-    const KspCaCO3 = kspCalcite(20); //FIX: usa Ksp temperature-dipendente
+    const KspCaCO3 = kspCalcite(tcOper); //FIX: usa Ksp temperature-dipendente (T dall'analisi acqua)
     const ok = IAP_mol <= KspCaCO3;
     audit.push({check:TT('Prodotto solubilità CaCO₃ (acqua di partenza)','CaCO₃ solubility product (source water)'), esito: ok?'OK':'GESTITO', dettaglio: ok?TT(`IAP CaCO₃ sotto soglia (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`,`IAP CaCO₃ below threshold (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`):TT(`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → neutralizzazione acido prescritta`,`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → acid neutralization prescribed`)});
   }
@@ -4394,7 +4410,7 @@ function calcola(){
   // ════════════════════════════════════════════════
   try {
     const profilo = profiloDaRighe(wRighe, aq);
-    const tempC = 20; // temperatura standard
+    const tempC = tcAcqua(aq); // dall'analisi acqua (default 20°C)
     const pH = phFinale;  // pH della soluzione finale impostato dall'utente
     const si = siForIons(profilo, pH, tempC);
     const ecPrecisa = ecFromIons(profilo, pH);
