@@ -381,7 +381,7 @@ Ogni prodotto ha: `id`, nome con formula, categoria, **composizione elementare i
 ### 11.2 Funzioni
 
 - **Scorta magazzino**: ogni ingrediente ha un interruttore "disponibile/non disponibile" (`scorta`, un `Set` persistito). È il dato usato dal ricalcolo con disponibili.
-- **CRUD completo**: nuovi ingredienti custom col modale (nome, categoria, % elementi, prezzo, dose tipica, note); modifica ed eliminazione (con conferma).
+- **CRUD completo**: nuovi ingredienti custom col modale — nome, categoria, **composizione completa in %** (N, P, K, Ca, Mg, S, Fe, Mn, Zn, B, Cu, Mo), **% di N ammoniacale** (per il limite NH₄ ≤ 10% e il rischio struvite), flag **prodotto liquido con densità** (dosaggio mostrato in mL), prezzo, dose tipica e note; modifica ed eliminazione (con conferma). Il coefficiente EC del sale custom viene **stimato automaticamente dalla composizione** (`stimaEcC`, conduttività equivalenti di Kohlrausch + fattore di Onsager), così i sali personalizzati contribuiscono correttamente all'EC attesa.
 - **Prezzi** → alimentano il calcolo dei costi per batch e per 1000 L.
 - **Stampa catalogo** dedicata.
 - Nota UI: il serbatoio **non si imposta a mano** — lo decide il calcolatore dalle regole di compatibilità.
@@ -456,8 +456,8 @@ La lingua scelta persiste in `fc_lang` e si cambia dall'header senza ricaricare.
 - **Orientamento coco coir**: le soglie (NH₄ ≤ 10% dell'N, Na ~50 mg/L, Cl ~100 mg/L, note sull'accumulo di solfati) e le ricette sono calibrate per coco. Per NFT/lana di roccia/suolo i profili vanno adattati.
 - **SI nel concentrato a condizioni fisse**: pH 6.0 e 20 °C (`SERB_SI_PH`, `SERB_SI_TC`). Temperature molto diverse nel locale tecnico cambiano i margini reali (i Ksp sono T-dipendenti, ma la T del serbatoio non è un input utente).
 - **La cinetica non è modellata**: SI > 0 indica sovrasaturazione termodinamica; i tempi reali di precipitazione dipendono da nucleazione, agitazione e impurezze. Il margine −0.5 esiste proprio per questo.
-- **EC stimata**: i coefficienti empirici sono accurati per le miscele tipiche ma l'EC reale va sempre verificata col conduttimetro.
-- **Distinzione NH₄/NO₃ per ID**: la ripartizione dell'azoto ammoniacale è nota solo per i sali riconosciuti (NH₄NO₃, MAP); un sale custom con N ammoniacale viene trattato come nitrico.
+- **EC stimata**: i coefficienti (tabellati per i sali di fabbrica, stimati dalla composizione per i custom) sono accurati per le miscele tipiche ma l'EC reale va sempre verificata col conduttimetro.
+- **Distinzione NH₄/NO₃**: per i sali di fabbrica la ripartizione è nota per ID (NH₄NO₃ 50%, MAP 100%); per i sali custom vale il campo "% N ammoniacale" dichiarato dall'utente — se lasciato a 0, l'N viene trattato come nitrico.
 - **Non è un sostituto del giudizio agronomico**: il motore verifica la chimica della soluzione, non lo stato della coltura. Le note agronomiche sono indicative.
 - **Acidi e basi sono pericolosi**: le prescrizioni di HNO₃/H₃PO₄/KOH presuppongono DPI e procedura corretta ("mai acqua nell'acido").
 
