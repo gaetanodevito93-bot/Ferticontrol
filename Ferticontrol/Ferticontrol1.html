@@ -655,7 +655,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
     <div class="pianta-grid" id="pianta-grid"></div>
     <div id="card-fasi-wrap" style="display:none">
       <div class="sep" style="margin:0"></div>
-      <div class="ch" style="background:var(--vm);font-size:.68rem" data-i18n="ricette.fasi">📅 Fase di Crescita</div>
+      <div class="ch" style="background:var(--vm);font-size:.68rem;justify-content:space-between">
+        <span id="fasi-header-title" data-i18n="ricette.fasi">📅 Fase di Crescita</span>
+        <button class="btn btn-sm" id="btn-clona-pianta" onclick="editCurrentRicetta()" style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.55);color:#fff">✏️ Clona e modifica</button>
+      </div>
       <div class="fase-row" id="fase-row"></div>
     </div>
   </div>
@@ -666,7 +669,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
       <div class="ch" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
         <span id="ricetta-out-title" data-i18n="ricette.composizione">🔬 Composizione</span>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-sm" id="btn-modifica-ricetta" onclick="editCurrentRicetta()" style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.55);color:#fff" data-i18n="ricette.modifica">✏️ Modifica</button>
           <button class="btn btn-pr btn-sm" style="width:auto" onclick="caricaRicettaCorrente()" data-i18n="ricette.calcola">→ Calcola</button>
         </div>
       </div>
@@ -873,15 +875,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
       <div class="sep"></div>
       <div class="sec-h"><h4 data-i18n="modal.ing.compo">Composizione chimica (%)</h4></div>
       <div class="row3">
-        <div class="field"><label data-i18n="ing.el.N">% N (Azoto)</label><input type="number" id="ing-N" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label data-i18n="ing.el.P">% P (Fosforo)</label><input type="number" id="ing-P" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label data-i18n="ing.el.K">% K (Potassio)</label><input type="number" id="ing-K" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label data-i18n="ing.el.Ca">% Ca (Calcio)</label><input type="number" id="ing-Ca" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label data-i18n="ing.el.Mg">% Mg (Magnesio)</label><input type="number" id="ing-Mg" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label data-i18n="ing.el.S">% S (Zolfo)</label><input type="number" id="ing-S" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label data-i18n="ing.el.Fe">% Fe (Ferro)</label><input type="number" id="ing-Fe" value="0" min="0" max="100" step="0.1"></div>
-        <div class="field"><label>% Mn</label><input type="number" id="ing-Mn" value="0" min="0" max="100" step="0.01"></div>
-        <div class="field"><label>% Zn</label><input type="number" id="ing-Zn" value="0" min="0" max="100" step="0.01"></div>
+        <div class="field"><label data-i18n="ing.el.N">% N (azoto)</label><input type="number" id="ing-N" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.P">% P (fosforo)</label><input type="number" id="ing-P" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.K">% K (potassio)</label><input type="number" id="ing-K" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Ca">% Ca (calcio)</label><input type="number" id="ing-Ca" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Mg">% Mg (magnesio)</label><input type="number" id="ing-Mg" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.S">% S (zolfo)</label><input type="number" id="ing-S" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Fe">% Fe (ferro)</label><input type="number" id="ing-Fe" value="0" min="0" max="100" step="0.1"></div>
+        <div class="field"><label data-i18n="ing.el.Mn">% Mn (manganese)</label><input type="number" id="ing-Mn" value="0" min="0" max="100" step="0.01"></div>
+        <div class="field"><label data-i18n="ing.el.Zn">% Zn (zinco)</label><input type="number" id="ing-Zn" value="0" min="0" max="100" step="0.01"></div>
       </div>
       <div class="row2">
         <div class="field"><label data-i18n="modal.ing.prezzo">Prezzo €/kg</label><input type="number" id="ing-prezzo" value="0" min="0" step="0.01" placeholder="0.00"></div>
@@ -1091,13 +1093,15 @@ const TRANSLATIONS = {
     'ph.ing.nome': 'Es. Nitrato di Potassio KNO₃',
     'ph.ric.nome': 'Es. Pomodoro Cherry',
     'ph.ric.note': 'Indica substrato, ph target, avvertenze…',
-    'ing.el.N': '% N (Azoto)',
-    'ing.el.P': '% P (Fosforo)',
-    'ing.el.K': '% K (Potassio)',
-    'ing.el.Ca': '% Ca (Calcio)',
-    'ing.el.Mg': '% Mg (Magnesio)',
-    'ing.el.S': '% S (Zolfo)',
-    'ing.el.Fe': '% Fe (Ferro)',
+    'ing.el.N': '% N (azoto)',
+    'ing.el.P': '% P (fosforo)',
+    'ing.el.K': '% K (potassio)',
+    'ing.el.Ca': '% Ca (calcio)',
+    'ing.el.Mg': '% Mg (magnesio)',
+    'ing.el.S': '% S (zolfo)',
+    'ing.el.Fe': '% Fe (ferro)',
+    'ing.el.Mn': '% Mn (manganese)',
+    'ing.el.Zn': '% Zn (zinco)',
     'ion.ca': 'Calcio', 'ion.mg': 'Magnesio', 'ion.k': 'Potassio', 'ion.na': 'Sodio',
     'ion.so4': 'Solfati', 'ion.cl': 'Cloruri', 'ion.hco3': 'Bicarbonati', 'ion.no3': 'Nitrati', 'ion.fe': 'Ferro',
   },
@@ -1269,13 +1273,15 @@ const TRANSLATIONS = {
     'ph.ing.nome': 'e.g. Potassium Nitrate KNO₃',
     'ph.ric.nome': 'e.g. Cherry Tomato',
     'ph.ric.note': 'Specify substrate, target pH, warnings…',
-    'ing.el.N': '% N (Nitrogen)',
-    'ing.el.P': '% P (Phosphorus)',
-    'ing.el.K': '% K (Potassium)',
-    'ing.el.Ca': '% Ca (Calcium)',
-    'ing.el.Mg': '% Mg (Magnesium)',
-    'ing.el.S': '% S (Sulfur)',
-    'ing.el.Fe': '% Fe (Iron)',
+    'ing.el.N': '% N (nitrogen)',
+    'ing.el.P': '% P (phosphorus)',
+    'ing.el.K': '% K (potassium)',
+    'ing.el.Ca': '% Ca (calcium)',
+    'ing.el.Mg': '% Mg (magnesium)',
+    'ing.el.S': '% S (sulfur)',
+    'ing.el.Fe': '% Fe (iron)',
+    'ing.el.Mn': '% Mn (manganese)',
+    'ing.el.Zn': '% Zn (zinc)',
     'ion.ca': 'Calcium', 'ion.mg': 'Magnesium', 'ion.k': 'Potassium', 'ion.na': 'Sodium',
     'ion.so4': 'Sulfates', 'ion.cl': 'Chlorides', 'ion.hco3': 'Bicarbonates', 'ion.no3': 'Nitrates', 'ion.fe': 'Iron',
   }
@@ -1284,7 +1290,7 @@ const TRANSLATIONS = {
 let currentLang = localStorage.getItem('fc_lang') || 'it';
 
 function t(key) {
-  return (TRANSLATIONS[currentLang] || TRANSLATIONS.it)[key] || (TRANSLATIONS.it[key] || key);
+  return expandElementRefs((TRANSLATIONS[currentLang] || TRANSLATIONS.it)[key] || (TRANSLATIONS.it[key] || key));
 }
 
 function setLang(lang) {
@@ -1301,6 +1307,7 @@ function setLang(lang) {
 }
 
 function applyLang() {
+  document.getElementById('html-root').lang = currentLang;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.dataset.i18n);
   });
@@ -1897,14 +1904,14 @@ const RICETTE_I18N = {
 
 // Helper di localizzazione dei dati: in EN usano i dizionari sopra, altrimenti il dato originale.
 function salNome(s){ if(currentLang==='en' && s){ const tr=SALI_I18N[s.id]; if(tr&&tr.nome) return tr.nome; } return s?(s.nome||''):''; }
-function salNote(s){ if(currentLang==='en' && s){ const tr=SALI_I18N[s.id]; if(tr&&tr.note) return tr.note; } return s?(s.note||''):''; }
+function salNote(s){ const out = (currentLang==='en' && s && SALI_I18N[s.id]?.note) ? SALI_I18N[s.id].note : (s?(s.note||''):''); return expandElementRefs(out); }
 function ricNome(r){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.nome) return tr.nome; } return r?(r.nome||''):''; }
-function ricNote(r){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.note) return tr.note; } return r?(r.note||''):''; }
+function ricNote(r){ const out = (currentLang==='en' && r && RICETTE_I18N[r.id]?.note) ? RICETTE_I18N[r.id].note : (r?(r.note||''):''); return expandElementRefs(out); }
 function faseNome(r,fi,f){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.fasi&&tr.fasi[fi]&&tr.fasi[fi].nome) return tr.fasi[fi].nome; } return f?(f.nome||''):''; }
-function faseNote(r,fi,f){ if(currentLang==='en' && r){ const tr=RICETTE_I18N[r.id]; if(tr&&tr.fasi&&tr.fasi[fi]&&tr.fasi[fi].note) return tr.fasi[fi].note; } return f?(f.note||''):''; }
+function faseNote(r,fi,f){ const tr = currentLang==='en' && r ? RICETTE_I18N[r.id] : null; const out = tr&&tr.fasi&&tr.fasi[fi]&&tr.fasi[fi].note ? tr.fasi[fi].note : (f?(f.note||''):''); return expandElementRefs(out); }
 
 // TT: scelta inline IT/EN per frasi del motore con interpolazione.
-function TT(it,en){ return currentLang==='en'?en:it; }
+function TT(it,en){ return expandElementRefs(currentLang==='en'?en:it); }
 // M: traduce le stringhe statiche del motore (regole di incompatibilità, ecc.).
 // Se la stringa non è mappata (es. formule chimiche) viene restituita invariata.
 const MOTORE_TR = {
@@ -1959,7 +1966,7 @@ const MOTORE_TR = {
   'Fe²⁺ libero da FeSO₄ compete col Fe nel chelato → degradazione EDTA.':'Free Fe²⁺ from FeSO₄ competes with the Fe in the chelate → EDTA degradation.',
   'Fe²⁺ libero degrada tutti i chelati del Mix.':'Free Fe²⁺ degrades all the chelates in the Mix.',
 };
-function M(s){ if(currentLang==='en' && s && MOTORE_TR[s]) return MOTORE_TR[s]; return s; }
+function M(s){ return expandElementRefs((currentLang==='en' && s && MOTORE_TR[s]) ? MOTORE_TR[s] : s); }
 
 let piantaSel = null, faseSel = null;
 let tipoRicettaSel = null; // 'builtin' o 'custom'
@@ -1989,6 +1996,79 @@ function esc(s){
 // perché chiude gli attributi HTML (es. value="${nome}") e permetterebbe di
 // iniettare handler. Limita anche la lunghezza.
 function sanitizeName(s){ return String(s==null?'':s).replace(/[<>"]/g,'').slice(0,120); }
+function isSafeId(id){ return typeof id==='string' && /^[A-Za-z0-9_-]{1,64}$/.test(id); }
+function cleanNum(v, fallback=0, min=0, max=Number.MAX_SAFE_INTEGER){
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
+}
+// Legge un numero da un campo input: vuoto/NaN → fallback.
+// A differenza di parseFloat(...)||fallback, uno "0" digitato resta 0
+// e può essere intercettato da validaInput invece di diventare il default.
+function numInput(id, fallback){
+  const n = parseFloat(document.getElementById(id)?.value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+// ── Persistenza analisi acqua (localStorage 'fc_acqua') ──
+// L'analisi dell'acqua è il dato più laborioso da reinserire: viene salvata
+// automaticamente a ogni modifica e inclusa nel backup JSON (esporta/importa).
+const AQ_FIELDS=['ec','ph','ca','mg','k','na','so4','cl','hco3','no3','fe'];
+const AQ_MAX={ec:10,ph:14,ca:1000,mg:500,k:500,na:2000,so4:2000,cl:2000,hco3:1000,no3:500,fe:50};
+function collectAcqua(){
+  const o={};
+  AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el) o[k]=cleanNum(el.value,0,0,AQ_MAX[k]||1e6); });
+  return o;
+}
+function saveAcqua(){
+  try{ localStorage.setItem('fc_acqua', JSON.stringify(collectAcqua())); }catch(e){}
+}
+function loadAcqua(){
+  const o=safeParse('fc_acqua', null);
+  if(!o||typeof o!=='object'||Array.isArray(o)) return;
+  AQ_FIELDS.forEach(k=>{
+    if(o[k]===undefined) return;
+    const el=document.getElementById('aq-'+k); if(!el) return;
+    el.value=cleanNum(o[k],0,0,AQ_MAX[k]||1e6);
+  });
+}
+function initAcquaPersist(){
+  AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el) el.addEventListener('change', saveAcqua); });
+}
+function normalizeImportedEl(el){
+  const out = {};
+  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(k=>{
+    const v = cleanNum(el && el[k], 0, 0, 100);
+    if(v>0) out[k]=v;
+  });
+  return out;
+}
+function normalizeImportedFase(f){
+  if(!f || typeof f!=='object') return null;
+  const modo = f.modo==='target' ? 'target' : 'grammi';
+  const ec = Array.isArray(f.ec) ? [cleanNum(f.ec[0],1,0,20), cleanNum(f.ec[1],2,0,20)] : [1,2];
+  const ph = Array.isArray(f.ph) ? [cleanNum(f.ph[0],5.5,0,14), cleanNum(f.ph[1],6.5,0,14)] : [5.5,6.5];
+  const fase = {
+    nome: sanitizeName(f.nome) || TT('Fase','Stage'),
+    icon: sanitizeName(f.icon) || '🌿',
+    modo,
+    ec: ec[0]<=ec[1] ? ec : [ec[1], ec[0]],
+    ph: ph[0]<=ph[1] ? ph : [ph[1], ph[0]],
+    note: sanitizeName(f.note)
+  };
+  if(modo==='target'){
+    fase.targetUnit = f.targetUnit==='mol' ? 'mol' : 'mg';
+    fase.targets = {};
+    ['N','P','K','Ca','Mg','Fe','Mn','B','Zn','Cu','Mo'].forEach(k=>{
+      const v = cleanNum(f.targets && f.targets[k], 0, 0, 10000);
+      if(v>0) fase.targets[k]=v;
+    });
+  } else {
+    fase.sali = Array.isArray(f.sali) ? f.sali
+      .filter(s=>s && isSafeId(s.id))
+      .map(s=>({id:s.id, nome:sanitizeName(s.nome), g:cleanNum(s.g,0,0,5000)})) : [];
+  }
+  return fase;
+}
 
 function fmtGram(g){
   g = Math.max(0, g); // protezione valori negativi
@@ -2069,6 +2149,16 @@ function selPianta(id, tipo){
     });
   }
 
+  // Pulsante clona/modifica disponibile già alla selezione della coltura
+  document.getElementById('btn-clona-pianta').textContent =
+    tipoRicettaSel==='builtin' ? t('js.clona') : t('js.modifica');
+
+  // Intestazione con la coltura selezionata
+  const pEmoji = piantaSel.emoji || '🌱';
+  const pNomeSel = tipoRicettaSel==='builtin' ? ricNome(piantaSel) : piantaSel.nome;
+  document.getElementById('fasi-header-title').textContent =
+    `${t('ricette.fasi')} — ${pEmoji} ${pNomeSel}`;
+
   document.getElementById('card-fasi-wrap').style.display='block';
   document.getElementById('ricetta-out-wrap').style.display='none';
 }
@@ -2076,16 +2166,6 @@ function selPianta(id, tipo){
 function selFase(i){
   faseSel = piantaSel.fasi[i];
   document.querySelectorAll('.fase-btn').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));
-
-  // Aggiorna i pulsanti in base al tipo di ricetta
-  const btnModifica = document.getElementById('btn-modifica-ricetta');
-  if(tipoRicettaSel === 'builtin'){
-    btnModifica.textContent = t('js.clona');
-    btnModifica.onclick = ()=>clonaPiantaInCustom();
-  } else {
-    btnModifica.textContent = t('js.modifica');
-    btnModifica.onclick = ()=>editCurrentCustom();
-  }
 
   renderRicettaOut(piantaSel, faseSel, tipoRicettaSel);
   document.getElementById('ricetta-out-wrap').style.display='block';
@@ -2117,7 +2197,7 @@ function renderRicettaOut(pianta, fase, tipo){
     Object.entries(tg).filter(([,v])=>v>0).forEach(([el,v])=>{
       const isMicroEl=MICRO_TARGET_ELS.includes(el);
       const unitMol=isMicroEl?'µmol/L':'mmol/L';
-      html+=`<tr><td><strong>${el}</strong> <span style="color:var(--ts);font-size:.85em">${elName(el)}</span></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} <span style="font-weight:700;color:${isMicroEl?'var(--vi)':'var(--vc)'}">${unitMol}</span></td></tr>`;
+      html+=`<tr><td><strong>${elLabel(el)}</strong></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} <span style="font-weight:700;color:${isMicroEl?'var(--vi)':'var(--vc)'}">${unitMol}</span></td></tr>`;
     });
     html+=`</tbody></table></div>`;
     document.getElementById('ricetta-out').innerHTML=html;
@@ -2247,12 +2327,6 @@ function clonaPiantaInCustom(){
   showToast(`"${piantaSel.nome}" ${t('js.ricettaCopiata')}`);
 }
 
-function editCurrentCustom(){
-  if(!piantaSel || tipoRicettaSel!=='custom') return;
-  const ri = ricetteCustom.findIndex(r=>r===piantaSel);
-  if(ri>=0) editRicetta(ri);
-}
-
 function caricaCustomInCalcola(ri,fi){
   const ric=ricetteCustom[ri]; const f=ric.fasi[fi];
   ricettaCaricata={nome:`${ric.nome} — ${f.nome}`,modo:f.modo};
@@ -2339,9 +2413,31 @@ const EL_NAME = {
   Ca:['Calcio','Calcium'], Mg:['Magnesio','Magnesium'], S:['Zolfo','Sulfur'],
   Fe:['Ferro','Iron'], Mn:['Manganese','Manganese'], Zn:['Zinco','Zinc'],
   B:['Boro','Boron'], Cu:['Rame','Copper'], Mo:['Molibdeno','Molybdenum'],
-  Na:['Sodio','Sodium'], Cl:['Cloro','Chlorine']
+  Na:['Sodio','Sodium'], Cl:['Cloro','Chlorine'], H:['Idrogeno','Hydrogen'],
+  Si:['Silicio','Silicon']
 };
 function elName(el){ const n=EL_NAME[el]; return n ? (currentLang==='en'?n[1]:n[0]) : el; }
+function elLabel(el){ const name = elName(el); return name===el ? el : `${el} (${name.toLocaleLowerCase(currentLang==='en'?'en':'it')})`; }
+// Variante HTML per contesti uppercase (.ri-lbl): preserva il case del simbolo e del nome
+function elLabelHtml(el){ const name = elName(el); return name===el ? el : `<span style="text-transform:none">${el} <span style="font-weight:500;letter-spacing:0">(${name.toLocaleLowerCase(currentLang==='en'?'en':'it')})</span></span>`; }
+function elPctList(elObj, sep=', '){ return elObj ? Object.entries(elObj).map(([k,v])=>`${elLabel(k)} ${v}%`).join(sep) : ''; }
+function expandElementRefs(text){
+  const s = String(text||'');
+  const keys = Object.keys(EL_NAME).sort((a,b)=>b.length-a.length).join('|');
+  // Le accentate (À-ÿ) devono stare nel boundary: senza, "Sì" matcherebbe la S di zolfo
+  const boundary = 'A-Za-zÀ-ÖØ-öø-ÿ0-9₀-₉⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻';
+  return s.replace(new RegExp(`(^|[^${boundary}])(${keys})(?!\\s*\\()(?=$|[^${boundary}])`,'g'), (m, pre, el, off)=>{
+    const next = s[off+m.length];
+    // Lettera di serbatoio, non elemento: "Serb. B", "Serbatoio B", "Tank B", "A/B/C"
+    const before = s.slice(Math.max(0, off-14), off+pre.length);
+    if(/(serb\.?|serbatoi\w*|tanks?)\s+$/i.test(before)) return m;
+    // Adiacente a "/" o "-": notazioni tipo A/B, Fe-EDTA, N-NO₃ — non espandere
+    if(pre==='/' || pre==='-' || next==='/' || next==='-') return m;
+    // Già tra parentesi (es. "Silicio (Si)"): è lui stesso la spiegazione
+    if(pre==='(') return m;
+    return pre+elLabel(el);
+  });
+}
 
 // ── UNITÀ TARGET: mg/L ↔ mmol/L (macro) · µmol/L (micro) ─────────
 // Solo layer di INPUT/VISUALIZZAZIONE: i targets restano sempre in mg/L
@@ -2389,7 +2485,7 @@ function renderFasiEditor(){
           const oc=isMol?`setTargetMol(${fi},'${el}',this.value)`:`setTargetMg(${fi},'${el}',this.value)`;
           return `
           <div class="tg-box">
-            <div class="tg-lbl"><span>${el}<span class="tg-name">${elName(el)}</span></span> <span class="tg-unit">${unitLbl}</span></div>
+            <div class="tg-lbl"><span>${elLabel(el)}</span> <span class="tg-unit">${unitLbl}</span></div>
             <input type="number" min="0" step="any" value="${val}" onchange="${oc}">
           </div>`;}).join('')}
       </div>`:'';
@@ -2499,7 +2595,7 @@ function renderCalcTabella(){
           ${buildSelectCalc(r.id||'__custom')}
         </select>
         ${!info?`<input type="text" placeholder="${TT('Nome…','Name…')}" value="${esc(r.nomeCustom)}" onchange="calcRighe[${i}].nomeCustom=this.value" style="margin-top:4px;font-size:.75rem;padding:5px;background:#fff">`:``}
-        ${info&&info.el?`<div class="el-txt">${Object.entries(info.el).map(([k,v])=>`${k} ${v}%`).join(', ')}</div>`:''}
+        ${info&&info.el?`<div class="el-txt">${elPctList(info.el)}</div>`:''}
       </td>
       <td style="vertical-align:top;padding-top:20px">
         <input type="number" value="${r.dose}" min="0" step="0.1" data-riga="${i}" data-campo="dose" onchange="calcRighe[${i}].dose=+this.value" style="text-align:right;width:80px;padding:5px;background:#fff">
@@ -2846,16 +2942,21 @@ function presetAcqua(tipo){
   };
   const v=map[tipo]; if(!v)return;
   Object.entries(v).forEach(([k,val])=>{ const el=document.getElementById('aq-'+k); if(el) el.value=val; });
+  saveAcqua();
 }
 
 function aggiornaDiluizioneWarning(){
-  const dil=parseFloat(document.getElementById('diluizione').value)||100;
+  const dil=numInput('diluizione',100);
   const w=document.getElementById('diluizione-warning');
   const wt=document.getElementById('diluizione-warning-txt');
   if(!w)return;
   // NOTA: diluizione ALTA = madre più concentrata = più rischio precipitazioni
   // EC_madre = EC_finale × dil → più è alto il dil, più è densa la soluzione madre
-  if(dil>200){
+  if(dil<1){
+    w.style.display='flex';
+    w.className='alert al-err';
+    wt.innerHTML=TT(`Fattore di diluizione non valido: il minimo è 1:1.`,`Invalid dilution factor: minimum is 1:1.`);
+  } else if(dil>200){
     w.style.display='flex';
     w.className='alert al-err';
     wt.innerHTML=TT(`Diluizione 1:${dil}: la soluzione madre è <strong>${dil}× la soluzione finale</strong> — concentrazione molto elevata. Rischio precipitazioni alto. Riduci la diluizione (≤ 1:150) oppure usa il Serbatoio C.`,`Dilution 1:${dil}: the mother solution is <strong>${dil}× the final solution</strong> — very high concentration. High precipitation risk. Reduce the dilution (≤ 1:150) or use Tank C.`);
@@ -3773,8 +3874,9 @@ function correggiDosi(righe, aq){
 }
 
 // ─ VALIDAZIONE INPUT (punto 6 del documento) ─────
-function validaInput(volA, volB, volC, dil, aq, righe){
+function validaInput(volA, volB, volC, dil, aq, righe, phFinale){
   const errori = [];
+  if(phFinale!==undefined && (phFinale<3||phFinale>9)) errori.push(TT(`pH soluzione finale (${phFinale}) fuori range plausibile (3–9).`,`Final solution pH (${phFinale}) out of plausible range (3–9).`));
   if(volA<1||volA>100000) errori.push(TT(`Volume Serb. A (${volA} L) fuori range valido (1–100000 L).`,`Tank A volume (${volA} L) out of valid range (1–100000 L).`));
   if(volB<1||volB>100000) errori.push(TT(`Volume Serb. B (${volB} L) fuori range valido (1–100000 L).`,`Tank B volume (${volB} L) out of valid range (1–100000 L).`));
   if(usaSerbC && (volC<1||volC>100000)) errori.push(TT(`Volume Serb. C (${volC} L) fuori range (1–100000 L).`,`Tank C volume (${volC} L) out of range (1–100000 L).`));
@@ -3797,11 +3899,13 @@ function validaInput(volA, volB, volC, dil, aq, righe){
 
 // ─ CALCOLO PRINCIPALE ──────────────────────────
 function calcola(){
-  const volA=parseFloat(document.getElementById('volA').value)||100;
-  const volB=parseFloat(document.getElementById('volB').value)||100;
-  const volC=usaSerbC?(parseFloat(document.getElementById('volC')?.value)||100):0;
-  const dil =parseFloat(document.getElementById('diluizione').value)||100;
-  const phFinale = parseFloat(document.getElementById('ph-finale')?.value)||6.0;
+  // numInput: campo vuoto → default, ma uno "0" digitato resta 0 così
+  // validaInput lo blocca (prima ||100 lo trasformava silenziosamente in 100).
+  const volA=numInput('volA',100);
+  const volB=numInput('volB',100);
+  const volC=usaSerbC?numInput('volC',100):0;
+  const dil =numInput('diluizione',100);
+  const phFinale = numInput('ph-finale',6.0);
   const aq  = getAcqua();
   let righe =calcRighe;
 
@@ -3837,7 +3941,7 @@ function calcola(){
   try {
 
   // 0. VALIDAZIONE INPUT
-  const erroriInput = validaInput(volA, volB, volC, dil, aq, wRighe);
+  const erroriInput = validaInput(volA, volB, volC, dil, aq, wRighe, phFinale);
   if(erroriInput.length>0){
     let h=`<div class="alert al-err" style="margin-top:12px"><span>🚫</span><div><strong>${TT('Input non valido — correggi prima di calcolare:','Invalid input — fix before calculating:')}</strong><ul style="margin:6px 0 0 14px;line-height:1.8;font-size:.78rem">`;
     erroriInput.forEach(e=>h+=`<li>${e}</li>`);
@@ -4032,12 +4136,12 @@ function calcola(){
       <div class="ch" style="background:var(--az)">${t('js.solFin')}</div>
       <div class="cb" style="padding-bottom:6px">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
-          <div class="ri-box"><div class="ri-lbl">${TT('N tot.','N tot.')}</div><div class="ri-val">${(ioni2.N_total+(aq.no3||0)*(14.007/62.00)).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
-          <div class="ri-box"><div class="ri-lbl">Ca</div><div class="ri-val">${(ioni2.Ca+aq.ca).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
-          <div class="ri-box"><div class="ri-lbl">Mg</div><div class="ri-val">${(ioni2.Mg+aq.mg).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
-          <div class="ri-box"><div class="ri-lbl">K</div><div class="ri-val">${(ioni2.K+aq.k).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${elLabelHtml('N')} tot.</div><div class="ri-val">${(ioni2.N_total+(aq.no3||0)*(14.007/62.00)).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${elLabelHtml('Ca')}</div><div class="ri-val">${(ioni2.Ca+aq.ca).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${elLabelHtml('Mg')}</div><div class="ri-val">${(ioni2.Mg+aq.mg).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
+          <div class="ri-box"><div class="ri-lbl">${elLabelHtml('K')}</div><div class="ri-val">${(ioni2.K+aq.k).toFixed(0)}</div><div class="ri-sub">mg/L</div></div>
         </div>
-        <div style="font-size:.7rem;color:var(--ts);margin-top:6px">EC totale: <strong>${ecFin2.toFixed(2)} mS/cm</strong> | Na ${aq.na||0} | Cl ${((ioni2.Cl||0)+(aq.cl||0)).toFixed(0)} | HCO₃⁻ ${aq.hco3||0} mg/L</div>
+        <div style="font-size:.7rem;color:var(--ts);margin-top:6px">EC totale: <strong>${ecFin2.toFixed(2)} mS/cm</strong> | ${elLabel('Na')} ${aq.na||0} | ${elLabel('Cl')} ${((ioni2.Cl||0)+(aq.cl||0)).toFixed(0)} | HCO₃⁻ (${TT('bicarbonati','bicarbonates')}) ${aq.hco3||0} mg/L</div>
       </div>
     </div>`;
   }
@@ -4211,7 +4315,7 @@ function calcola(){
           <span>✅</span>
           <span>${TT('Concentrato sicuro: tutti gli SI nel concentrato sotto soglia.','Safe concentrate: all SI in the concentrate below threshold.')}</span>
         </div>`}
-    </div></div>`;
+    </div>`;
 
     // ── AVVISO PROSSIMITÀ SATURAZIONE — consigli operativi ──
     // La saturazione nella soluzione finale NON dipende dalla diluizione
@@ -4459,7 +4563,7 @@ function calcola(){
           <thead><tr style="background:var(--cs)">
             <th style="text-align:left;padding:5px 8px">${t('js.sale')}</th>
             <th style="padding:5px 4px;text-align:center">${t('js.serb')}</th>
-            ${EL_C.map(e=>`<th style="padding:5px 6px;text-align:right">${e}</th>`).join('')}
+            ${EL_C.map(e=>`<th style="padding:5px 6px;text-align:right">${elLabel(e)}</th>`).join('')}
           </tr></thead>
           <tbody>
             ${contrib.map(c=>`<tr style="border-bottom:1px solid var(--cs)">
@@ -4543,54 +4647,112 @@ function calcola(){
 function stampaMiscela(){
   const contenuto = document.getElementById('risultato-stampa');
   if(!contenuto){ window.print(); return; }
+  // innerText con fallback textContent (robusto anche fuori dal browser)
+  const txt = el => el ? ((el.innerText!==undefined && el.innerText!==null) ? el.innerText : (el.textContent||'')) : '';
   const dataOra = new Date().toLocaleString(currentLang==='en'?'en-GB':'it-IT',{dateStyle:'short',timeStyle:'short'});
 
   const badgeEl = contenuto.querySelector('.al-ok, .al-err');
-  const badge   = badgeEl ? badgeEl.innerText.trim().substring(0,160) : '';
+  const badge   = badgeEl ? txt(badgeEl).trim().substring(0,160) : '';
   const badgeOk = badgeEl && badgeEl.classList.contains('al-ok');
 
-  // Serbatoi
+  // ── Parametri impianto: letti direttamente dagli input (non dal DOM dei risultati) ──
+  const pVolA = numInput('volA',100), pVolB = numInput('volB',100);
+  const pVolC = usaSerbC ? numInput('volC',100) : null;
+  const pDil  = numInput('diluizione',100);
+  const pPh   = numInput('ph-finale',6.0);
+  const nomeRicetta = (ricettaCaricata && ricettaCaricata.nome)
+    ? ricettaCaricata.nome
+    : (txt(document.getElementById('lbl-ricetta-caricata')).trim() || '\u2014');
+
+  // EC finale prevista, dal riepilogo a schermo
+  let ecFinale = '';
+  contenuto.querySelectorAll('.eco-row').forEach(r=>{
+    const l = txt(r.children[0]);
+    if(/EC soluzione finale|Final solution EC/.test(l)) ecFinale = txt(r.children[1]).trim();
+  });
+
+  // Strip parametri in testa alla scheda
+  const params = [
+    {l:TT('Serbatoio A','Tank A'), v:pVolA, s:'L'},
+    {l:TT('Serbatoio B','Tank B'), v:pVolB, s:'L'},
+  ];
+  if(pVolC !== null) params.push({l:TT('Serbatoio C','Tank C'), v:pVolC, s:'L'});
+  params.push({l:TT('Diluizione','Dilution'), v:'1:'+pDil, s:TT('conc. \u2192 finale','conc. \u2192 final')});
+  params.push({l:TT('pH finale','Final pH'), v:pPh, s:TT('in coltura','in culture')});
+  if(ecFinale) params.push({l:TT('EC prevista','Expected EC'), v:ecFinale.replace(/\s*mS\/cm/,''), s:'mS/cm'});
+  const paramsHtml = params.map(p=>`<div class="pbox"><div class="pl">${p.l}</div><div class="pv">${p.v}</div><div class="ps">${p.s}</div></div>`).join('');
+
+  // ── Serbatoi: righe sali con casella di spunta per l'operatore ──
+  const TANK_COLORS = ['#1e8449','#2471a3','#7b3f9e'];
   let serbHtml = '';
   const serbCards = contenuto.querySelectorAll('.serb-card');
   const nSerb = serbCards.length || 2;
-  serbCards.forEach(card => {
-    const titolo = card.querySelector('.serb-title')?.innerText?.replace(/\s+/g,' ').trim() || '';
+  serbCards.forEach((card, idx) => {
+    const col = TANK_COLORS[idx] || '#333';
+    const titolo = txt(card.querySelector('.serb-title')).replace(/\s+/g,' ').trim();
     let righe = '';
     card.querySelectorAll('.sale-row').forEach(row => {
-      const nome = row.children[0]?.innerText || '';
-      const dose = row.children[1]?.innerText?.split('\n')[0] || '';
-      righe += `<tr><td>${nome}</td><td class="r">${dose}</td></tr>`;
+      const isTot = row.classList.contains('tot-row');
+      const nome = txt(row.children[0]).replace(/\s+/g,' ').trim();
+      const dose = txt(row.children[1]).split('\n')[0] || '';
+      righe += isTot
+        ? `<tr class="tot"><td></td><td>${nome}</td><td class="r" style="color:${col}">${dose}</td></tr>`
+        : `<tr><td class="cbx">\u2610</td><td>${nome}</td><td class="r" style="color:${col}">${dose}</td></tr>`;
     });
-    serbHtml += `<div class="serb"><div class="st">${titolo}</div><table>${righe}</table></div>`;
+    serbHtml += `<div class="serb" style="border-color:${col}"><div class="st" style="background:${col}">${titolo}</div><table>${righe}</table></div>`;
   });
 
-  // Riepilogo
+  // ── Riepilogo parametri calcolati ──
   let riepilogoHtml = '';
-  const rCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('📊'));
+  const rCard = [...contenuto.querySelectorAll('.card')].find(c => txt(c.querySelector('.ch')).includes('\ud83d\udcca'));
   if(rCard){
     rCard.querySelectorAll('.eco-row').forEach(r => {
-      riepilogoHtml += `<tr><td>${r.children[0]?.innerText||''}</td><td class="r">${r.children[1]?.innerText||''}</td></tr>`;
+      riepilogoHtml += `<tr><td>${txt(r.children[0])}</td><td class="r">${txt(r.children[1])}</td></tr>`;
     });
   }
 
-  // Apporti ionici principali
+  // ── Apporti ionici principali ──
   let ioniHtml = '';
-  const ioniCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('💧'));
+  const ioniCard = [...contenuto.querySelectorAll('.card')].find(c => txt(c.querySelector('.ch')).includes('\ud83d\udca7'));
   if(ioniCard){
     ioniCard.querySelectorAll('.ri-box').forEach(box => {
-      const lbl = box.querySelector('.ri-lbl')?.innerText || '';
-      const val = box.querySelector('.ri-val')?.innerText || '';
-      const sub = box.querySelector('.ri-sub')?.innerText || '';
+      const lbl = txt(box.querySelector('.ri-lbl'));
+      const val = txt(box.querySelector('.ri-val'));
+      const sub = txt(box.querySelector('.ri-sub'));
       if(lbl && val) ioniHtml += `<tr><td>${lbl}</td><td class="r"><strong>${val}</strong>&nbsp;<small>${sub}</small></td></tr>`;
     });
   }
 
-  // Procedura
+  // ── Correzione pH / bicarbonati (se il calcolo l'ha prodotta) ──
+  let acidoHtml = '';
+  const acidoCard = [...contenuto.querySelectorAll('.card')].find(c => {
+    const h = txt(c.querySelector('.ch'));
+    return h.includes('\ud83e\uddea') && /Correzione pH|Bicarbonate Correction/.test(h);
+  });
+  if(acidoCard){
+    let boxes = '';
+    acidoCard.querySelectorAll('.ri-box').forEach(b => {
+      boxes += `<div class="pbox amber"><div class="pl">${txt(b.querySelector('.ri-lbl'))}</div><div class="pv">${txt(b.querySelector('.ri-val'))}</div><div class="ps">${txt(b.querySelector('.ri-sub'))}</div></div>`;
+    });
+    const note = txt([...acidoCard.querySelectorAll('.cb > div')].pop());
+    acidoHtml = `<div class="acid"><div class="acid-t">${TT('\ud83e\uddea Correzione pH / Bicarbonati','\ud83e\uddea pH / Bicarbonate Correction')}</div><div class="pgrid" style="grid-template-columns:repeat(3,1fr)">${boxes}</div>${note?`<div class="acid-n">${note}</div>`:''}</div>`;
+  }
+
+  // ── Avvisi da verificare manualmente ──
+  let avvisiHtml = '';
+  const avvisoEl = [...contenuto.querySelectorAll('.alert')].find(a => txt(a).includes(t('js.avvisiManuali')));
+  if(avvisoEl){
+    let items = '';
+    avvisoEl.querySelectorAll('li').forEach(li => { items += `<li>${txt(li)}</li>`; });
+    if(items) avvisiHtml = `<div class="avvisi"><div class="avvisi-t">\u26a0\ufe0f ${t('js.avvisiManuali')}</div><ul>${items}</ul></div>`;
+  }
+
+  // ── Procedura con caselle di spunta ──
   let procHtml = '';
-  const procCard = [...contenuto.querySelectorAll('.card')].find(c => c.querySelector('.ch')?.innerText.includes('📋'));
+  const procCard = [...contenuto.querySelectorAll('.card')].find(c => txt(c.querySelector('.ch')).includes('\ud83d\udccb'));
   if(procCard){
-    procCard.querySelectorAll('li').forEach(li => {
-      procHtml += `<li>${li.innerText}</li>`;
+    procCard.querySelectorAll('li').forEach((li, i) => {
+      procHtml += `<li><span class="pn">${i+1}</span><span class="pc">\u2610</span><span class="pt">${txt(li)}</span></li>`;
     });
   }
 
@@ -4599,69 +4761,115 @@ function stampaMiscela(){
   const htmlStampa = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="utf-8">
 <title>FertiControl ${dataOra}</title>
 <style>
-@page{size:A4 portrait;margin:10mm}
+@page{size:A4 portrait;margin:12mm}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:7pt;color:#111;line-height:1.35}
-.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:3px;margin-bottom:4px}
-.header h1{font-size:10pt;color:#2d6a2d;font-weight:700}
-.header .meta{font-size:6pt;color:#555;text-align:right;line-height:1.5}
-.badge{display:inline-block;padding:2.5px 8px;border-radius:3px;font-size:6.5pt;font-weight:700;margin-bottom:3px;border:1px solid}
+body{font-family:Arial,Helvetica,sans-serif;font-size:9pt;color:#1a1a1a;line-height:1.4;background:#edf2ed;padding:10mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{width:186mm;max-width:100%;margin:0 auto;background:#fff;border:1px solid #d7ddd7;border-radius:5px;padding:7mm;box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden}
+.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2d6a2d;padding-bottom:6px;margin-bottom:6px;break-inside:avoid}
+.header h1{font-size:14pt;color:#2d6a2d;font-weight:700;letter-spacing:.01em}
+.header .sub{font-size:8pt;color:#555;margin-top:2px}
+.header .meta{text-align:right;max-width:45%}
+.header .meta .ric{font-size:10.5pt;font-weight:700;color:#2d6a2d;line-height:1.25}
+.header .meta .mt{font-size:7.5pt;color:#666;margin-top:2px}
+.badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:8.5pt;font-weight:700;margin:2px 0 4px;border:1.5px solid}
 .badge.ok{background:#e8f5e8;border-color:#2d6a2d;color:#155724}
 .badge.err{background:#fde8e8;border-color:#c0392b;color:#721c24}
-.warn{background:#fff8e1;border:1px solid #f0c040;border-radius:3px;padding:2px 6px;font-size:6pt;color:#7a5c00;margin-bottom:5px}
-.serb-grid{display:grid;grid-template-columns:${gridCols};gap:3.5mm;margin-bottom:5mm}
-.serb{border:1.5px solid #2d6a2d;border-radius:3px;overflow:hidden}
-.st{background:#2d6a2d;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
-.bottom-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:5mm;align-items:start}
-.box{border:1px solid #ccc;border-radius:3px;overflow:hidden;margin-bottom:3mm}
-.box-title{background:#4a7c59;color:#fff;padding:2px 5px;font-weight:700;font-size:6.5pt}
-table{width:100%;border-collapse:collapse}
-td{padding:1.5px 5px;border-bottom:1px solid #eee;font-size:6.5pt}
-tr:last-child td{border-bottom:none;font-weight:700;background:#f0f5f0}
-.r{text-align:right;font-family:monospace}
-small{font-size:5.5pt;color:#666;font-weight:normal}
-h2{font-size:7pt;color:#2d6a2d;font-weight:700;margin-bottom:2px;margin-top:0;border-bottom:1px solid #c8e6c8;padding-bottom:1px}
-ol{padding-left:13px;margin:0}
-li{font-size:6.5pt;margin-bottom:2.5px;line-height:1.35}
-.firma{border-top:1px dashed #aaa;margin-top:5mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;padding-top:2mm}
-.firma-line{border-top:1px solid #333;padding-top:2px;margin-top:7mm;font-size:6pt;color:#444}
+.warn{background:#fff8e1;border:1px solid #e6b800;border-radius:4px;padding:4px 8px;font-size:8pt;color:#6b5200;margin-bottom:4px}
+.params{display:grid;grid-template-columns:repeat(${params.length},1fr);gap:2.5mm;margin:3mm 0 4mm;break-inside:avoid}
+.pbox{border:1px solid #cfe0cf;border-radius:4px;padding:4px 4px 3px;text-align:center;background:#f6faf6}
+.pbox.amber{border-color:#e6c980;background:#fdf8ec}
+.pl{font-size:6.5pt;text-transform:uppercase;letter-spacing:.05em;color:#5a6b5a;font-weight:700}
+.pv{font-size:13pt;font-weight:700;font-family:Consolas,'Courier New',monospace;color:#1a3a2a;margin:1px 0;white-space:nowrap}
+.ps{font-size:6.5pt;color:#8a958a}
+h2{font-size:10pt;color:#2d6a2d;font-weight:700;border-bottom:1px solid #c8e6c8;padding-bottom:2px;margin:4mm 0 2.5mm}
+.serb-grid{display:grid;grid-template-columns:${gridCols};gap:4mm;break-inside:avoid}
+.serb{border:1.5px solid;border-radius:4px;overflow:hidden;break-inside:avoid}
+.st{color:#fff;padding:3px 8px;font-weight:700;font-size:9pt;letter-spacing:.02em}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead{display:table-header-group}
+tr{break-inside:avoid}
+td{padding:3px 6px;border-bottom:1px solid #ececec;font-size:8.5pt;vertical-align:top;overflow-wrap:anywhere}
+td.cbx{width:15px;font-size:11pt;padding:2px 0 0 6px;color:#666;line-height:1}
+tr.tot td{border-top:1.5px solid #bbb;border-bottom:none;font-weight:700;background:#f4f8f4}
+.r{text-align:right;font-family:Consolas,'Courier New',monospace;font-weight:700;font-size:9pt;white-space:nowrap}
+small{font-size:7pt;color:#666;font-weight:normal}
+.acid{border:1.5px solid #d49a1a;border-radius:4px;margin-top:4mm;padding:0;overflow:hidden;break-inside:avoid}
+.acid-t{background:#d49a1a;color:#fff;font-weight:700;font-size:9pt;padding:3px 8px}
+.acid .pgrid{display:grid;gap:2.5mm;padding:3mm}
+.acid-n{font-size:7.5pt;color:#6b5200;padding:0 3mm 2.5mm;font-style:italic}
+.avvisi{border:1.5px solid #c0392b;border-radius:4px;margin-top:4mm;overflow:hidden;break-inside:avoid}
+.avvisi-t{background:#c0392b;color:#fff;font-weight:700;font-size:9pt;padding:3px 8px}
+.avvisi ul{padding:2mm 3mm 2mm 8mm;margin:0}
+.avvisi li{font-size:8pt;color:#5a1a12;margin-bottom:1.5px}
+.bottom-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:5mm;align-items:start;margin-top:1mm}
+.box{border:1px solid #ccc;border-radius:4px;overflow:hidden;margin-bottom:3mm;break-inside:avoid}
+.box-title{background:#4a7c59;color:#fff;padding:3px 8px;font-weight:700;font-size:8.5pt}
+.box td{font-size:8pt;padding:2.5px 7px}
+.box tr:last-child td{border-bottom:none}
+ol.proc{list-style:none;padding:0;margin:0}
+ol.proc li{display:flex;gap:5px;align-items:flex-start;font-size:8.5pt;margin-bottom:3px;line-height:1.4;break-inside:avoid}
+ol.proc .pn{flex-shrink:0;width:14px;height:14px;border-radius:50%;background:#2d6a2d;color:#fff;font-size:7pt;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+ol.proc .pc{flex-shrink:0;font-size:11pt;line-height:1;color:#666;margin-top:-1px}
+.firma{border-top:1px dashed #aaa;margin-top:6mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8mm;padding-top:2mm;break-inside:avoid}
+.firma-line{border-top:1px solid #333;padding-top:3px;margin-top:9mm;font-size:7.5pt;color:#444}
+.footer{margin-top:4mm;text-align:center;font-size:6.5pt;color:#999;border-top:1px solid #eee;padding-top:2mm}
+@media print{
+  body{background:#fff;padding:0}
+  .sheet{width:100%;max-width:none;margin:0;padding:5mm;border:1px solid #d7ddd7;border-radius:0;box-shadow:none}
+  a{color:inherit;text-decoration:none}
+}
 </style></head><body>
 
+<main class="sheet">
 <div class="header">
   <div>
-    <h1>${TT('FertiControl — Scheda Miscela Nutritiva','FertiControl — Nutrient Mix Sheet')}</h1>
-    <div style="font-size:6pt;color:#555;margin-top:1px">${TT('Generata:','Generated:')} ${dataOra}</div>
+    <h1>\ud83c\udf3f FertiControl</h1>
+    <div class="sub">${TT('Scheda Miscela Nutritiva \u2014 Soluzioni Madri per Fertirrigazione','Nutrient Mix Sheet \u2014 Mother Solutions for Fertigation')}</div>
+    <div class="sub">${TT('Generata:','Generated:')} ${dataOra}</div>
   </div>
-  <div class="meta">${TT('Coltura Coco Coir — Soluzioni Madri A/B','Coco Coir crop — Mother Solutions A/B')}${nSerb>=3?'/C':''}<br>${TT('Fertirrigazione idroponica','Hydroponic fertigation')}</div>
+  <div class="meta">
+    <div class="ric">${nomeRicetta}</div>
+    <div class="mt">${TT('Coltura Coco Coir \u2014 Serbatoi','Coco Coir crop \u2014 Tanks')} A/B${nSerb>=3?'/C':''}</div>
+  </div>
 </div>
 
 <div class="badge ${badgeOk?'ok':'err'}">${badge}</div>
-<div class="warn">${TT('⚠️ Verificare sempre EC e pH al punto di consegna prima dell\'irrigazione. Non miscelare mai i concentrati direttamente tra loro.','⚠️ Always check EC and pH at the delivery point before irrigation. Never mix the concentrates directly together.')}</div>
+<div class="warn">\u26a0\ufe0f ${TT('Verificare sempre EC e pH al punto di consegna prima dell\'irrigazione. Non miscelare mai i concentrati direttamente tra loro.','Always check EC and pH at the delivery point before irrigation. Never mix the concentrates directly together.')}</div>
 
-<h2 style="margin-bottom:3px">${TT('Soluzioni Madri — Dosi per Concentrato','Mother Solutions — Doses per Concentrate')}</h2>
+<div class="params">${paramsHtml}</div>
+
+<h2>${TT('Soluzioni Madri \u2014 Dosi per Serbatoio','Mother Solutions \u2014 Doses per Tank')} <span style="font-weight:400;font-size:7.5pt;color:#777">${TT('(spuntare ogni sale dopo l\'aggiunta)','(tick each salt after adding)')}</span></h2>
 <div class="serb-grid">${serbHtml}</div>
 
+${acidoHtml}
+${avvisiHtml}
+
+<h2>${TT('Riepilogo e Procedura','Summary and Procedure')}</h2>
 <div class="bottom-grid">
   <div>
-    <h2>${TT('Riepilogo Parametri','Parameter Summary')}</h2>
     <div class="box">
-      <div class="box-title">${TT('Risultati calcolo','Calculation results')}</div>
+      <div class="box-title">${TT('\ud83d\udcca Risultati calcolo','\ud83d\udcca Calculation results')}</div>
       <table>${riepilogoHtml}</table>
     </div>
-    ${ioniHtml?`<h2>${TT('Apporti Ionici Finali','Final Ionic Inputs')}</h2><div class="box"><div class="box-title">${TT('mg/L soluzione diluita','mg/L diluted solution')}</div><table>${ioniHtml}</table></div>`:''}
+    ${ioniHtml?`<div class="box"><div class="box-title">${TT('\ud83d\udca7 Apporti ionici \u2014 mg/L soluzione diluita','\ud83d\udca7 Ionic inputs \u2014 mg/L diluted solution')}</div><table>${ioniHtml}</table></div>`:''}
   </div>
   <div>
-    <h2>${TT('Procedura di Preparazione','Preparation Procedure')}</h2>
-    <ol>${procHtml}</ol>
+    <div class="box">
+      <div class="box-title">${TT('\ud83d\udccb Procedura di preparazione','\ud83d\udccb Preparation procedure')}</div>
+      <div style="padding:2.5mm"><ol class="proc">${procHtml}</ol></div>
+    </div>
   </div>
 </div>
 
 <div class="firma">
   <div class="firma-line">${TT('Preparata da','Prepared by')}</div>
   <div class="firma-line">${TT('Verificata da','Verified by')}</div>
-  <div class="firma-line">${TT('Data preparazione','Preparation date')}</div>
+  <div class="firma-line">${TT('Data e ora preparazione','Preparation date and time')}</div>
 </div>
 
+<div class="footer">FertiControl \u2014 ${TT('documento generato automaticamente: le dosi calcolate vanno sempre verificate prima della preparazione. Misurare EC e pH della soluzione finale.','automatically generated document: calculated doses must always be verified before preparation. Measure EC and pH of the final solution.')}</div>
+
+</main>
 </body></html>`;
 
   lanciaStampa(htmlStampa);
@@ -4736,7 +4944,7 @@ function stampaCatalogo(){
       if(!items.length) return;
       let righe='';
       items.forEach(s=>{
-        const elStr = s.el?Object.entries(s.el).map(([k,v])=>`${k} ${v}%`).join(', '):'';
+        const elStr = elPctList(s.el);
         const prezzo = s.prezzo?`€${s.prezzo}/kg`:'—';
         righe += `<tr><td>${salNome(s)}</td><td>${elStr}</td><td class="r">${prezzo}</td></tr>`;
       });
@@ -4748,7 +4956,7 @@ function stampaCatalogo(){
     if(altre.length){
       let righe='';
       altre.forEach(s=>{
-        const elStr = s.el?Object.entries(s.el).map(([k,v])=>`${k} ${v}%`).join(', '):'';
+        const elStr = elPctList(s.el);
         const prezzo = s.prezzo?`€${s.prezzo}/kg`:'—';
         righe += `<tr><td>${salNome(s)}</td><td>${elStr}</td><td class="r">${prezzo}</td></tr>`;
       });
@@ -4762,25 +4970,33 @@ function stampaCatalogo(){
 <style>
 @page{size:A4 portrait;margin:12mm}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#111;line-height:1.4}
-.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:4px;margin-bottom:8px}
+body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#111;line-height:1.4;background:#edf2ed;padding:10mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{width:186mm;max-width:100%;margin:0 auto;background:#fff;border:1px solid #d7ddd7;border-radius:5px;padding:7mm;box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden}
+.header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2d6a2d;padding-bottom:4px;margin-bottom:8px;break-inside:avoid}
 .header h1{font-size:12pt;color:#2d6a2d;font-weight:700}
 .header .meta{font-size:7pt;color:#555;text-align:right;line-height:1.5}
 .sez{margin-bottom:9mm;break-inside:avoid}
-.sez-h{font-size:10pt;font-weight:700;padding:3px 8px;border-radius:3px;margin-bottom:5px;display:flex;justify-content:space-between}
+.sez-h{font-size:10pt;font-weight:700;padding:4px 9px;border-radius:4px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
 .sez-ok{background:#e8f5e8;color:#155724;border:1px solid #2d6a2d}
 .sez-no{background:#fde8e8;color:#721c24;border:1px solid #c0392b}
 .grp{margin-bottom:4mm;break-inside:avoid}
 .gt{font-size:8pt;font-weight:700;color:#2d6a2d;border-bottom:1px solid #c8e6c8;padding-bottom:1px;margin-bottom:2px}
-table{width:100%;border-collapse:collapse}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead{display:table-header-group}
+tr{break-inside:avoid}
 th{text-align:left;font-size:6.5pt;color:#666;text-transform:uppercase;border-bottom:1px solid #ccc;padding:2px 5px}
-td{padding:2px 5px;border-bottom:1px solid #eee;font-size:7.5pt}
+td{padding:2px 5px;border-bottom:1px solid #eee;font-size:7.5pt;vertical-align:top;overflow-wrap:anywhere}
 .r{text-align:right;font-family:monospace}
 .vuoto{font-size:7.5pt;color:#888;font-style:italic;padding:3px 5px}
 .tot{font-size:7pt;color:#555;font-weight:400}
 .firma{border-top:1px dashed #aaa;margin-top:6mm;padding-top:3mm;font-size:7pt;color:#444}
+@media print{
+  body{background:#fff;padding:0}
+  .sheet{width:100%;max-width:none;margin:0;padding:5mm;border:1px solid #d7ddd7;border-radius:0;box-shadow:none}
+}
 </style></head><body>
 
+<main class="sheet">
 <div class="header">
   <div>
     <h1>${TT('FertiControl — Catalogo Ingredienti','FertiControl — Ingredient Catalog')}</h1>
@@ -4801,6 +5017,7 @@ td{padding:2px 5px;border-bottom:1px solid #eee;font-size:7.5pt}
 
 <div class="firma">${TT('Lista della spesa / inventario — spuntare gli ingredienti da riordinare.','Shopping list / inventory — check the ingredients to reorder.')} _____________________________</div>
 
+</main>
 </body></html>`;
 
   lanciaStampaIframe(htmlStampa);
@@ -5023,7 +5240,7 @@ function renderCatalogo(){
     row.className='cat-row '+(disp?'row-dispon':'row-manca');
     row.id='cat-row-'+s.id;
     const c=CAT[s.cat]||{bg:'#555',label:'?'};
-    const elStr=s.el?Object.entries(s.el).map(([k,v])=>`${k}: ${v}%`).join(', '):'';
+    const elStr=elPctList(s.el, ', ');
     const isCustom=!SALI_DEFAULT.find(x=>x.id===s.id);
     row.innerHTML=`
       <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;flex:1;min-width:0;margin:0">
@@ -5147,11 +5364,12 @@ function esportaDati(){
       app: 'FertiControl',
       version: '2.0',
       esportato: new Date().toISOString(),
-      descrizione: 'Backup catalogo ingredienti, ricette personalizzate e scorta magazzino'
+      descrizione: 'Backup catalogo ingredienti, ricette personalizzate, scorta magazzino e analisi acqua'
     },
     catalogo: catalogo,
     ricetteCustom: ricetteCustom,
-    scorta: [...scorta]
+    scorta: [...scorta],
+    acqua: collectAcqua()
   };
   const json = JSON.stringify(payload, null, 2);
   const blob = new Blob([json], {type:'application/json'});
@@ -5194,8 +5412,19 @@ function importaDati(input){
         // schema malformato romperebbe il solver. Sanifica nome/note importati.
         const custom = data.catalogo.filter(s=>!defaultIds.has(s.id));
         const nuoviCustom = custom
-          .filter(s=>s && typeof s.id==='string' && s.el && typeof s.el==='object')
-          .map(s=>({...s, nome:sanitizeName(s.nome), note:sanitizeName(s.note)}));
+          .filter(s=>s && isSafeId(s.id) && s.el && typeof s.el==='object')
+          .map(s=>({
+            id:s.id,
+            nome:sanitizeName(s.nome) || s.id,
+            cat:['macro','micro','ph'].includes(s.cat) ? s.cat : 'macro',
+            serb:['A','B','C'].includes(s.serb) ? s.serb : 'A',
+            el:normalizeImportedEl(s.el),
+            note:sanitizeName(s.note),
+            prezzo:cleanNum(s.prezzo,0,0,1000000),
+            dose:cleanNum(s.dose,0,0,5000),
+            ecC:cleanNum(s.ecC,0,0,100)
+          }))
+          .filter(s=>Object.keys(s.el).length>0);
         const scartati = custom.length - nuoviCustom.length;
         catalogo = [...base, ...nuoviCustom];
         saveCatalogo();
@@ -5207,8 +5436,13 @@ function importaDati(input){
         // Tieni solo ricette valide (nome + fasi array) e sanifica i testi (anche le fasi).
         const valide = data.ricetteCustom
           .filter(r => r && typeof r.nome==='string' && Array.isArray(r.fasi))
-          .map(r => ({...r, nome:sanitizeName(r.nome), note:sanitizeName(r.note),
-            fasi:r.fasi.map(f=>({...f, nome:sanitizeName(f&&f.nome), note:sanitizeName(f&&f.note)}))}));
+          .map(r => ({
+            nome:sanitizeName(r.nome),
+            emoji:sanitizeName(r.emoji) || '🌱',
+            note:sanitizeName(r.note),
+            fasi:r.fasi.map(normalizeImportedFase).filter(Boolean)
+          }))
+          .filter(r => r.nome && r.fasi.length);
         const existingNames = new Set(ricetteCustom.map(r => r.nome));
         const nuove = valide.filter(r => !existingNames.has(r.nome));
         const giàPresenti = valide.length - nuove.length;
@@ -5222,9 +5456,22 @@ function importaDati(input){
 
       if(Array.isArray(data.scorta)){
         // Union: keep all currently checked + those from backup
-        data.scorta.forEach(id => scorta.add(id));
+        const catalogoIds = new Set(catalogo.map(s=>s.id));
+        data.scorta.filter(id=>isSafeId(id) && catalogoIds.has(id)).forEach(id => scorta.add(id));
         saveScorta();
         msg.push(TT(`Scorta: ${scorta.size} ingredienti`,`Stock: ${scorta.size} ingredients`));
+      }
+
+      if(data.acqua && typeof data.acqua==='object' && !Array.isArray(data.acqua)){
+        // Ripristina l'analisi acqua dal backup: solo campi noti, valori
+        // sanificati con cleanNum entro i range plausibili (AQ_MAX).
+        AQ_FIELDS.forEach(k=>{
+          if(data.acqua[k]===undefined) return;
+          const el=document.getElementById('aq-'+k); if(!el) return;
+          el.value=cleanNum(data.acqua[k],0,0,AQ_MAX[k]||1e6);
+        });
+        saveAcqua();
+        msg.push(TT('Analisi acqua ripristinata','Water analysis restored'));
       }
 
       renderCatalogo();
@@ -5253,6 +5500,7 @@ function eseguiReset(){
   saveCatalogo();
   saveRicette();
   saveScorta();
+  presetAcqua('media'); // acqua ai valori di default (salvata da presetAcqua)
   renderCatalogo();
   renderRicetteCustom();
   calcRighe = [];
@@ -5262,6 +5510,8 @@ function eseguiReset(){
 
 // ─ INIT ─────────────────────────────────────────
 initPiante();
+loadAcqua();        // ripristina l'analisi acqua salvata
+initAcquaPersist(); // autosalvataggio dei campi acqua a ogni modifica
 renderCatalogo();
 renderRicetteCustom();
 renderCalcTabella();
@@ -5312,5 +5562,8 @@ applyLang();
   </div>
 </div>
 
+<script>
+applyLang();
+</script>
 </body>
 </html>
