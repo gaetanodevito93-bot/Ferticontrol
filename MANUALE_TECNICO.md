@@ -370,7 +370,7 @@ Il verdetto complessivo `sicuro` è vero solo senza conflitti critici; in caso c
 
 ### 11.1 Il catalogo di fabbrica
 
-**23 prodotti** (`SALI_DEFAULT`) in tre categorie:
+**22 prodotti** (`SALI_DEFAULT`) in tre categorie:
 
 - **Macro**: Ca(NO₃)₂·4H₂O, KNO₃, Mg(NO₃)₂·6H₂O, MgSO₄·7H₂O, KH₂PO₄, MAP, K₂SO₄, NH₄NO₃, CaCl₂·2H₂O;
 - **Micro**: Fe-EDTA 13%, Fe-DTPA 11%, Fe-EDDHA 6%, Mix Chelati (Fe+Mn+Zn+Cu+B+Mo), FeSO₄·7H₂O, MnSO₄·H₂O, ZnSO₄·7H₂O, H₃BO₃, Na₂MoO₄·2H₂O;
