@@ -118,9 +118,11 @@ L'analisi dell'acqua di partenza (acquedotto, pozzo, osmosi):
 - **EC** (mS/cm) e **pH**;
 - ioni in mg/L: **Ca²⁺, Mg²⁺, K⁺, Na⁺, SO₄²⁻, Cl⁻, HCO₃⁻, NO₃⁻, Fe**.
 
-### 4.2 Preset rapidi
+### 4.2 Preset rapidi e profili personali
 
 Sei profili tipici precompilati: **Ottima (EC 0.1)**, **Acquedotto medio**, **Acqua dura**, **Osmosi inversa**, **Piovana**, **Distillata**. Servono come punto di partenza quando non si dispone di un'analisi di laboratorio.
+
+Accanto ai preset generici, l'utente può salvare le **proprie analisi con un nome** ("Pozzo — analisi giugno", "Acquedotto casa") e richiamarle con un click: è la soluzione per chi ha più fonti idriche o analisi stagionali. I profili personali sono persistiti in `fc_acqua_profili`, inclusi nel backup JSON (export/import con merge per nome), aggiornabili risalvando lo stesso nome ed eliminabili singolarmente con conferma.
 
 ### 4.3 Come viene usata l'acqua nel calcolo
 
@@ -394,7 +396,7 @@ Ogni prodotto ha: `id`, nome con formula, categoria, **composizione elementare i
 
 ## Capitolo 12 — Scheda Dati
 
-- **⬇ Esporta**: scarica un JSON con catalogo, scorta e ricette personalizzate — backup o condivisione della configurazione tra dispositivi/utenti.
+- **⬇ Esporta**: scarica un JSON con catalogo, scorta, ricette personalizzate, analisi acqua corrente e profili acqua salvati — backup o condivisione della configurazione tra dispositivi/utenti.
 - **⬆ Importa**: carica un JSON esportato. Le ricette e gli ingredienti custom vengono **uniti** agli esistenti; per gli ingredienti default vengono aggiornati i prezzi ma **non** la composizione chimica (che resta quella autoritativa del file). Ogni campo importato è normalizzato e sanificato (`normalizeImportedEl`, `normalizeImportedFase`, `stripTags`, controlli su ID).
 - **↺ Reset**: ripristino di fabbrica (catalogo default, scorta piena, zero ricette custom) con doppia conferma — irreversibile, l'app invita a esportare prima.
 - **📊 Stato attuale**: contatori live (ingredienti, disponibili in scorta, ricette custom, ricette predefinite).
@@ -423,6 +425,7 @@ Tutto in `localStorage` del browser — nessun dato lascia il dispositivo:
 |---|---|
 | `fc_lang` | Lingua interfaccia (`it`/`en`) |
 | `fc_acqua` | Analisi acqua corrente |
+| `fc_acqua_profili` | Profili acqua salvati dall'utente (nome + analisi) |
 | `fc_catalogo` | Catalogo ingredienti (default modificati + custom) |
 | `fc_catalogo_v` | Versione del catalogo per la migrazione |
 | `fc_ricette` | Ricette personalizzate |

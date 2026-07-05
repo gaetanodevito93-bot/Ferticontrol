@@ -346,6 +346,73 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check('calcolo completo in inglese senza errori', lang.outOk && jsErrors.length === 0, jsErrors.join(' | '));
 
   // ────────────────────────────────────────────────
+  console.log('\n═══ S13. Profili acqua salvati ═══');
+  const profili = await page.evaluate(() => {
+    // Salva un profilo con l'analisi corrente modificata
+    presetAcqua('dura');
+    document.getElementById('aq-ca').value = 175; // valore personalizzato
+    saveAcqua();
+    document.getElementById('acqua-profilo-nome').value = 'Pozzo Test <script>x</script>';
+    salvaProfiloAcqua();
+    const salvato = acquaProfili[acquaProfili.length - 1];
+    // Cambia acqua, poi ricarica il profilo
+    presetAcqua('distillata');
+    const caDopoPreset = document.getElementById('aq-ca').value;
+    caricaProfiloAcqua(acquaProfili.length - 1);
+    const caRipristinato = document.getElementById('aq-ca').value;
+    // Aggiornamento omonimo: non deve duplicare
+    document.getElementById('aq-ca').value = 190; saveAcqua();
+    document.getElementById('acqua-profilo-nome').value = salvato.nome;
+    const nPrima = acquaProfili.length;
+    salvaProfiloAcqua();
+    return {
+      nome: salvato.nome, chips: document.querySelectorAll('#acqua-profili-list button').length,
+      caDopoPreset, caRipristinato, duplicato: acquaProfili.length !== nPrima,
+      caAggiornato: acquaProfili[nPrima - 1].valori.ca,
+      persistito: JSON.parse(localStorage.getItem('fc_acqua_profili')).length === acquaProfili.length,
+    };
+  });
+  check(`nome sanificato ("${profili.nome}")`, !/[<>]/.test(profili.nome));
+  check('chip renderizzate (carica + elimina)', profili.chips >= 2);
+  check(`profilo ricaricato: Ca ${profili.caDopoPreset} → ${profili.caRipristinato}`, profili.caRipristinato === '175');
+  check('salvataggio omonimo aggiorna senza duplicare', !profili.duplicato && profili.caAggiornato === 190);
+  check('profili persistiti in localStorage', profili.persistito);
+
+  // Il profilo entra nel backup e sopravvive al round-trip
+  const rtProfili = await page.evaluate(async () => {
+    let captured = null;
+    const orig = URL.createObjectURL;
+    URL.createObjectURL = (b) => { captured = b; return 'blob:x'; };
+    esportaDati();
+    URL.createObjectURL = orig;
+    const json = JSON.parse(await captured.text());
+    const inBackup = Array.isArray(json.acquaProfili) && json.acquaProfili.some(p => /Pozzo Test/.test(p.nome));
+    // elimina e reimporta
+    const nome = acquaProfili[acquaProfili.length - 1].nome;
+    acquaProfili.length = 0; saveAcquaProfili(); renderProfiliAcqua();
+    return { inBackup, json: JSON.stringify(json), nome };
+  });
+  check('profilo incluso nel backup JSON', rtProfili.inBackup);
+  const tmpProf = path.join(os.tmpdir(), 'fc-profili.json');
+  fs.writeFileSync(tmpProf, rtProfili.json);
+  await page.setInputFiles('#ie-file-input', tmpProf);
+  await page.waitForTimeout(400);
+  const dopoImportProf = await page.evaluate((nome) => ({
+    ripristinato: acquaProfili.some(p => p.nome === nome && p.valori.ca === 190),
+    chips: document.querySelectorAll('#acqua-profili-list button').length,
+  }), rtProfili.nome);
+  check('import ripristina i profili acqua', dopoImportProf.ripristinato && dopoImportProf.chips >= 2);
+
+  // Eliminazione con conferma
+  const elim = await page.evaluate(() => {
+    const n = acquaProfili.length;
+    eliminaProfiloAcqua(acquaProfili.length - 1);
+    eseguiElimina(); // conferma
+    return { prima: n, dopo: acquaProfili.length };
+  });
+  check(`eliminazione profilo (${elim.prima} → ${elim.dopo})`, elim.dopo === elim.prima - 1);
+
+  // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
   if (failures.length) { console.log('\nFallimenti:'); failures.forEach(f => console.log('  • ' + f)); }

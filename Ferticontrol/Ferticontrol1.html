@@ -627,6 +627,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')" data-i18n="preset.piovana">🌧️ Piovana</button>
         <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')" data-i18n="preset.distillata">💎 Distillata</button>
       </div>
+      <div class="sep"></div>
+      <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" data-i18n="acqua.profili">💾 I tuoi profili salvati</div>
+      <div id="acqua-profili-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
+      <div class="urow">
+        <input type="text" id="acqua-profilo-nome" maxlength="40" data-i18n-placeholder="ph.acqua.profilo" placeholder="Es. Pozzo — analisi giugno 2026">
+        <button class="btn btn-se btn-sm" onclick="salvaProfiloAcqua()" data-i18n="acqua.salvaProfilo">💾 Salva profilo</button>
+      </div>
     </div>
   </div>
 </div>
@@ -948,6 +955,9 @@ const TRANSLATIONS = {
     'preset.osmosi': '🔬 Osmosi inversa',
     'preset.piovana': '🌧️ Piovana',
     'preset.distillata': '💎 Distillata',
+    'acqua.profili': '💾 I tuoi profili salvati',
+    'acqua.salvaProfilo': '💾 Salva profilo',
+    'ph.acqua.profilo': 'Es. Pozzo — analisi giugno 2026',
     'ricette.title': '🌿 Le tue Ricette',
     'ricette.nuova': '+ Nuova Ricetta',
     'ricette.cocoHeader': '🌱 Ricette — Coco Coir',
@@ -1135,6 +1145,9 @@ const TRANSLATIONS = {
     'preset.osmosi': '🔬 Reverse osmosis',
     'preset.piovana': '🌧️ Rainwater',
     'preset.distillata': '💎 Distilled',
+    'acqua.profili': '💾 Your saved profiles',
+    'acqua.salvaProfilo': '💾 Save profile',
+    'ph.acqua.profilo': 'E.g. Well — June 2026 analysis',
     'ricette.title': '🌿 Your Recipes',
     'ricette.nuova': '+ New Recipe',
     'ricette.cocoHeader': '🌱 Recipes — Coco Coir',
@@ -2060,6 +2073,60 @@ function loadAcqua(){
 function initAcquaPersist(){
   AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el) el.addEventListener('change', saveAcqua); });
 }
+
+// ─ PROFILI ACQUA UTENTE (analisi reali salvate con nome) ─
+// I 6 preset sono valori generici hardcoded; questi sono le analisi VERE
+// dell'utente (es. "Pozzo — giugno" vs "Acquedotto casa"): lo slot unico
+// fc_acqua non basta a chi ha più fonti idriche o analisi stagionali.
+// Persistiti in fc_acqua_profili e inclusi nel backup JSON.
+function sanitizeAcquaValori(v){
+  const out={};
+  AQ_FIELDS.forEach(k=>{ out[k]=cleanNum(v && v[k], 0, 0, AQ_MAX[k]||1e6); });
+  return out;
+}
+let acquaProfili = safeParse('fc_acqua_profili', []);
+acquaProfili = (Array.isArray(acquaProfili)?acquaProfili:[])
+  .filter(p=>p && typeof p.nome==='string' && p.valori && typeof p.valori==='object')
+  .map(p=>({nome:stripTags(p.nome).slice(0,40), valori:sanitizeAcquaValori(p.valori)}))
+  .filter(p=>p.nome);
+function saveAcquaProfili(){
+  try{ localStorage.setItem('fc_acqua_profili', JSON.stringify(acquaProfili)); }
+  catch(e){ console.warn('Salvataggio profili acqua fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); }
+}
+function salvaProfiloAcqua(){
+  const inp=document.getElementById('acqua-profilo-nome');
+  const nome=sanitizeName(inp.value.trim()).slice(0,40);
+  if(!nome){ showToast(TT('Dai un nome al profilo (es. "Pozzo — giugno")','Give the profile a name (e.g. "Well — June")'), false); inp.focus(); return; }
+  const valori=collectAcqua(); // già validati con cleanNum entro AQ_MAX
+  const idx=acquaProfili.findIndex(p=>p.nome===nome);
+  const aggiornato = idx>-1;
+  if(aggiornato) acquaProfili[idx]={nome,valori}; else acquaProfili.push({nome,valori});
+  saveAcquaProfili(); renderProfiliAcqua(); inp.value='';
+  showToast(aggiornato ? TT(`Profilo "${nome}" aggiornato`,`Profile "${nome}" updated`) : TT(`Profilo "${nome}" salvato`,`Profile "${nome}" saved`));
+}
+function caricaProfiloAcqua(i){
+  const p=acquaProfili[i]; if(!p) return;
+  AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el && p.valori[k]!==undefined) el.value=p.valori[k]; });
+  saveAcqua();
+  showToast(TT(`Acqua: profilo "${p.nome}" caricato`,`Water: profile "${p.nome}" loaded`));
+}
+function eliminaProfiloAcqua(i){
+  const p=acquaProfili[i]; if(!p) return;
+  window._pendingDelete={tipo:'profiloAcqua', i};
+  document.getElementById('modal-del-msg').textContent=TT(`Eliminare il profilo acqua "${p.nome}"?`,`Delete the water profile "${p.nome}"?`);
+  openModal('modal-del');
+}
+function renderProfiliAcqua(){
+  const wrap=document.getElementById('acqua-profili-list'); if(!wrap) return;
+  if(!acquaProfili.length){
+    wrap.innerHTML=`<span style="font-size:.75rem;color:var(--ts)">${TT('Nessun profilo salvato: inserisci la tua analisi qui sopra e salvala con un nome.','No saved profiles: enter your analysis above and save it with a name.')}</span>`;
+    return;
+  }
+  wrap.innerHTML=acquaProfili.map((p,i)=>`<span style="display:inline-flex">
+    <button class="btn btn-se btn-sm" style="border-top-right-radius:0;border-bottom-right-radius:0" onclick="caricaProfiloAcqua(${i})" title="EC ${p.valori.ec} mS/cm — pH ${p.valori.ph}">💧 ${esc(p.nome)}</button>
+    <button class="btn btn-del btn-sm" style="border-top-left-radius:0;border-bottom-left-radius:0;border-left:0;padding:6px 9px" onclick="eliminaProfiloAcqua(${i})" aria-label="${TT('Elimina profilo','Delete profile')} ${esc(p.nome)}">✕</button>
+  </span>`).join('');
+}
 function normalizeImportedEl(el){
   const out = {};
   ['N','P','K','Ca','Mg','S','Fe','Mn','Zn','B','Cu','Mo','Cl','Si','Na'].forEach(k=>{
@@ -2400,7 +2467,10 @@ function eseguiElimina(){
     if(!ricetteCustom[p.ri].fasi.length) ricetteCustom.splice(p.ri,1);
   } else if(p.tipo==='ingrediente'){
     catalogo=catalogo.filter(s=>s.id!==p.id);
-    saveCatalogo(); renderCatalogo(); return;
+    saveCatalogo(); renderCatalogo(); window._pendingDelete=null; return;
+  } else if(p.tipo==='profiloAcqua'){
+    acquaProfili.splice(p.i,1);
+    saveAcquaProfili(); renderProfiliAcqua(); window._pendingDelete=null; return;
   }
   saveRicette(); renderRicetteCustom();
   window._pendingDelete=null;
@@ -5444,7 +5514,8 @@ function esportaDati(){
     catalogo: catalogo,
     ricetteCustom: ricetteCustom,
     scorta: [...scorta],
-    acqua: collectAcqua()
+    acqua: collectAcqua(),
+    acquaProfili: acquaProfili
   };
   const json = JSON.stringify(payload, null, 2);
   const blob = new Blob([json], {type:'application/json'});
@@ -5556,6 +5627,23 @@ function importaDati(input){
         msg.push(TT('Analisi acqua ripristinata','Water analysis restored'));
       }
 
+      if(Array.isArray(data.acquaProfili)){
+        // Merge per nome: i profili nuovi si aggiungono, gli omonimi vengono aggiornati
+        const validi = data.acquaProfili
+          .filter(p=>p && typeof p.nome==='string' && p.valori && typeof p.valori==='object')
+          .map(p=>({nome:sanitizeName(p.nome).slice(0,40), valori:sanitizeAcquaValori(p.valori)}))
+          .filter(p=>p.nome);
+        let nuovi=0;
+        validi.forEach(p=>{
+          const idx=acquaProfili.findIndex(x=>x.nome===p.nome);
+          if(idx>-1) acquaProfili[idx]=p; else { acquaProfili.push(p); nuovi++; }
+        });
+        if(validi.length){
+          saveAcquaProfili(); renderProfiliAcqua();
+          msg.push(TT(`Profili acqua: ${nuovi} nuovi, ${validi.length-nuovi} aggiornati`,`Water profiles: ${nuovi} new, ${validi.length-nuovi} updated`));
+        }
+      }
+
       renderCatalogo();
       renderRicetteCustom();
       if(calcRighe.length) renderCalcTabella();
@@ -5594,6 +5682,7 @@ function eseguiReset(){
 initPiante();
 loadAcqua();        // ripristina l'analisi acqua salvata
 initAcquaPersist(); // autosalvataggio dei campi acqua a ogni modifica
+renderProfiliAcqua(); // chip dei profili acqua salvati dall'utente
 renderCatalogo();
 renderRicetteCustom();
 renderCalcTabella();
