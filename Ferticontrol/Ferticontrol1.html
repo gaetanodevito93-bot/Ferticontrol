@@ -625,7 +625,14 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <button class="btn btn-se btn-sm" onclick="presetAcqua('dura')" data-i18n="preset.dura">🪨 Acqua dura</button>
         <button class="btn btn-se btn-sm" onclick="presetAcqua('osmosi')" data-i18n="preset.osmosi">🔬 Osmosi inversa</button>
         <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')" data-i18n="preset.piovana">🌧️ Piovana</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')" data-i18n="preset.distillata">💎 Distillata</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('personalizzata')" data-i18n="preset.personalizzata">⚙️ Personalizzata</button>
+      </div>
+      <div class="sep"></div>
+      <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" data-i18n="acqua.profili">💾 I tuoi profili salvati</div>
+      <div id="acqua-profili-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
+      <div class="urow">
+        <input type="text" id="acqua-profilo-nome" maxlength="40" data-i18n-placeholder="ph.acqua.profilo" placeholder="Es. Pozzo — analisi giugno 2026">
+        <button class="btn btn-se btn-sm" onclick="salvaProfiloAcqua()" data-i18n="acqua.salvaProfilo">💾 Salva profilo</button>
       </div>
     </div>
   </div>
@@ -875,7 +882,19 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <div class="field"><label data-i18n="ing.el.Fe">% Fe (ferro)</label><input type="number" id="ing-Fe" value="0" min="0" max="100" step="0.1"></div>
         <div class="field"><label data-i18n="ing.el.Mn">% Mn (manganese)</label><input type="number" id="ing-Mn" value="0" min="0" max="100" step="0.01"></div>
         <div class="field"><label data-i18n="ing.el.Zn">% Zn (zinco)</label><input type="number" id="ing-Zn" value="0" min="0" max="100" step="0.01"></div>
+        <div class="field"><label data-i18n="ing.el.B">% B (boro)</label><input type="number" id="ing-B" value="0" min="0" max="100" step="0.01"></div>
+        <div class="field"><label data-i18n="ing.el.Cu">% Cu (rame)</label><input type="number" id="ing-Cu" value="0" min="0" max="100" step="0.01"></div>
+        <div class="field"><label data-i18n="ing.el.Mo">% Mo (molibdeno)</label><input type="number" id="ing-Mo" value="0" min="0" max="100" step="0.01"></div>
       </div>
+      <div class="field"><label><span data-i18n="modal.ing.nh4">% N ammoniacale (quota su N totale)</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="modal.ing.nh4.tip">Percentuale dell'azoto dichiarato che è in forma ammoniacale (NH₄⁺). Es: nitrato d'ammonio = 50, MAP = 100, solfato ammonico = 100, nitrato di calcio = 0. Serve per il limite NH₄ ≤ 10% dell'N in coco e per il rischio struvite.</span></span></label><input type="number" id="ing-nh4" value="0" min="0" max="100" step="1"></div>
+      <div class="row2">
+        <div class="field" style="display:flex;align-items:center;gap:8px;margin-bottom:0">
+          <input type="checkbox" id="ing-liquid" style="width:18px;height:18px;flex-shrink:0" onchange="document.getElementById('ing-density').disabled=!this.checked">
+          <label for="ing-liquid" style="margin:0;cursor:pointer" data-i18n="modal.ing.liquid">Prodotto liquido (dosato in mL)</label>
+        </div>
+        <div class="field" style="margin-bottom:0"><label data-i18n="modal.ing.density">Densità kg/L</label><input type="number" id="ing-density" value="0" min="0" max="3" step="0.01" disabled></div>
+      </div>
+      <div class="sep"></div>
       <div class="row2">
         <div class="field"><label data-i18n="modal.ing.prezzo">Prezzo €/kg</label><input type="number" id="ing-prezzo" value="0" min="0" step="0.01" placeholder="0.00"></div>
         <div class="field"><label data-i18n="modal.ing.dose">g/1000L tipico</label><input type="number" id="ing-dose" value="0" min="0" step="0.1"></div>
@@ -935,7 +954,10 @@ const TRANSLATIONS = {
     'preset.dura': '🪨 Acqua dura',
     'preset.osmosi': '🔬 Osmosi inversa',
     'preset.piovana': '🌧️ Piovana',
-    'preset.distillata': '💎 Distillata',
+    'preset.personalizzata': '⚙️ Personalizzata',
+    'acqua.profili': '💾 I tuoi profili salvati',
+    'acqua.salvaProfilo': '💾 Salva profilo',
+    'ph.acqua.profilo': 'Es. Pozzo — analisi giugno 2026',
     'ricette.title': '🌿 Le tue Ricette',
     'ricette.nuova': '+ Nuova Ricetta',
     'ricette.cocoHeader': '🌱 Ricette — Coco Coir',
@@ -996,6 +1018,10 @@ const TRANSLATIONS = {
     'modal.ing.prezzo': 'Prezzo €/kg',
     'modal.ing.dose': 'g/1000L tipico',
     'modal.ing.note': 'Note',
+    'modal.ing.nh4': '% N ammoniacale (quota su N totale)',
+    'modal.ing.nh4.tip': "Percentuale dell'azoto dichiarato che è in forma ammoniacale (NH₄⁺). Es: nitrato d'ammonio = 50, MAP = 100, solfato ammonico = 100, nitrato di calcio = 0. Serve per il limite NH₄ ≤ 10% dell'N in coco e per il rischio struvite.",
+    'modal.ing.liquid': 'Prodotto liquido (dosato in mL)',
+    'modal.ing.density': 'Densità kg/L',
     'modal.ing.salva': '💾 Salva',
     'modal.ing.editTitle': '✏️ Modifica Ingrediente',
     'modal.ricetta.title': '🌱 Nuova Ricetta',
@@ -1093,6 +1119,9 @@ const TRANSLATIONS = {
     'ing.el.Fe': '% Fe (ferro)',
     'ing.el.Mn': '% Mn (manganese)',
     'ing.el.Zn': '% Zn (zinco)',
+    'ing.el.B': '% B (boro)',
+    'ing.el.Cu': '% Cu (rame)',
+    'ing.el.Mo': '% Mo (molibdeno)',
     'ion.ca': 'Calcio', 'ion.mg': 'Magnesio', 'ion.k': 'Potassio', 'ion.na': 'Sodio',
     'ion.so4': 'Solfati', 'ion.cl': 'Cloruri', 'ion.hco3': 'Bicarbonati', 'ion.no3': 'Nitrati', 'ion.fe': 'Ferro',
   },
@@ -1115,7 +1144,10 @@ const TRANSLATIONS = {
     'preset.dura': '🪨 Hard water',
     'preset.osmosi': '🔬 Reverse osmosis',
     'preset.piovana': '🌧️ Rainwater',
-    'preset.distillata': '💎 Distilled',
+    'preset.personalizzata': '⚙️ Custom',
+    'acqua.profili': '💾 Your saved profiles',
+    'acqua.salvaProfilo': '💾 Save profile',
+    'ph.acqua.profilo': 'E.g. Well — June 2026 analysis',
     'ricette.title': '🌿 Your Recipes',
     'ricette.nuova': '+ New Recipe',
     'ricette.cocoHeader': '🌱 Recipes — Coco Coir',
@@ -1176,6 +1208,10 @@ const TRANSLATIONS = {
     'modal.ing.prezzo': 'Price €/kg',
     'modal.ing.dose': 'Typical g/1000L',
     'modal.ing.note': 'Notes',
+    'modal.ing.nh4': '% ammoniacal N (share of total N)',
+    'modal.ing.nh4.tip': 'Percentage of the declared nitrogen that is in ammoniacal form (NH₄⁺). E.g.: ammonium nitrate = 50, MAP = 100, ammonium sulfate = 100, calcium nitrate = 0. Used for the NH₄ ≤ 10% of N limit in coco and for struvite risk.',
+    'modal.ing.liquid': 'Liquid product (dosed in mL)',
+    'modal.ing.density': 'Density kg/L',
     'modal.ing.salva': '💾 Save',
     'modal.ing.editTitle': '✏️ Edit Ingredient',
     'modal.ricetta.title': '🌱 New Recipe',
@@ -1273,6 +1309,9 @@ const TRANSLATIONS = {
     'ing.el.Fe': '% Fe (iron)',
     'ing.el.Mn': '% Mn (manganese)',
     'ing.el.Zn': '% Zn (zinc)',
+    'ing.el.B': '% B (boron)',
+    'ing.el.Cu': '% Cu (copper)',
+    'ing.el.Mo': '% Mo (molybdenum)',
     'ion.ca': 'Calcium', 'ion.mg': 'Magnesium', 'ion.k': 'Potassium', 'ion.na': 'Sodium',
     'ion.so4': 'Sulfates', 'ion.cl': 'Chlorides', 'ion.hco3': 'Bicarbonates', 'ion.no3': 'Nitrates', 'ion.fe': 'Iron',
   }
@@ -1388,6 +1427,15 @@ function meqBalance(s,ph){
   return {cat:cat*1000,an:an*1000};
 }
 
+// Frazione ammoniacale dell'N di un sale: ID noti hardcoded (NH₄NO₃ 50%,
+// MAP 100%), sali custom via campo nh4Frac (0-100 = % dell'N in forma NH₄⁺).
+function fracNH4(id, info){
+  if(id==='NH4NO3') return 0.5;
+  if(id==='MAP') return 1;
+  const f = (info && info.nh4Frac) || 0;
+  return Math.min(100, Math.max(0, f)) / 100;
+}
+
 // Helper: converte profilo ioni dal catalogo del file 2
 // Le dosi sono in g/1000L → torna oggetto con ppm di ogni elemento
 function profiloDaRighe(righe, aq){
@@ -1398,10 +1446,10 @@ function profiloDaRighe(righe, aq){
     const el=info.el;
     // g/1000L = mg/L di sale → mg/L di elemento = g/1000L * el%
     if(el.N){
-      // Distingui NH4 vs NO3 per i sali noti
-      if(r.id==='NH4NO3'){ p.NH4+=g*el.N/100*0.5; p.NO3+=g*el.N/100*0.5; }
-      else if(r.id==='MAP'){ p.NH4+=g*el.N/100; }
-      else { p.NO3+=g*el.N/100; }
+      // Distingui NH4 vs NO3: sali noti per ID, custom via nh4Frac (% N ammoniacale dichiarato)
+      const fNH4 = fracNH4(r.id, info);
+      p.NH4+=g*el.N/100*fNH4;
+      p.NO3+=g*el.N/100*(1-fNH4);
       p.N+=g*el.N/100;
     }
     if(el.Ca) p.Ca+=g*el.Ca/100;
@@ -1428,11 +1476,29 @@ function profiloDaRighe(righe, aq){
   return p;
 }
 
-// Calcola Volume acido per neutralizzazione HCO3
-function calcAcidVolume(aq, prodL){
-  if(!aq||!aq.hco3) return {meq:0,volHNO3:0,volH3PO4:0};
+// Calcola Volume acido per neutralizzazione HCO3, dimensionato sul pH TARGET.
+// Chimica: l'acido converte HCO₃⁻ in CO₂; all'equilibrio (Henderson-Hasselbalch
+// su pKa₁ = 6.35 del sistema carbonato, sistema chiuso) la frazione di
+// alcalinità da neutralizzare per raggiungere phTarget è 1/(1+10^(phTarget−pKa₁)).
+// Es: pH 5.8 → 78%, pH 6.2 → 59%, pH 7.0 → 18% dell'HCO₃⁻.
+// Resta sempre il tampone minimo RESID_HCO3_MEQ (0.5 meq/L) contro i crolli
+// di pH. Senza phTarget vale la vecchia regola fissa "tutto meno 0.5 meq/L"
+// (equivalente a un target ~5.8 per acque medie).
+const PKA1_CARB = 6.35;
+function calcAcidVolume(aq, prodL, phTarget){
+  if(!aq||!aq.hco3) return {meq:0,residuo:0,volHNO3:0,volH3PO4:0};
   const hco3meq=aq.hco3/61.0;
-  const acidMeq=Math.max(0,hco3meq-RESID_HCO3_MEQ);
+  let acidMeq;
+  if(phTarget){
+    if(aq.ph && aq.ph <= phTarget){
+      acidMeq = 0; // l'acqua è già al pH target (o più acida): niente acido
+    } else {
+      const fraz = 1/(1+Math.pow(10, phTarget - PKA1_CARB));
+      acidMeq = Math.max(0, Math.min(hco3meq*fraz, hco3meq - RESID_HCO3_MEQ));
+    }
+  } else {
+    acidMeq = Math.max(0, hco3meq - RESID_HCO3_MEQ);
+  }
   // Molarità dei prodotti commerciali dichiarati (HNO3 38%, H3PO4 75%, H2SO4 98%)
   // M = (densità g/L × frazione massa) / PM
   //   HNO3 38% (d~1.24): (1240×0.38)/63.01 = 7.47 mol/L
@@ -1441,6 +1507,7 @@ function calcAcidVolume(aq, prodL){
   const molPerL={nitric:7.47,phosphoric:12.1,sulfuric:18.0};
   return {
     meq:acidMeq,
+    residuo:hco3meq-acidMeq,
     volHNO3:acidMeq/1000.0*prodL/molPerL.nitric*1000.0,
     volH3PO4:acidMeq/1000.0*prodL/molPerL.phosphoric*1000.0
   };
@@ -2025,9 +2092,63 @@ function loadAcqua(){
 function initAcquaPersist(){
   AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el) el.addEventListener('change', saveAcqua); });
 }
+
+// ─ PROFILI ACQUA UTENTE (analisi reali salvate con nome) ─
+// I 6 preset sono valori generici hardcoded; questi sono le analisi VERE
+// dell'utente (es. "Pozzo — giugno" vs "Acquedotto casa"): lo slot unico
+// fc_acqua non basta a chi ha più fonti idriche o analisi stagionali.
+// Persistiti in fc_acqua_profili e inclusi nel backup JSON.
+function sanitizeAcquaValori(v){
+  const out={};
+  AQ_FIELDS.forEach(k=>{ out[k]=cleanNum(v && v[k], 0, 0, AQ_MAX[k]||1e6); });
+  return out;
+}
+let acquaProfili = safeParse('fc_acqua_profili', []);
+acquaProfili = (Array.isArray(acquaProfili)?acquaProfili:[])
+  .filter(p=>p && typeof p.nome==='string' && p.valori && typeof p.valori==='object')
+  .map(p=>({nome:stripTags(p.nome).slice(0,40), valori:sanitizeAcquaValori(p.valori)}))
+  .filter(p=>p.nome);
+function saveAcquaProfili(){
+  try{ localStorage.setItem('fc_acqua_profili', JSON.stringify(acquaProfili)); }
+  catch(e){ console.warn('Salvataggio profili acqua fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); }
+}
+function salvaProfiloAcqua(){
+  const inp=document.getElementById('acqua-profilo-nome');
+  const nome=sanitizeName(inp.value.trim()).slice(0,40);
+  if(!nome){ showToast(TT('Dai un nome al profilo (es. "Pozzo — giugno")','Give the profile a name (e.g. "Well — June")'), false); inp.focus(); return; }
+  const valori=collectAcqua(); // già validati con cleanNum entro AQ_MAX
+  const idx=acquaProfili.findIndex(p=>p.nome===nome);
+  const aggiornato = idx>-1;
+  if(aggiornato) acquaProfili[idx]={nome,valori}; else acquaProfili.push({nome,valori});
+  saveAcquaProfili(); renderProfiliAcqua(); inp.value='';
+  showToast(aggiornato ? TT(`Profilo "${nome}" aggiornato`,`Profile "${nome}" updated`) : TT(`Profilo "${nome}" salvato`,`Profile "${nome}" saved`));
+}
+function caricaProfiloAcqua(i){
+  const p=acquaProfili[i]; if(!p) return;
+  AQ_FIELDS.forEach(k=>{ const el=document.getElementById('aq-'+k); if(el && p.valori[k]!==undefined) el.value=p.valori[k]; });
+  saveAcqua();
+  showToast(TT(`Acqua: profilo "${p.nome}" caricato`,`Water: profile "${p.nome}" loaded`));
+}
+function eliminaProfiloAcqua(i){
+  const p=acquaProfili[i]; if(!p) return;
+  window._pendingDelete={tipo:'profiloAcqua', i};
+  document.getElementById('modal-del-msg').textContent=TT(`Eliminare il profilo acqua "${p.nome}"?`,`Delete the water profile "${p.nome}"?`);
+  openModal('modal-del');
+}
+function renderProfiliAcqua(){
+  const wrap=document.getElementById('acqua-profili-list'); if(!wrap) return;
+  if(!acquaProfili.length){
+    wrap.innerHTML=`<span style="font-size:.75rem;color:var(--ts)">${TT('Nessun profilo salvato: inserisci la tua analisi qui sopra e salvala con un nome.','No saved profiles: enter your analysis above and save it with a name.')}</span>`;
+    return;
+  }
+  wrap.innerHTML=acquaProfili.map((p,i)=>`<span style="display:inline-flex">
+    <button class="btn btn-se btn-sm" style="border-top-right-radius:0;border-bottom-right-radius:0" onclick="caricaProfiloAcqua(${i})" title="EC ${p.valori.ec} mS/cm — pH ${p.valori.ph}">💧 ${esc(p.nome)}</button>
+    <button class="btn btn-del btn-sm" style="border-top-left-radius:0;border-bottom-left-radius:0;border-left:0;padding:6px 9px" onclick="eliminaProfiloAcqua(${i})" aria-label="${TT('Elimina profilo','Delete profile')} ${esc(p.nome)}">✕</button>
+  </span>`).join('');
+}
 function normalizeImportedEl(el){
   const out = {};
-  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(k=>{
+  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn','B','Cu','Mo','Cl','Si','Na'].forEach(k=>{
     const v = cleanNum(el && el[k], 0, 0, 100);
     if(v>0) out[k]=v;
   });
@@ -2365,7 +2486,10 @@ function eseguiElimina(){
     if(!ricetteCustom[p.ri].fasi.length) ricetteCustom.splice(p.ri,1);
   } else if(p.tipo==='ingrediente'){
     catalogo=catalogo.filter(s=>s.id!==p.id);
-    saveCatalogo(); renderCatalogo(); return;
+    saveCatalogo(); renderCatalogo(); window._pendingDelete=null; return;
+  } else if(p.tipo==='profiloAcqua'){
+    acquaProfili.splice(p.i,1);
+    saveAcquaProfili(); renderProfiliAcqua(); window._pendingDelete=null; return;
   }
   saveRicette(); renderRicetteCustom();
   window._pendingDelete=null;
@@ -2929,7 +3053,10 @@ function presetAcqua(tipo){
     dura:   {ec:0.7,ph:7.8,ca:180,mg:45,k:8,na:60,so4:90,cl:80,hco3:320,no3:15,fe:0.2},
     osmosi: {ec:0.02,ph:6.5,ca:2,mg:1,k:0,na:2,so4:1,cl:2,hco3:5,no3:1,fe:0.01},
     piovana:{ec:0.05,ph:6.2,ca:3,mg:1,k:1,na:2,so4:2,cl:2,hco3:8,no3:1,fe:0.01},
-    distillata:{ec:0.001,ph:7.0,ca:0,mg:0,k:0,na:0,so4:0,cl:0,hco3:0,no3:0,fe:0},
+    // Personalizzata: parte dai valori dell'acquedotto medio come base
+    // realistica da correggere con la propria analisi (poi salvabile come
+    // profilo con nome). Ha sostituito il vecchio preset "Distillata".
+    personalizzata:{ec:0.3,ph:7.2,ca:80,mg:20,k:5,na:30,so4:40,cl:50,hco3:150,no3:10,fe:0.1},
   };
   const v=map[tipo]; if(!v)return;
   Object.entries(v).forEach(([k,val])=>{ const el=document.getElementById('aq-'+k); if(el) el.value=val; });
@@ -3007,9 +3134,8 @@ function calcolaIoniDaSali(righe){
     if(el.B)  c.B  += g*el.B/100;
     if(el.Cu) c.Cu += g*el.Cu/100;
     if(el.Mo) c.Mo += g*el.Mo/100;
-    // NH4: in NH4NO3 metà dell'N è ammoniacale; in MAP tutto l'N è NH4+
-    if(r.id==='NH4NO3' && el.N) c.N_NH4 += g*el.N/100*0.5;
-    if(r.id==='MAP' && el.N)    c.N_NH4 += g*el.N/100;
+    // NH4: sali noti per ID (NH4NO3 50%, MAP 100%), custom via nh4Frac
+    if(el.N) c.N_NH4 += g*el.N/100*fracNH4(r.id, info);
   });
 
   // Analisi per serbatoio
@@ -3065,6 +3191,43 @@ const EC_COEFF_GLOBAL = {
   KOH:    2.42,  // K⁺ + OH⁻ (50%): Λm=271.5/56.1 × 0.89 (già corretto)
   K2SiO3: 0.72,  // prodotto commerciale ~49% K₂SiO₃: 1.47 × 0.493
 };
+
+// Stima EC (mS/cm per g/L) per sali CUSTOM dalla composizione elementare:
+// conducibilità equivalenti (LAMBDA) × eq/L per 1 g/L di prodotto, assumendo
+// le forme ioniche tipiche in soluzione nutritiva (N→NO₃⁻/NH₄⁺ via nh4Frac,
+// S→SO₄²⁻, P→H₂PO₄⁻). Onsager 0.85 come i coefficienti tabellati; 0.60 se
+// coesistono Ca/Mg e S (ion-pairing 2:2 stile MgSO₄). Micro e chelati non
+// contano: contributo <0.02 mS/cm alle dosi reali (coerente con la tabella).
+// Verifica contro i tabellati: KNO₃ 1.22 vs 1.27, CaN 0.94 vs 0.95, MgSO₄ 0.65 vs 0.65.
+function stimaEcC(el, nh4Frac){
+  if(!el) return 0;
+  const f = Math.min(100, Math.max(0, nh4Frac||0)) / 100;
+  const eqL = (pct, mm, z) => (pct||0)/100/mm*z; // eq/L per 1 g/L di prodotto
+  let sum = 0;
+  sum += LAMBDA.Ca    * eqL(el.Ca, MM.Ca, 2);
+  sum += LAMBDA.Mg    * eqL(el.Mg, MM.Mg, 2);
+  sum += LAMBDA.K     * eqL(el.K,  MM.K,  1);
+  sum += LAMBDA.Cl    * eqL(el.Cl, MM.Cl, 1);
+  sum += LAMBDA.SO4   * eqL(el.S,  MM.S,  2);
+  sum += LAMBDA.H2PO4 * eqL(el.P,  MM.P,  1);
+  if(el.N){
+    sum += LAMBDA.NO3 * eqL(el.N*(1-f), MM.N, 1);
+    sum += LAMBDA.NH4 * eqL(el.N*f,     MM.N, 1);
+  }
+  const onsager = (el.S>0 && ((el.Ca||0)+(el.Mg||0))>0) ? 0.60 : 0.85;
+  return Math.round(sum * onsager * 100) / 100;
+}
+
+// Coefficiente EC di una riga di calcolo: tabella per i sali noti, ecC salvato
+// o stima dalla composizione per i custom (prima valevano 0 → EC sottostimata).
+function ecCoeffSale(id){
+  if(EC_COEFF_GLOBAL[id] != null) return EC_COEFF_GLOBAL[id];
+  if(id==='__custom') return 0.5;
+  const s = getSale(id);
+  if(!s) return 0;
+  if(s.ecC > 0) return s.ecC;
+  return s.el ? stimaEcC(s.el, s.nh4Frac) : 0;
+}
 // ════════════════════════════════════════════════
 // CLASSIFICAZIONE GRUPPI IONICI
 // Funziona anche per sali CUSTOM analizzando la composizione el{}.
@@ -3191,7 +3354,7 @@ function assegnaSerbatoi(righe){
 }
 
 // ── AUTO-SOLVER COMPLETO ─────────────────────────
-function autoRisolvi(righeInput, dil, aq){
+function autoRisolvi(righeInput, dil, aq, phFinale){
   // Step 1: assegnazione base
   let righe = assegnaSerbatoi(righeInput.map(r=>({...r})));
   const interventi = [];
@@ -3200,11 +3363,16 @@ function autoRisolvi(righeInput, dil, aq){
   // Step 2: Neutralizzazione HCO3 (da acqua partenza)
   // ────────────────────────────────────────────────
   if(aq && aq.hco3 > 50){
-    const mmolHCO3 = aq.hco3/61.0;
-    interventi.push({
-      tipo:'acido', icona:'🧪',
-      msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L di HNO₃ 38%</strong> (o ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare pH a 5.8–6.0.`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L of HNO₃ 38%</strong> (or ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) to the dilution water before the salts to bring pH to 5.8–6.0.`)
-    });
+    // Acido dimensionato sul pH TARGET scelto dall'utente (prima era fisso
+    // "neutralizza tutto per pH 5.8-6.0"): a pH 6.5 serve meno acido che a 5.5.
+    const phT = phFinale || 6.0;
+    const av = calcAcidVolume(aq, 1, phT); // prodL=1 → volumi in mL per litro
+    if(av.meq > 0.01){
+      interventi.push({
+        tipo:'acido', icona:'🧪',
+        msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${av.volHNO3.toFixed(2)} mL/L di HNO₃ 38%</strong> (o ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare il pH a <strong>${phT}</strong> (neutralizzati ${av.meq.toFixed(2)} meq/L, tampone residuo ${av.residuo.toFixed(2)} meq/L).`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${av.volHNO3.toFixed(2)} mL/L of HNO₃ 38%</strong> (or ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%) to the dilution water before the salts to bring the pH to <strong>${phT}</strong> (${av.meq.toFixed(2)} meq/L neutralized, ${av.residuo.toFixed(2)} meq/L residual buffer).`)
+      });
+    }
   }
 
   // ────────────────────────────────────────────────
@@ -3363,7 +3531,7 @@ function autoRisolvi(righeInput, dil, aq){
   ['A','B','C'].forEach(s=>{
     let ec=0;
     righe.filter(r=>r.serb===s).forEach(r=>{
-      const coeff = EC_COEFF_GLOBAL[r.id] || (r.id==='__custom' ? 0.5 : 0);
+      const coeff = ecCoeffSale(r.id);
       ec+=(r.dose/1000)*coeff;
     });
     ecPerSerb[s]=ec; // mS/cm contributo nel finale da questo serbatoio
@@ -3755,7 +3923,7 @@ function verificaSicurezza(righe, dil, aq, phFinale){
   }
 
   // ── CHECK 4: EC concentrato (informativo) ──
-  let ecFin=0; righe.forEach(r=>{ const coeff = EC_COEFF_GLOBAL[r.id] || (r.id==='__custom' ? 0.5 : 0); ecFin+=(r.dose/1000)*coeff; });
+  let ecFin=0; righe.forEach(r=>{ const coeff = ecCoeffSale(r.id); ecFin+=(r.dose/1000)*coeff; });
   if(aq) ecFin+=aq.ec;
   const ecConc = ecFin*dil;
   audit.push({check:TT('EC nel concentrato','EC in the concentrate'), esito:'INFO', dettaglio:TT(`${ecConc.toFixed(0)} mS/cm — la sicurezza è verificata dagli indici di saturazione (SI), non da soglie EC arbitrarie`,`${ecConc.toFixed(0)} mS/cm — safety is verified by saturation indices (SI), not by arbitrary EC thresholds`)});
@@ -3953,7 +4121,7 @@ function calcola(){
   }
 
   // 2. AUTO-SOLVER precipitazioni (sulla copia)
-  const autoRes = autoRisolvi(wRighe, dil, aq);
+  const autoRes = autoRisolvi(wRighe, dil, aq, phFinale);
   const {righe: righeSolved, interventi, ecFin, ecPerSerb, dilSuggerito} = autoRes;
   let needsSerbC = autoRes.needsSerbC;
   wRighe = righeSolved;
@@ -3972,7 +4140,7 @@ function calcola(){
       wRighe = bilReport.righe;
       sicurezza = verificaSicurezza(wRighe, dil, aq, phFinale);
       // Ricalcola ecPerSerb e needsSerbC sulle righe bilanciate
-      ['A','B','C'].forEach(s=>{ let ec=0; wRighe.filter(r=>r.serb===s).forEach(r=>{ const coeff = EC_COEFF_GLOBAL[r.id] || (r.id==='__custom' ? 0.5 : 0); ec+=(r.dose/1000)*coeff; }); ecPerSerb[s]=ec; });
+      ['A','B','C'].forEach(s=>{ let ec=0; wRighe.filter(r=>r.serb===s).forEach(r=>{ const coeff = ecCoeffSale(r.id); ec+=(r.dose/1000)*coeff; }); ecPerSerb[s]=ec; });
       needsSerbC = checkNeedSerbC(wRighe, dil, aq);
       // Applica auto-balance SOLO se la sicurezza è ora OK
       autoBalanceApplied = sicurezza.sicuro;
@@ -3980,7 +4148,7 @@ function calcola(){
     }
   }
 
-  let ecFin2=0; wRighe.forEach(r=>{ const coeff = EC_COEFF_GLOBAL[r.id] || (r.id==='__custom' ? 0.5 : 0); ecFin2+=(r.dose/1000)*coeff; });
+  let ecFin2=0; wRighe.forEach(r=>{ const coeff = ecCoeffSale(r.id); ecFin2+=(r.dose/1000)*coeff; });
   if(aq) ecFin2+=aq.ec;
   const ecConc2=ecFin2*dil;
 
@@ -4502,20 +4670,20 @@ function calcola(){
       </div>
     </div>`;
 
-    // Correzione bicarbonati
+    // Correzione bicarbonati — acido dimensionato sul pH target scelto
     if(aq && aq.hco3 > 50){
-      const acido = calcAcidVolume(aq, volFinale1000L);
+      const acido = calcAcidVolume(aq, volFinale1000L, phFinale);
       if(acido.meq > 0.01){
         html+=`<div class="card" style="margin-top:12px">
-          <div class="ch" style="background:var(--ar)">${t('js.correzionePH')}</div>
+          <div class="ch" style="background:var(--ar)">${t('js.correzionePH')} → pH ${phFinale}</div>
           <div class="cb">
-            <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>${TT(`Neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻ con acido nitrico 38%.`,`Neutralized ${acido.meq.toFixed(2)} meq/L of HCO₃⁻ with nitric acid 38%.`)}</span></div>
+            <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>${TT(`Per portare l'acqua (pH ${aq.ph||'—'}, HCO₃⁻ ${aq.hco3} mg/L) a <strong>pH ${phFinale}</strong>: neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻. Cambiando il pH target, la dose di acido si aggiorna.`,`To bring the water (pH ${aq.ph||'—'}, HCO₃⁻ ${aq.hco3} mg/L) to <strong>pH ${phFinale}</strong>: ${acido.meq.toFixed(2)} meq/L of HCO₃⁻ neutralized. Changing the target pH updates the acid dose.`)}</span></div>
             <div class="ri-grid" style="grid-template-columns:repeat(3,1fr)">
               <div class="ri-box"><div class="ri-lbl">HNO₃ 38%</div><div class="ri-val">${acido.volHNO3.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L</div></div>
               <div class="ri-box"><div class="ri-lbl">H₃PO₄ 75%</div><div class="ri-val">${acido.volH3PO4.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L</div></div>
-              <div class="ri-box"><div class="ri-lbl">${TT('HCO₃⁻ residuo','HCO₃⁻ residual')}</div><div class="ri-val">${RESID_HCO3_MEQ.toFixed(1)}</div><div class="ri-sub">${TT('meq/L tampone','meq/L buffer')}</div></div>
+              <div class="ri-box"><div class="ri-lbl">${TT('HCO₃⁻ residuo','HCO₃⁻ residual')}</div><div class="ri-val">${acido.residuo.toFixed(2)}</div><div class="ri-sub">${TT('meq/L tampone','meq/L buffer')}</div></div>
             </div>
-            <div style="font-size:.72rem;color:var(--ts);margin-top:8px">${TT('Aggiungere l\'acido nell\'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati.','Add the acid to the dilution water <strong>before</strong> the salts, never to the concentrates.')}</div>
+            <div style="font-size:.72rem;color:var(--ts);margin-top:8px">${TT('Aggiungere l\'acido nell\'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati. Usare uno solo dei due acidi (H₃PO₄ apporta anche P: conteggiarlo se la dose è alta).','Add the acid to the dilution water <strong>before</strong> the salts, never to the concentrates. Use only one of the two acids (H₃PO₄ also adds P: account for it if the dose is high).')}</div>
           </div>
         </div>`;
       }
@@ -4574,7 +4742,7 @@ function calcola(){
   }
 
   // ── PROCEDURA ──
-  const hco3Note = aq&&aq.hco3>50?TT(`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄) all'acqua di miscelazione fino a pH 5.8–6.0 <em>prima</em> di aggiungere qualsiasi sale.</li>`,`<li><strong>HCO₃⁻ neutralization:</strong> add acid (HNO₃ or H₃PO₄) to the mixing water until pH 5.8–6.0 <em>before</em> adding any salt.</li>`):'';
+  const hco3Note = aq&&aq.hco3>50?TT(`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄, dosi nella scheda "Correzione pH") all'acqua di miscelazione fino a <strong>pH ${phFinale}</strong> <em>prima</em> di aggiungere qualsiasi sale.</li>`,`<li><strong>HCO₃⁻ neutralization:</strong> add acid (HNO₃ or H₃PO₄, doses in the "pH Correction" card) to the mixing water until <strong>pH ${phFinale}</strong> <em>before</em> adding any salt.</li>`):'';
   const serbCNote = usaSerbC?TT(`<li>Prepara <strong>Serb. C</strong> (${volC||100} L) seguendo lo stesso protocollo: prima i sali da soli, poi porta al volume finale.</li>`,`<li>Prepare <strong>Tank C</strong> (${volC||100} L) following the same protocol: salts alone first, then bring to final volume.</li>`):'';
   html+=`<div class="card" style="margin-top:12px">
     <div class="ch">${t('js.procedura')}</div>
@@ -5270,10 +5438,14 @@ function toggleScortaUI(id, checked){
 function openNuovoIngrediente(){
   editIngId=null;
   ['nome','note'].forEach(f=>document.getElementById('ing-'+f).value='');
-  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(f=>document.getElementById('ing-'+f).value=0);
+  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn','B','Cu','Mo'].forEach(f=>document.getElementById('ing-'+f).value=0);
   document.getElementById('ing-cat').value='macro';
   document.getElementById('ing-prezzo').value=0;
   document.getElementById('ing-dose').value=0;
+  document.getElementById('ing-nh4').value=0;
+  document.getElementById('ing-liquid').checked=false;
+  document.getElementById('ing-density').value=0;
+  document.getElementById('ing-density').disabled=true;
   document.getElementById('modal-ing-title').textContent=t('modal.ing.title');
   openModal('modal-ing');
 }
@@ -5286,7 +5458,11 @@ function editIngrediente(id){
   document.getElementById('ing-prezzo').value=s.prezzo||0;
   document.getElementById('ing-dose').value=s.dose||0;
   document.getElementById('ing-note').value=s.note||'';
-  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(f=>{ document.getElementById('ing-'+f).value=(s.el&&s.el[f])||0; });
+  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn','B','Cu','Mo'].forEach(f=>{ document.getElementById('ing-'+f).value=(s.el&&s.el[f])||0; });
+  document.getElementById('ing-nh4').value=s.nh4Frac||0;
+  document.getElementById('ing-liquid').checked=!!s.isLiquid;
+  document.getElementById('ing-density').value=s.density||0;
+  document.getElementById('ing-density').disabled=!s.isLiquid;
   document.getElementById('modal-ing-title').textContent=t('modal.ing.editTitle');
   openModal('modal-ing');
 }
@@ -5295,17 +5471,22 @@ function salvaIngrediente(){
   const nome=sanitizeName(document.getElementById('ing-nome').value.trim());
   if(!nome){ alert(t('js.nomeIngrediente')); return; }
   const el={};
-  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn'].forEach(f=>{ const v=parseFloat(document.getElementById('ing-'+f).value)||0; if(v>0)el[f]=v; });
+  ['N','P','K','Ca','Mg','S','Fe','Mn','Zn','B','Cu','Mo'].forEach(f=>{ const v=parseFloat(document.getElementById('ing-'+f).value)||0; if(v>0)el[f]=v; });
   // Serbatoio assegnato automaticamente dal motore in base alla composizione
   const serb = (el.Ca && !el.P && !el.S && !el.Fe) ? 'B' : 'A'; // euristica base; verrà comunque ricalcolato da assegnaSerbatoi()
+  const nh4Frac = el.N ? Math.min(100, Math.max(0, parseFloat(document.getElementById('ing-nh4').value)||0)) : 0;
+  const isLiquid = document.getElementById('ing-liquid').checked;
+  const density = isLiquid ? Math.max(0, parseFloat(document.getElementById('ing-density').value)||0) : 0;
   const s={
     id: editIngId || ('custom_'+Date.now()),
     nome, cat:document.getElementById('ing-cat').value,
     serb, el, note:sanitizeName(document.getElementById('ing-note').value.trim()),
     prezzo:parseFloat(document.getElementById('ing-prezzo').value)||0,
     dose:parseFloat(document.getElementById('ing-dose').value)||0,
-    ecC:0
+    ecC:stimaEcC(el, nh4Frac)
   };
+  if(nh4Frac>0) s.nh4Frac=nh4Frac;
+  if(isLiquid && density>0){ s.isLiquid=true; s.density=density; }
   if(editIngId){ const idx=catalogo.findIndex(x=>x.id===editIngId); if(idx>-1) catalogo[idx]=s; }
   else { catalogo.push(s); }
   saveCatalogo(); renderCatalogo(); closeModal('modal-ing');
@@ -5360,7 +5541,8 @@ function esportaDati(){
     catalogo: catalogo,
     ricetteCustom: ricetteCustom,
     scorta: [...scorta],
-    acqua: collectAcqua()
+    acqua: collectAcqua(),
+    acquaProfili: acquaProfili
   };
   const json = JSON.stringify(payload, null, 2);
   const blob = new Blob([json], {type:'application/json'});
@@ -5404,17 +5586,24 @@ function importaDati(input){
         const custom = data.catalogo.filter(s=>!defaultIds.has(s.id));
         const nuoviCustom = custom
           .filter(s=>s && isSafeId(s.id) && s.el && typeof s.el==='object')
-          .map(s=>({
-            id:s.id,
-            nome:sanitizeName(s.nome) || s.id,
-            cat:['macro','micro','ph'].includes(s.cat) ? s.cat : 'macro',
-            serb:['A','B','C'].includes(s.serb) ? s.serb : 'A',
-            el:normalizeImportedEl(s.el),
-            note:sanitizeName(s.note),
-            prezzo:cleanNum(s.prezzo,0,0,1000000),
-            dose:cleanNum(s.dose,0,0,5000),
-            ecC:cleanNum(s.ecC,0,0,100)
-          }))
+          .map(s=>{
+            const out = {
+              id:s.id,
+              nome:sanitizeName(s.nome) || s.id,
+              cat:['macro','micro','ph'].includes(s.cat) ? s.cat : 'macro',
+              serb:['A','B','C'].includes(s.serb) ? s.serb : 'A',
+              el:normalizeImportedEl(s.el),
+              note:sanitizeName(s.note),
+              prezzo:cleanNum(s.prezzo,0,0,1000000),
+              dose:cleanNum(s.dose,0,0,5000),
+              ecC:cleanNum(s.ecC,0,0,100)
+            };
+            const nh4 = cleanNum(s.nh4Frac,0,0,100);
+            if(nh4>0 && out.el.N) out.nh4Frac = nh4;
+            const dens = cleanNum(s.density,0,0,3);
+            if(s.isLiquid===true && dens>0){ out.isLiquid = true; out.density = dens; }
+            return out;
+          })
           .filter(s=>Object.keys(s.el).length>0);
         const scartati = custom.length - nuoviCustom.length;
         catalogo = [...base, ...nuoviCustom];
@@ -5465,6 +5654,23 @@ function importaDati(input){
         msg.push(TT('Analisi acqua ripristinata','Water analysis restored'));
       }
 
+      if(Array.isArray(data.acquaProfili)){
+        // Merge per nome: i profili nuovi si aggiungono, gli omonimi vengono aggiornati
+        const validi = data.acquaProfili
+          .filter(p=>p && typeof p.nome==='string' && p.valori && typeof p.valori==='object')
+          .map(p=>({nome:sanitizeName(p.nome).slice(0,40), valori:sanitizeAcquaValori(p.valori)}))
+          .filter(p=>p.nome);
+        let nuovi=0;
+        validi.forEach(p=>{
+          const idx=acquaProfili.findIndex(x=>x.nome===p.nome);
+          if(idx>-1) acquaProfili[idx]=p; else { acquaProfili.push(p); nuovi++; }
+        });
+        if(validi.length){
+          saveAcquaProfili(); renderProfiliAcqua();
+          msg.push(TT(`Profili acqua: ${nuovi} nuovi, ${validi.length-nuovi} aggiornati`,`Water profiles: ${nuovi} new, ${validi.length-nuovi} updated`));
+        }
+      }
+
       renderCatalogo();
       renderRicetteCustom();
       if(calcRighe.length) renderCalcTabella();
@@ -5503,6 +5709,7 @@ function eseguiReset(){
 initPiante();
 loadAcqua();        // ripristina l'analisi acqua salvata
 initAcquaPersist(); // autosalvataggio dei campi acqua a ogni modifica
+renderProfiliAcqua(); // chip dei profili acqua salvati dall'utente
 renderCatalogo();
 renderRicetteCustom();
 renderCalcTabella();
