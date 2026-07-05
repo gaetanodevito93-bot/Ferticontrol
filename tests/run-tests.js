@@ -413,6 +413,46 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check(`eliminazione profilo (${elim.prima} → ${elim.dopo})`, elim.dopo === elim.prima - 1);
 
   // ────────────────────────────────────────────────
+  console.log('\n═══ S14. Dose acido dimensionata sul pH target ═══');
+  const acido = await page.evaluate(() => {
+    const aq = { ph: 7.8, hco3: 150 }; // ~2.46 meq/L di alcalinità
+    const v = (ph) => calcAcidVolume(aq, 1, ph);
+    return {
+      ph55: v(5.5).meq, ph58: v(5.8).meq, ph62: v(6.2).meq, ph70: v(7.0).meq,
+      res55: v(5.5).residuo,
+      giaAcida: calcAcidVolume({ ph: 6.0, hco3: 150 }, 1, 6.5).meq,
+      legacy: calcAcidVolume(aq, 1).meq, // senza pH target: vecchia regola
+      hco3meq: 150 / 61.0,
+    };
+  });
+  check(`più acido a pH basso: 5.5→${acido.ph55.toFixed(2)} > 5.8→${acido.ph58.toFixed(2)} > 6.2→${acido.ph62.toFixed(2)} > 7.0→${acido.ph70.toFixed(2)} meq/L`,
+    acido.ph55 >= acido.ph58 && acido.ph58 > acido.ph62 && acido.ph62 > acido.ph70 && acido.ph70 > 0);
+  check(`tampone minimo 0.5 meq/L rispettato anche a pH 5.5 (residuo ${acido.res55.toFixed(2)})`, acido.res55 >= 0.5 - 1e-9);
+  check('acqua già al pH target → zero acido', acido.giaAcida === 0);
+  check(`retrocompatibile senza pH target (${acido.legacy.toFixed(2)} = alcalinità − 0.5)`, close(acido.legacy, acido.hco3meq - 0.5, 0.01));
+  // Frazioni Henderson-Hasselbalch attese: pH 5.8 → 78%, pH 7.0 → 18%
+  check('frazione H-H corretta a pH 5.8 (~78%)', close(acido.ph58 / acido.hco3meq, 0.78, 0.02));
+  check('frazione H-H corretta a pH 7.0 (~18%)', close(acido.ph70 / acido.hco3meq, 0.183, 0.02));
+
+  // End-to-end: cambiare il pH nel calcolatore aggiorna la card acido
+  const acidoUI = await page.evaluate(() => {
+    presetAcqua('dura'); // HCO3 320 → correzione sempre presente
+    document.getElementById('diluizione').value = 100;
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    const leggi = (ph) => {
+      document.getElementById('ph-finale').value = ph;
+      document.getElementById('ph-finale').dispatchEvent(new Event('change'));
+      const out = document.getElementById('calc-out').innerText;
+      const m = out.match(/HNO₃ 38%\s*\n?\s*([\d.,]+)/);
+      return { vol: m ? parseFloat(m[1].replace(',', '.')) : null, menzionaPh: out.includes('pH ' + ph) };
+    };
+    return { a58: leggi('5.8'), a65: leggi('6.5') };
+  });
+  check(`UI: acido a pH 5.8 (${acidoUI.a58.vol} mL) > acido a pH 6.5 (${acidoUI.a65.vol} mL)`,
+    acidoUI.a58.vol !== null && acidoUI.a65.vol !== null && acidoUI.a58.vol > acidoUI.a65.vol);
+  check('UI: la card acido cita il pH target scelto', acidoUI.a58.menzionaPh && acidoUI.a65.menzionaPh);
+
+  // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
   if (failures.length) { console.log('\nFallimenti:'); failures.forEach(f => console.log('  • ' + f)); }

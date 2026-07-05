@@ -1476,11 +1476,29 @@ function profiloDaRighe(righe, aq){
   return p;
 }
 
-// Calcola Volume acido per neutralizzazione HCO3
-function calcAcidVolume(aq, prodL){
-  if(!aq||!aq.hco3) return {meq:0,volHNO3:0,volH3PO4:0};
+// Calcola Volume acido per neutralizzazione HCO3, dimensionato sul pH TARGET.
+// Chimica: l'acido converte HCO₃⁻ in CO₂; all'equilibrio (Henderson-Hasselbalch
+// su pKa₁ = 6.35 del sistema carbonato, sistema chiuso) la frazione di
+// alcalinità da neutralizzare per raggiungere phTarget è 1/(1+10^(phTarget−pKa₁)).
+// Es: pH 5.8 → 78%, pH 6.2 → 59%, pH 7.0 → 18% dell'HCO₃⁻.
+// Resta sempre il tampone minimo RESID_HCO3_MEQ (0.5 meq/L) contro i crolli
+// di pH. Senza phTarget vale la vecchia regola fissa "tutto meno 0.5 meq/L"
+// (equivalente a un target ~5.8 per acque medie).
+const PKA1_CARB = 6.35;
+function calcAcidVolume(aq, prodL, phTarget){
+  if(!aq||!aq.hco3) return {meq:0,residuo:0,volHNO3:0,volH3PO4:0};
   const hco3meq=aq.hco3/61.0;
-  const acidMeq=Math.max(0,hco3meq-RESID_HCO3_MEQ);
+  let acidMeq;
+  if(phTarget){
+    if(aq.ph && aq.ph <= phTarget){
+      acidMeq = 0; // l'acqua è già al pH target (o più acida): niente acido
+    } else {
+      const fraz = 1/(1+Math.pow(10, phTarget - PKA1_CARB));
+      acidMeq = Math.max(0, Math.min(hco3meq*fraz, hco3meq - RESID_HCO3_MEQ));
+    }
+  } else {
+    acidMeq = Math.max(0, hco3meq - RESID_HCO3_MEQ);
+  }
   // Molarità dei prodotti commerciali dichiarati (HNO3 38%, H3PO4 75%, H2SO4 98%)
   // M = (densità g/L × frazione massa) / PM
   //   HNO3 38% (d~1.24): (1240×0.38)/63.01 = 7.47 mol/L
@@ -1489,6 +1507,7 @@ function calcAcidVolume(aq, prodL){
   const molPerL={nitric:7.47,phosphoric:12.1,sulfuric:18.0};
   return {
     meq:acidMeq,
+    residuo:hco3meq-acidMeq,
     volHNO3:acidMeq/1000.0*prodL/molPerL.nitric*1000.0,
     volH3PO4:acidMeq/1000.0*prodL/molPerL.phosphoric*1000.0
   };
@@ -3335,7 +3354,7 @@ function assegnaSerbatoi(righe){
 }
 
 // ── AUTO-SOLVER COMPLETO ─────────────────────────
-function autoRisolvi(righeInput, dil, aq){
+function autoRisolvi(righeInput, dil, aq, phFinale){
   // Step 1: assegnazione base
   let righe = assegnaSerbatoi(righeInput.map(r=>({...r})));
   const interventi = [];
@@ -3344,11 +3363,16 @@ function autoRisolvi(righeInput, dil, aq){
   // Step 2: Neutralizzazione HCO3 (da acqua partenza)
   // ────────────────────────────────────────────────
   if(aq && aq.hco3 > 50){
-    const mmolHCO3 = aq.hco3/61.0;
-    interventi.push({
-      tipo:'acido', icona:'🧪',
-      msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L di HNO₃ 38%</strong> (o ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare pH a 5.8–6.0.`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${(mmolHCO3*0.134).toFixed(1)} mL/L of HNO₃ 38%</strong> (or ${(mmolHCO3*0.083).toFixed(1)} mL/L H₃PO₄ 75%) to the dilution water before the salts to bring pH to 5.8–6.0.`)
-    });
+    // Acido dimensionato sul pH TARGET scelto dall'utente (prima era fisso
+    // "neutralizza tutto per pH 5.8-6.0"): a pH 6.5 serve meno acido che a 5.5.
+    const phT = phFinale || 6.0;
+    const av = calcAcidVolume(aq, 1, phT); // prodL=1 → volumi in mL per litro
+    if(av.meq > 0.01){
+      interventi.push({
+        tipo:'acido', icona:'🧪',
+        msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${av.volHNO3.toFixed(2)} mL/L di HNO₃ 38%</strong> (o ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare il pH a <strong>${phT}</strong> (neutralizzati ${av.meq.toFixed(2)} meq/L, tampone residuo ${av.residuo.toFixed(2)} meq/L).`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${av.volHNO3.toFixed(2)} mL/L of HNO₃ 38%</strong> (or ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%) to the dilution water before the salts to bring the pH to <strong>${phT}</strong> (${av.meq.toFixed(2)} meq/L neutralized, ${av.residuo.toFixed(2)} meq/L residual buffer).`)
+      });
+    }
   }
 
   // ────────────────────────────────────────────────
@@ -4097,7 +4121,7 @@ function calcola(){
   }
 
   // 2. AUTO-SOLVER precipitazioni (sulla copia)
-  const autoRes = autoRisolvi(wRighe, dil, aq);
+  const autoRes = autoRisolvi(wRighe, dil, aq, phFinale);
   const {righe: righeSolved, interventi, ecFin, ecPerSerb, dilSuggerito} = autoRes;
   let needsSerbC = autoRes.needsSerbC;
   wRighe = righeSolved;
@@ -4646,20 +4670,20 @@ function calcola(){
       </div>
     </div>`;
 
-    // Correzione bicarbonati
+    // Correzione bicarbonati — acido dimensionato sul pH target scelto
     if(aq && aq.hco3 > 50){
-      const acido = calcAcidVolume(aq, volFinale1000L);
+      const acido = calcAcidVolume(aq, volFinale1000L, phFinale);
       if(acido.meq > 0.01){
         html+=`<div class="card" style="margin-top:12px">
-          <div class="ch" style="background:var(--ar)">${t('js.correzionePH')}</div>
+          <div class="ch" style="background:var(--ar)">${t('js.correzionePH')} → pH ${phFinale}</div>
           <div class="cb">
-            <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>${TT(`Neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻ con acido nitrico 38%.`,`Neutralized ${acido.meq.toFixed(2)} meq/L of HCO₃⁻ with nitric acid 38%.`)}</span></div>
+            <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>${TT(`Per portare l'acqua (pH ${aq.ph||'—'}, HCO₃⁻ ${aq.hco3} mg/L) a <strong>pH ${phFinale}</strong>: neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻. Cambiando il pH target, la dose di acido si aggiorna.`,`To bring the water (pH ${aq.ph||'—'}, HCO₃⁻ ${aq.hco3} mg/L) to <strong>pH ${phFinale}</strong>: ${acido.meq.toFixed(2)} meq/L of HCO₃⁻ neutralized. Changing the target pH updates the acid dose.`)}</span></div>
             <div class="ri-grid" style="grid-template-columns:repeat(3,1fr)">
               <div class="ri-box"><div class="ri-lbl">HNO₃ 38%</div><div class="ri-val">${acido.volHNO3.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L</div></div>
               <div class="ri-box"><div class="ri-lbl">H₃PO₄ 75%</div><div class="ri-val">${acido.volH3PO4.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L</div></div>
-              <div class="ri-box"><div class="ri-lbl">${TT('HCO₃⁻ residuo','HCO₃⁻ residual')}</div><div class="ri-val">${RESID_HCO3_MEQ.toFixed(1)}</div><div class="ri-sub">${TT('meq/L tampone','meq/L buffer')}</div></div>
+              <div class="ri-box"><div class="ri-lbl">${TT('HCO₃⁻ residuo','HCO₃⁻ residual')}</div><div class="ri-val">${acido.residuo.toFixed(2)}</div><div class="ri-sub">${TT('meq/L tampone','meq/L buffer')}</div></div>
             </div>
-            <div style="font-size:.72rem;color:var(--ts);margin-top:8px">${TT('Aggiungere l\'acido nell\'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati.','Add the acid to the dilution water <strong>before</strong> the salts, never to the concentrates.')}</div>
+            <div style="font-size:.72rem;color:var(--ts);margin-top:8px">${TT('Aggiungere l\'acido nell\'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati. Usare uno solo dei due acidi (H₃PO₄ apporta anche P: conteggiarlo se la dose è alta).','Add the acid to the dilution water <strong>before</strong> the salts, never to the concentrates. Use only one of the two acids (H₃PO₄ also adds P: account for it if the dose is high).')}</div>
           </div>
         </div>`;
       }
@@ -4718,7 +4742,7 @@ function calcola(){
   }
 
   // ── PROCEDURA ──
-  const hco3Note = aq&&aq.hco3>50?TT(`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄) all'acqua di miscelazione fino a pH 5.8–6.0 <em>prima</em> di aggiungere qualsiasi sale.</li>`,`<li><strong>HCO₃⁻ neutralization:</strong> add acid (HNO₃ or H₃PO₄) to the mixing water until pH 5.8–6.0 <em>before</em> adding any salt.</li>`):'';
+  const hco3Note = aq&&aq.hco3>50?TT(`<li><strong>Neutralizzazione HCO₃⁻:</strong> aggiungi acido (HNO₃ o H₃PO₄, dosi nella scheda "Correzione pH") all'acqua di miscelazione fino a <strong>pH ${phFinale}</strong> <em>prima</em> di aggiungere qualsiasi sale.</li>`,`<li><strong>HCO₃⁻ neutralization:</strong> add acid (HNO₃ or H₃PO₄, doses in the "pH Correction" card) to the mixing water until <strong>pH ${phFinale}</strong> <em>before</em> adding any salt.</li>`):'';
   const serbCNote = usaSerbC?TT(`<li>Prepara <strong>Serb. C</strong> (${volC||100} L) seguendo lo stesso protocollo: prima i sali da soli, poi porta al volume finale.</li>`,`<li>Prepare <strong>Tank C</strong> (${volC||100} L) following the same protocol: salts alone first, then bring to final volume.</li>`):'';
   html+=`<div class="card" style="margin-top:12px">
     <div class="ch">${t('js.procedura')}</div>

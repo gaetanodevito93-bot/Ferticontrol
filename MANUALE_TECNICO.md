@@ -129,7 +129,7 @@ Accanto ai preset generici, l'utente può salvare le **proprie analisi con un no
 L'acqua non è un semplice dato informativo — entra in quattro punti del motore:
 
 1. **Sottrazione dei nutrienti già presenti** (`correggiDosi` in modalità grammi, oppure direttamente nei target nel solver NNLS): Ca, Mg, K, Fe vengono scalati dalle dosi; i solfati e i nitrati dell'acqua vengono convertiti nelle unità elementari corrette (SO₄→S con fattore 32.07/96.06, NO₃→N con 14.007/62.00) prima della sottrazione.
-2. **Neutralizzazione dei bicarbonati**: se HCO₃⁻ > 50 mg/L il motore prescrive i **mL/L di acido** (HNO₃ 38% o H₃PO₄ 75%) da aggiungere all'acqua di diluizione, calcolati dalle molarità reali dei prodotti commerciali (`calcAcidVolume`). Viene lasciato un residuo tampone di 0.5 meq/L (`RESID_HCO3_MEQ`).
+2. **Neutralizzazione dei bicarbonati**: se HCO₃⁻ > 50 mg/L il motore prescrive i **mL/L di acido** (HNO₃ 38% o H₃PO₄ 75%) da aggiungere all'acqua di diluizione, calcolati dalle molarità reali dei prodotti commerciali (`calcAcidVolume`). La dose è **dimensionata sul pH target scelto** nel calcolatore: la frazione di alcalinità da neutralizzare segue Henderson-Hasselbalch sul pKa₁ del sistema carbonato (6.35) — a pH 5.8 si neutralizza ~78% dell'HCO₃⁻, a pH 6.5 ~41%, a pH 7.0 ~18% — sempre con un residuo tampone minimo di 0.5 meq/L (`RESID_HCO3_MEQ`) contro i crolli di pH. Se l'acqua è già al pH target, l'acido è zero. Cambiando il pH nel calcolatore la prescrizione si aggiorna in tempo reale.
 3. **Rischio calcite (CaCO₃)**: il Ca totale e i carbonati dell'acqua (speciati con Henderson-Hasselbalch al pH dell'acqua) vengono confrontati col Ksp della calcite dipendente dalla temperatura.
 4. **EC e bilancio ionico finali**: l'EC dell'acqua si somma a quella dei sali; Na e Cl dell'acqua entrano nei controlli di salinità (limiti coco: Na ~50 mg/L, Cl ~100 mg/L).
 
@@ -188,7 +188,7 @@ Quando una fase target viene caricata in Calcola, la variabile `window._targetAt
 
 - **Volume Serbatoio A e B** (litri) — e **C** se attivato.
 - **Fattore di diluizione 1:X** — 1 L di concentrato produce X L di soluzione finale. Più X è alto, più la madre è concentrata e più cresce il rischio di precipitazione: il campo ha un warning dinamico (`aggiornaDiluizioneWarning`) e il motore può **suggerire la diluizione massima sicura** in base alle dosi.
-- **pH soluzione finale** — il pH mantenuto in coltura. È l'input chiave della verifica anti-precipitazione dei fosfati (a pH ≤ 6 il fosfato di calcio resta in soluzione; sopra 6.3 tende a precipitare). Se già esiste un risultato, cambiare il pH ricalcola al volo.
+- **pH soluzione finale** — il pH mantenuto in coltura. È l'input chiave della verifica anti-precipitazione dei fosfati (a pH ≤ 6 il fosfato di calcio resta in soluzione; sopra 6.3 tende a precipitare) e **dimensiona la dose di acido** prescritta per i bicarbonati. Se già esiste un risultato, cambiare il pH ricalcola al volo: le dosi dei sali restano invariate per scelta (i fabbisogni nutritivi non dipendono dal pH), mentre cambiano gli indici di saturazione, gli avvisi e i mL di acido.
 
 ### 6.2 Tabella "Sali da Preparare"
 
