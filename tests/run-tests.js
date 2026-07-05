@@ -82,7 +82,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   // ────────────────────────────────────────────────
   console.log('\n═══ S3. Golden: EC calcolata vs EC dichiarata dalle ricette ═══');
   // L'EC stimata dai coefficienti deve cadere vicino al range EC che la
-  // ricetta stessa dichiara per la fase (acqua distillata, quindi solo sali).
+  // ricetta stessa dichiara per la fase (nessuna acqua: solo il contributo dei sali).
   const ecFasi = await page.evaluate(() => {
     return PIANTE_BUILTIN.flatMap(pl => pl.fasi.map((f, fi) => {
       const ec = f.sali.reduce((a, r) => a + (r.g / 1000) * ecCoeffSale(r.id), 0);
@@ -136,7 +136,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   console.log('\n═══ S5. Stress: acque difficili × diluizioni estreme ═══');
   const stress = await page.evaluate(() => {
     const out = [];
-    ['dura', 'osmosi', 'distillata'].forEach(preset => {
+    ['dura', 'osmosi', 'personalizzata'].forEach(preset => {
       [50, 200].forEach(dil => {
         presetAcqua(preset);
         document.getElementById('diluizione').value = dil;
@@ -356,7 +356,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     salvaProfiloAcqua();
     const salvato = acquaProfili[acquaProfili.length - 1];
     // Cambia acqua, poi ricarica il profilo
-    presetAcqua('distillata');
+    presetAcqua('osmosi');
     const caDopoPreset = document.getElementById('aq-ca').value;
     caricaProfiloAcqua(acquaProfili.length - 1);
     const caRipristinato = document.getElementById('aq-ca').value;

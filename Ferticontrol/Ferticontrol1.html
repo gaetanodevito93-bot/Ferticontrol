@@ -625,7 +625,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
         <button class="btn btn-se btn-sm" onclick="presetAcqua('dura')" data-i18n="preset.dura">🪨 Acqua dura</button>
         <button class="btn btn-se btn-sm" onclick="presetAcqua('osmosi')" data-i18n="preset.osmosi">🔬 Osmosi inversa</button>
         <button class="btn btn-se btn-sm" onclick="presetAcqua('piovana')" data-i18n="preset.piovana">🌧️ Piovana</button>
-        <button class="btn btn-se btn-sm" onclick="presetAcqua('distillata')" data-i18n="preset.distillata">💎 Distillata</button>
+        <button class="btn btn-se btn-sm" onclick="presetAcqua('personalizzata')" data-i18n="preset.personalizzata">⚙️ Personalizzata</button>
       </div>
       <div class="sep"></div>
       <div style="font-size:.65rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px" data-i18n="acqua.profili">💾 I tuoi profili salvati</div>
@@ -954,7 +954,7 @@ const TRANSLATIONS = {
     'preset.dura': '🪨 Acqua dura',
     'preset.osmosi': '🔬 Osmosi inversa',
     'preset.piovana': '🌧️ Piovana',
-    'preset.distillata': '💎 Distillata',
+    'preset.personalizzata': '⚙️ Personalizzata',
     'acqua.profili': '💾 I tuoi profili salvati',
     'acqua.salvaProfilo': '💾 Salva profilo',
     'ph.acqua.profilo': 'Es. Pozzo — analisi giugno 2026',
@@ -1144,7 +1144,7 @@ const TRANSLATIONS = {
     'preset.dura': '🪨 Hard water',
     'preset.osmosi': '🔬 Reverse osmosis',
     'preset.piovana': '🌧️ Rainwater',
-    'preset.distillata': '💎 Distilled',
+    'preset.personalizzata': '⚙️ Custom',
     'acqua.profili': '💾 Your saved profiles',
     'acqua.salvaProfilo': '💾 Save profile',
     'ph.acqua.profilo': 'E.g. Well — June 2026 analysis',
@@ -3034,7 +3034,10 @@ function presetAcqua(tipo){
     dura:   {ec:0.7,ph:7.8,ca:180,mg:45,k:8,na:60,so4:90,cl:80,hco3:320,no3:15,fe:0.2},
     osmosi: {ec:0.02,ph:6.5,ca:2,mg:1,k:0,na:2,so4:1,cl:2,hco3:5,no3:1,fe:0.01},
     piovana:{ec:0.05,ph:6.2,ca:3,mg:1,k:1,na:2,so4:2,cl:2,hco3:8,no3:1,fe:0.01},
-    distillata:{ec:0.001,ph:7.0,ca:0,mg:0,k:0,na:0,so4:0,cl:0,hco3:0,no3:0,fe:0},
+    // Personalizzata: parte dai valori dell'acquedotto medio come base
+    // realistica da correggere con la propria analisi (poi salvabile come
+    // profilo con nome). Ha sostituito il vecchio preset "Distillata".
+    personalizzata:{ec:0.3,ph:7.2,ca:80,mg:20,k:5,na:30,so4:40,cl:50,hco3:150,no3:10,fe:0.1},
   };
   const v=map[tipo]; if(!v)return;
   Object.entries(v).forEach(([k,val])=>{ const el=document.getElementById('aq-'+k); if(el) el.value=val; });

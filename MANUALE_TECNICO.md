@@ -120,7 +120,7 @@ L'analisi dell'acqua di partenza (acquedotto, pozzo, osmosi):
 
 ### 4.2 Preset rapidi e profili personali
 
-Sei profili tipici precompilati: **Ottima (EC 0.1)**, **Acquedotto medio**, **Acqua dura**, **Osmosi inversa**, **Piovana**, **Distillata**. Servono come punto di partenza quando non si dispone di un'analisi di laboratorio.
+Sei preset precompilati: **Ottima (EC 0.1)**, **Acquedotto medio**, **Acqua dura**, **Osmosi inversa**, **Piovana** e **Personalizzata** — quest'ultima precompila i valori dell'acquedotto medio come base realistica da correggere con la propria analisi. Servono come punto di partenza quando non si dispone di un'analisi di laboratorio.
 
 Accanto ai preset generici, l'utente può salvare le **proprie analisi con un nome** ("Pozzo — analisi giugno", "Acquedotto casa") e richiamarle con un click: è la soluzione per chi ha più fonti idriche o analisi stagionali. I profili personali sono persistiti in `fc_acqua_profili`, inclusi nel backup JSON (export/import con merge per nome), aggiornabili risalvando lo stesso nome ed eliminabili singolarmente con conferma.
 
