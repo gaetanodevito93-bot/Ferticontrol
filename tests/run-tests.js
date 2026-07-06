@@ -24,8 +24,24 @@ const path = require('path');
 const os = require('os');
 
 let chromium;
-try { ({ chromium } = require('playwright')); }
-catch (e) { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); }
+{
+  const candidates = [
+    'playwright',
+    process.env.PLAYWRIGHT_PATH,
+    path.join(__dirname, '..', 'node_modules', 'playwright'),
+    '/opt/node22/lib/node_modules/playwright',
+  ].filter(Boolean);
+  let lastErr;
+  for (const c of candidates) {
+    try { ({ chromium } = require(c)); break; }
+    catch (e) { lastErr = e; }
+  }
+  if (!chromium) {
+    console.error('Playwright non trovato. Installa con: npm install playwright && npx playwright install chromium');
+    console.error('(oppure indica il modulo con la variabile PLAYWRIGHT_PATH)');
+    throw lastErr;
+  }
+}
 
 const APP = 'file://' + path.resolve(__dirname, '..', 'Ferticontrol', 'Ferticontrol1.html');
 const EXEC = process.env.CHROMIUM_PATH || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
