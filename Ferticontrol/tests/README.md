@@ -1,6 +1,6 @@
 # FertiControl — Suite di test automatica
 
-Esegue l'app reale (`Ferticontrol/Ferticontrol1.html`) in Chromium headless e verifica motore chimico, solver, sicurezza, persistenza e UI. **Da lanciare prima di ogni modifica al file HTML e dopo ogni correzione.**
+Esegue l'app reale (`Ferticontrol/Ferticontrol1.html`, nella cartella padre) in Chromium headless e verifica motore chimico, solver, sicurezza, persistenza e UI. **Da lanciare prima di ogni modifica al file HTML e dopo ogni correzione.**
 
 ## Requisiti
 
@@ -17,7 +17,7 @@ Se Chromium è già installato altrove, indicare il percorso con la variabile `C
 ## Esecuzione
 
 ```bash
-node tests/run-tests.js
+node Ferticontrol/tests/run-tests.js
 ```
 
 Exit code `0` = tutti i test passati; `1` = almeno un fallimento (elencati in fondo all'output); `2` = errore della suite stessa.

@@ -16,8 +16,8 @@
 //   S11. Fuzzing dell'import (JSON malformati e ostili)
 //   S12. Cambio lingua IT/EN
 //
-// Uso:  node tests/run-tests.js
-// Requisiti: Playwright + Chromium (vedi tests/README.md)
+// Uso:  node Ferticontrol/tests/run-tests.js
+// Requisiti: Playwright + Chromium (vedi Ferticontrol/tests/README.md)
 // ════════════════════════════════════════════════════════════════
 const fs = require('fs');
 const path = require('path');
@@ -28,7 +28,7 @@ let chromium;
   const candidates = [
     'playwright',
     process.env.PLAYWRIGHT_PATH,
-    path.join(__dirname, '..', 'node_modules', 'playwright'),
+    path.join(__dirname, '..', '..', 'node_modules', 'playwright'),
     '/opt/node22/lib/node_modules/playwright',
   ].filter(Boolean);
   let lastErr;
@@ -43,7 +43,7 @@ let chromium;
   }
 }
 
-const APP = 'file://' + path.resolve(__dirname, '..', 'Ferticontrol', 'Ferticontrol1.html');
+const APP = 'file://' + path.resolve(__dirname, '..', 'Ferticontrol1.html');
 const EXEC = process.env.CHROMIUM_PATH || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
 
 let pass = 0, fail = 0;
