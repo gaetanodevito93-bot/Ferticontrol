@@ -910,7 +910,6 @@ it: {
 'js.ripristinaOriginali': '↺ Ripristina dosi originali',
 'js.doseModificate': 'Dosi modificate',
 'js.eliminaRicetta': 'Eliminare la ricetta e tutte le sue fasi?',
-'js.eliminaFase': 'Eliminare questa fase di crescita?',
 'js.eliminaIngrediente': 'Eliminare questo ingrediente dal catalogo?',
 'js.nuovaRicetta': 'Nuova Ricetta',
 'js.modificaRicetta': 'Modifica Ricetta',
@@ -1100,7 +1099,6 @@ en: {
 'js.ripristinaOriginali': '↺ Restore original doses',
 'js.doseModificate': 'Modified doses',
 'js.eliminaRicetta': 'Delete this recipe and all its stages?',
-'js.eliminaFase': 'Delete this growth stage?',
 'js.eliminaIngrediente': 'Delete this ingredient from the catalog?',
 'js.nuovaRicetta': 'New Recipe',
 'js.modificaRicetta': 'Edit Recipe',
@@ -1421,10 +1419,6 @@ fasi:r.fasi.map(f=>f ? {...f, nome:stripTags(f.nome), note:stripTags(f.note)} : 
 let scorta = new Set(safeParse('fc_scorta', null) || SALI_DEFAULT.map(s=>s.id));
 function saveScorta(){ try{ localStorage.setItem('fc_scorta', JSON.stringify([...scorta])); }catch(e){ console.warn('Salvataggio scorta fallito:', e.message); } }
 function isDisponibile(id){ return scorta.has(id); }
-function toggleScorta(id){
-if(scorta.has(id)) scorta.delete(id); else scorta.add(id);
-saveScorta();
-}
 let calcRighe = [];
 let ricettaCaricata = null;
 let fasiBozza = [];
@@ -2082,20 +2076,12 @@ window._pendingDelete={tipo:'ricetta',ri};
 document.getElementById('modal-del-msg').textContent=t('js.eliminaRicetta');
 openModal('modal-del');
 }
-function eliminaFaseCustom(ri,fi){
-window._pendingDelete={tipo:'fase',ri,fi};
-document.getElementById('modal-del-msg').textContent=t('js.eliminaFase');
-openModal('modal-del');
-}
 function eseguiElimina(){
 closeModal('modal-del');
 const p=window._pendingDelete;
 if(!p) return;
 if(p.tipo==='ricetta'){
 ricetteCustom.splice(p.ri,1);
-} else if(p.tipo==='fase'){
-ricetteCustom[p.ri].fasi.splice(p.fi,1);
-if(!ricetteCustom[p.ri].fasi.length) ricetteCustom.splice(p.ri,1);
 } else if(p.tipo==='ingrediente'){
 catalogo=catalogo.filter(s=>s.id!==p.id);
 saveCatalogo(); renderCatalogo(); window._pendingDelete=null; return;
@@ -2557,7 +2543,6 @@ if(!isFinite(temp) || temp<1 || temp>45) temp = 20;
 if(!ec && !ca && !mg && !k && !na && !so4 && !cl && !hco3 && !no3 && !fe) return null;
 return {ec, ph, temp, ca, mg, k, na, so4, cl, hco3, no3, fe};
 }
-function toggleAcquaPanel(){   }
 function presetAcqua(tipo){
 const map={
 ottima: {ec:0.1,ph:6.8,ca:10,mg:2,k:1,na:5,so4:5,cl:5,hco3:20,no3:2,fe:0.01},
