@@ -86,6 +86,8 @@ body.dragging-active{cursor:grabbing;user-select:none}
 .set-check.on{background:var(--volt);border-color:var(--volt)}
 .set-check.on svg{stroke:#0A0A0F;stroke-width:3}
 .set-row.on .set-input{opacity:.55}
+.set-prev{grid-column:2/4;font-size:11px;font-weight:600;color:var(--muted);text-align:center;margin-top:-1px;padding-bottom:2px}
+.set-prev b{color:#B4B4C4;font-weight:700}
 .empty{text-align:center;padding:70px 20px;color:var(--muted)}
 .empty svg{width:56px;height:56px;stroke:var(--border);margin-bottom:16px}
 .empty h3{font-family:Anton,sans-serif;font-size:22px;color:var(--text);margin-bottom:8px}
@@ -93,6 +95,20 @@ body.dragging-active{cursor:grabbing;user-select:none}
 .fab{position:fixed;right:20px;bottom:24px;z-index:35;height:56px;padding:0 22px 0 18px;border-radius:999px;background:var(--volt);color:#0A0A0F;font-weight:800;font-size:15px;display:flex;align-items:center;gap:9px;box-shadow:0 12px 34px rgba(198,255,61,.4);transition:transform .15s}
 .fab:active{transform:scale(.95)}
 .fab svg{width:22px;height:22px;stroke:#0A0A0F;stroke-width:2.5}
+.fab-save{left:20px;right:auto;background:var(--surface);color:var(--text);border:1px solid var(--volt);box-shadow:0 12px 34px rgba(0,0,0,.5)}
+.fab-save svg{stroke:var(--volt)}
+.cmp-ex{margin-bottom:18px}
+.cmp-ex h4{font-size:14px;font-weight:800;margin-bottom:8px}
+.cmp-head,.cmp-row{display:grid;grid-template-columns:30px 1fr 26px 1fr;gap:8px;align-items:center;padding:5px 0}
+.cmp-head{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+.cmp-row{font-size:13.5px;font-weight:700;border-bottom:1px solid rgba(42,42,58,.5)}
+.cmp-row .n{font-family:Anton,sans-serif;color:var(--muted);text-align:center;font-size:12px}
+.cmp-row .v{text-align:center}
+.cmp-row .prev{color:var(--muted)}
+.cmp-row .arrow{text-align:center;font-size:15px}
+.cmp-row .arrow.up{color:var(--volt)}
+.cmp-row .arrow.down{color:var(--coral)}
+.cmp-row .arrow.eq{color:var(--muted)}
 .btn{padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px;transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn svg{width:17px;height:17px}
 .btn-primary{background:var(--volt);color:#0A0A0F}
@@ -185,6 +201,11 @@ body.dragging-active{cursor:grabbing;user-select:none}
   <div class="ex-list" id="exList"></div>
 </main>
 
+<button class="fab fab-save" id="fabSave" data-testid="save-session-btn" style="display:none">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><path d="M4 22v-7"></path></svg>
+  Fine
+</button>
+
 <button class="fab" id="fabAdd" data-testid="add-exercise-btn">
   <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
   Esercizio
@@ -259,6 +280,7 @@ function normalizeState(s) {
   s.programName = String(s.programName || 'Il mio programma');
   s.activeDay = Math.min(Math.max(0, s.activeDay | 0), s.days.length - 1);
   s.days.forEach(d => { d.name = String(d.name || 'Giorno'); (d.exercises || (d.exercises = [])).forEach(ensureLog); });
+  if (!s.history || typeof s.history !== 'object' || Array.isArray(s.history)) s.history = {};
   return s;
 }
 function load() {
@@ -284,6 +306,24 @@ function parseRest(v) {
   if (v.includes(':')) { const [m, s] = v.split(':'); return Math.max(0, (parseInt(m, 10) || 0) * 60 + (parseInt(s, 10) || 0)); }
   const n = parseFloat(v.replace(',', '.'));
   return isNaN(n) ? 90 : Math.max(0, Math.round(n));
+}
+function fmtDate(ts) { return new Date(ts).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }); }
+function firstNum(v) { const m = String(v == null ? '' : v).replace(',', '.').match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; }
+// ultima sessione salvata per questo giorno; se possibile una di un giorno
+// precedente a oggi (così "oggi vs ultima volta" resta sensato dopo il salvataggio)
+function lastSessionFor(dayName) {
+  const arr = state.history[dayName];
+  if (!arr || !arr.length) return null;
+  const today = new Date().toDateString();
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (new Date(arr[i].ts).toDateString() !== today) return arr[i];
+  }
+  return arr[arr.length - 1];
+}
+function prevExercise(session, name) {
+  if (!session) return null;
+  const n = name.trim().toLowerCase();
+  return session.exercises.find(e => e.name.trim().toLowerCase() === n) || null;
 }
 let toastT = null;
 function toast(msg) {
@@ -320,10 +360,12 @@ function renderDayHead() {
   const n = d.exercises.length;
   const C = 2 * Math.PI * 24;
   const p = tot ? done / tot : 0;
+  const last = lastSessionFor(d.name);
+  $('fabSave').style.display = done > 0 ? 'flex' : 'none';
   $('dayHead').innerHTML = `
     <div class="title-block">
       <h2 data-testid="day-title">${esc(d.name)}</h2>
-      <p>${n} ${n === 1 ? 'esercizio' : 'esercizi'} · ${done}/${tot} serie completate</p>
+      <p>${n} ${n === 1 ? 'esercizio' : 'esercizi'} · ${done}/${tot} serie completate${last ? ` · ultima volta ${fmtDate(last.ts)}` : ''}</p>
     </div>
     <div class="day-progress"><div class="ring">
       <svg width="58" height="58"><circle cx="29" cy="29" r="24" fill="none" stroke="#1D1D2A" stroke-width="6"></circle>
@@ -332,17 +374,27 @@ function renderDayHead() {
     </div></div>`;
 }
 
-function cardHTML(ex, i) {
+function cardHTML(ex, i, session) {
   const chips = [
     `<span class="chip">${ICONS.reps}${ex.sets}×${esc(ex.reps)}</span>`,
     ex.weight != null && ex.weight !== '' ? `<span class="chip">${ICONS.weight}${esc(ex.weight)} kg</span>` : '',
     `<span class="chip rest">${ICONS.rest}${fmtRest(ex.restSec)} recupero</span>`
   ].join('');
-  const rows = ex.log.map((l, j) => `<div class="set-row${l.done ? ' on' : ''}">
+  const prevEx = prevExercise(session, ex.name);
+  const rows = ex.log.map((l, j) => {
+    const ps = prevEx && prevEx.sets[j];
+    let prevLine = '';
+    if (ps && (ps.reps || ps.weight)) {
+      prevLine = `<div class="set-prev">ultima volta: <b>${esc(ps.reps || '—')}${ps.weight ? ` × ${esc(ps.weight)} kg` : ''}</b></div>`;
+    } else if (ps && ps.done) {
+      prevLine = `<div class="set-prev">ultima volta: <b>✓ completata</b></div>`;
+    }
+    return `<div class="set-row${l.done ? ' on' : ''}">
     <div class="set-idx">${j + 1}</div>
     <input class="set-input" data-testid="reps-${i}-${j}" data-ex="${i}" data-set="${j}" data-k="reps" inputmode="text" placeholder="${esc(ex.reps)}" value="${esc(l.reps)}">
     <input class="set-input" data-testid="weight-${i}-${j}" data-ex="${i}" data-set="${j}" data-k="weight" inputmode="decimal" placeholder="${ex.weight != null && ex.weight !== '' ? esc(ex.weight) : '—'}" value="${esc(l.weight)}">
-    <button class="set-check${l.done ? ' on' : ''}" data-testid="set-check-${i}-${j}" data-ex="${i}" data-set="${j}">${ICONS.check}</button></div>`).join('');
+    <button class="set-check${l.done ? ' on' : ''}" data-testid="set-check-${i}-${j}" data-ex="${i}" data-set="${j}">${ICONS.check}</button>${prevLine}</div>`;
+  }).join('');
   const allDone = ex.sets > 0 && ex.log.every(l => l.done);
   return `<div class="ex-card${allDone ? ' done' : ''}" data-testid="exercise-card-${i}" data-exidx="${i}" style="animation-delay:${i * 0.05}s" title="Tieni premuto per spostare">
     <div class="ex-top">
@@ -371,7 +423,8 @@ function renderList() {
     const b = $('emptyAdd'); if (b) b.onclick = () => openExerciseForm(null);
     return;
   }
-  $('exList').innerHTML = exs.map(cardHTML).join('');
+  const session = lastSessionFor(day().name);
+  $('exList').innerHTML = exs.map((ex, i) => cardHTML(ex, i, session)).join('');
 }
 
 /* ── serie: input e spunte ── */
@@ -659,11 +712,71 @@ function openExMenu(i) {
   });
 }
 
+/* ── sessioni: salvataggio e confronto con l'ultima volta ── */
+$('fabSave').onclick = openFinishModal;
+
+function openFinishModal() {
+  const { tot, done } = dayCounts();
+  const b = openModal('Fine allenamento', `
+    <p style="color:var(--muted);font-size:14px;margin-bottom:18px">Hai completato <b style="color:var(--text)">${done} serie su ${tot}</b>.
+    La sessione di oggi (ripetizioni e pesi inseriti) viene salvata nello storico di "${esc(day().name)}" e la ritroverai come "ultima volta" al prossimo allenamento.</p>
+    <button class="btn btn-primary btn-block" id="finSaveClear" style="margin-bottom:10px">Salva e prepara la prossima</button>
+    <button class="btn btn-ghost btn-block" id="finSaveOnly">Salva soltanto</button>`);
+  b.querySelector('#finSaveClear').onclick = () => { saveSession(true); closeModal(); };
+  b.querySelector('#finSaveOnly').onclick = () => { saveSession(false); closeModal(); };
+}
+
+function saveSession(clearAfter) {
+  const d = day();
+  const rec = {
+    ts: Date.now(),
+    exercises: d.exercises.map(e => ({
+      name: e.name,
+      sets: e.log.map(l => ({ reps: l.reps, weight: l.weight, done: !!l.done }))
+    }))
+  };
+  const arr = state.history[d.name] || (state.history[d.name] = []);
+  arr.push(rec);
+  if (arr.length > 20) arr.splice(0, arr.length - 20);
+  if (clearAfter) d.exercises.forEach(ex => ex.log.forEach(l => { l.done = false; l.reps = ''; l.weight = ''; }));
+  save(); render();
+  toast(clearAfter ? 'Sessione salvata, scheda pronta 💪' : 'Sessione salvata');
+}
+
+function openCompare() {
+  const last = lastSessionFor(day().name);
+  if (!last) { toast('Nessuna sessione salvata per questo giorno'); return; }
+  const fmtSet = s => !s || (!s.reps && !s.weight) ? (s && s.done ? '✓' : '—')
+    : `${s.reps || '—'}${s.weight ? ` × ${s.weight}` : ''}`;
+  const blocks = day().exercises.map(ex => {
+    const prevEx = prevExercise(last, ex.name);
+    if (!prevEx) return '';
+    const rows = ex.log.map((l, j) => {
+      const ps = prevEx.sets[j];
+      const today = { reps: l.reps, weight: l.weight, done: l.done };
+      // confronto: prima il peso, a parità le ripetizioni
+      const dw = firstNum(today.weight) != null && ps && firstNum(ps.weight) != null ? firstNum(today.weight) - firstNum(ps.weight) : null;
+      const dr = firstNum(today.reps) != null && ps && firstNum(ps.reps) != null ? firstNum(today.reps) - firstNum(ps.reps) : null;
+      const diff = dw !== null && dw !== 0 ? dw : (dr !== null ? dr : (dw !== null ? 0 : null));
+      const arrow = diff == null ? '<span class="arrow eq">·</span>'
+        : diff > 0 ? '<span class="arrow up">▲</span>'
+        : diff < 0 ? '<span class="arrow down">▼</span>'
+        : '<span class="arrow eq">=</span>';
+      return `<div class="cmp-row"><div class="n">${j + 1}</div><div class="v prev">${esc(fmtSet(ps))}</div>${arrow}<div class="v">${esc(fmtSet(today))}</div></div>`;
+    }).join('');
+    return `<div class="cmp-ex"><h4>${esc(ex.name)}</h4>
+      <div class="cmp-head"><span></span><span style="text-align:center">${esc(fmtDate(last.ts))}</span><span></span><span style="text-align:center">Oggi</span></div>${rows}</div>`;
+  }).join('');
+  openModal('Confronto con l\'ultima volta', blocks ||
+    '<p style="color:var(--muted);font-size:14px">Nessun esercizio di oggi compare nella sessione salvata.</p>');
+}
+
 /* ── menu principale ── */
 $('btnMenu').onclick = openAppMenu;
 function openAppMenu() {
   const canDelDay = state.days.length > 1;
   const b = openModal('Menu', `<div style="display:flex;flex-direction:column;gap:4px">
+    <button class="sheet-btn" data-testid="menu-compare" id="aCompare"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>Confronta con l'ultima volta</button>
     <button class="sheet-btn" id="aRename"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>Rinomina giorno / programma</button>
     <button class="sheet-btn" data-testid="menu-import" id="aImport"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M12 3v13m0 0-4-4m4 4 4-4"></path></svg>Importa scheda JSON</button>
     <button class="sheet-btn" data-testid="menu-export" id="aExport"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M12 16V3m0 13 4-4m-4 4-4-4"></path></svg>Esporta scheda JSON</button>
@@ -672,6 +785,7 @@ function openAppMenu() {
     ${canDelDay ? `<button class="sheet-btn danger" id="aDelDay"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>Elimina questo giorno</button>` : ''}
     <button class="sheet-btn danger" id="aReset"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>Reset completo</button>
   </div>`);
+  b.querySelector('#aCompare').onclick = () => { closeModal(); openCompare(); };
   b.querySelector('#aRename').onclick = () => { closeModal(); openRename(); };
   b.querySelector('#aImport').onclick = () => { closeModal(); openImport(); };
   b.querySelector('#aExport').onclick = () => { closeModal(); exportJSON(); };
@@ -681,8 +795,10 @@ function openAppMenu() {
     save(); render(); toast('Progressi azzerati');
   });
   const dd = b.querySelector('#aDelDay');
-  if (dd) dd.onclick = () => confirmModal('Elimina giorno', `Eliminare "${day().name}" con tutti i suoi esercizi?`, 'Elimina', () => {
+  if (dd) dd.onclick = () => confirmModal('Elimina giorno', `Eliminare "${day().name}" con tutti i suoi esercizi e il suo storico?`, 'Elimina', () => {
+    const name = day().name;
     state.days.splice(state.activeDay, 1);
+    if (!state.days.some(d => d.name === name)) delete state.history[name];
     state.activeDay = Math.max(0, state.activeDay - 1);
     save(); render(); toast('Giorno eliminato');
   });
@@ -699,7 +815,13 @@ function openRename() {
     <div class="modal-foot"><button class="btn btn-primary btn-block" id="rSave">Salva</button></div>`);
   b.querySelector('#rSave').onclick = () => {
     state.programName = b.querySelector('#rProg').value.trim() || state.programName;
-    day().name = b.querySelector('#rDay').value.trim() || day().name;
+    const newName = b.querySelector('#rDay').value.trim() || day().name;
+    // lo storico è legato al nome del giorno: seguilo nel rinomino
+    if (newName !== day().name && state.history[day().name] && !state.history[newName]) {
+      state.history[newName] = state.history[day().name];
+      delete state.history[day().name];
+    }
+    day().name = newName;
     save(); closeModal(); render(); toast('Nomi aggiornati');
   };
 }
@@ -777,7 +899,8 @@ function importProgram(obj) {
   state = normalizeState({
     programName: String(obj.programName || obj.program || obj.nome || 'Il mio programma').trim(),
     activeDay: 0,
-    days: outDays
+    days: outDays,
+    history: state.history // lo storico sessioni sopravvive all'import (chiave: nome giorno)
   });
   save();
 }
@@ -857,7 +980,9 @@ REGOLE
 2. Numeri con il punto decimale (22.5, non 22,5).
 3. L'ordine degli esercizi nella lista è l'ordine mostrato nell'app.
 4. Non inventare campi extra: quelli sconosciuti vengono ignorati.
-5. L'import SOSTITUISCE tutta la scheda esistente.
+5. L'import SOSTITUISCE tutta la scheda esistente. Lo storico delle
+   sessioni salvate NON viene toccato: resta collegato ai giorni con
+   lo stesso nome ("name" del giorno).
 
 ESEMPIO COMPLETO (2 giorni)
 ---------------------------

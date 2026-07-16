@@ -59,7 +59,9 @@ REGOLE
 2. Numeri con il punto decimale (22.5, non 22,5).
 3. L'ordine degli esercizi nella lista è l'ordine mostrato nell'app.
 4. Non inventare campi extra: quelli sconosciuti vengono ignorati.
-5. L'import SOSTITUISCE tutta la scheda esistente.
+5. L'import SOSTITUISCE tutta la scheda esistente. Lo storico delle
+   sessioni salvate NON viene toccato: resta collegato ai giorni con
+   lo stesso nome ("name" del giorno).
 
 ESEMPIO COMPLETO (2 giorni)
 ---------------------------

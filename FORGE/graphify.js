@@ -167,6 +167,35 @@ const check = (name, cond, detail = '') => {
   await page.screenshot({ path: path.join(OUT, '04-timer.png') });
   await page.locator('[data-testid="timer-skip"]').click();
 
+  // ── sessioni: salva, "ultima volta" a colpo d'occhio, confronto ──
+  await page.fill('[data-testid="reps-0-0"]', '10');
+  await page.fill('[data-testid="weight-0-0"]', '52.5');
+  check('V8: pulsante "Fine" visibile con almeno una serie completata', await page.locator('#fabSave').isVisible());
+  await page.locator('#fabSave').click();
+  await page.waitForTimeout(400);
+  await page.locator('#finSaveClear').click();
+  await page.waitForTimeout(450);
+  const prevTxt = (await page.locator('.set-prev').first().innerText()).replace(/\s+/g, ' ');
+  check('V9: riga "ultima volta" con ripetizioni e peso', prevTxt.includes('10') && prevTxt.includes('52.5'), prevTxt);
+  check('V9b: spunte e valori azzerati dopo "salva e prepara"', await page.locator('.set-check.on').count() === 0);
+  await page.screenshot({ path: path.join(OUT, '05-ultima-volta.png') });
+
+  // sessione di oggi con valori migliori, poi confronto
+  await page.fill('[data-testid="reps-0-0"]', '11');
+  await page.fill('[data-testid="weight-0-0"]', '55');
+  await page.locator('[data-testid="set-check-0-0"]').click();
+  await page.waitForTimeout(400);
+  await page.locator('[data-testid="timer-skip"]').click();
+  await page.waitForTimeout(300);
+  await page.locator('[data-testid="app-menu-btn"]').click();
+  await page.waitForTimeout(350);
+  await page.locator('[data-testid="menu-compare"]').click();
+  await page.waitForTimeout(400);
+  const cmp = await page.locator('#modal').innerText();
+  check('V10: confronto ultima volta / oggi con freccia di miglioramento',
+    cmp.includes('52.5') && cmp.includes('55') && cmp.includes('▲'), cmp.slice(0, 120));
+  await page.screenshot({ path: path.join(OUT, '06-confronto.png') });
+
   check('Nessun errore JS durante le interazioni', jsErrors.length === 0, jsErrors.join(' | '));
 
   await browser.close();
