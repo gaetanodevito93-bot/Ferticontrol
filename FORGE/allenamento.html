@@ -65,6 +65,10 @@ main{max-width:900px;margin:0 auto;padding:20px 18px 140px}
 .ex-opts-btn:active{transform:scale(.95)}
 .ex-opts-btn svg{width:17px;height:17px;fill:var(--volt)}
 .ex-card.dragging{z-index:120;box-shadow:0 24px 64px rgba(0,0,0,.75);border-color:var(--volt);cursor:grabbing;opacity:.97;animation:buzz .2s linear 3;will-change:top}
+/* durante il trascinamento tutte le finestre si riducono al solo titolo */
+.ex-list.compact .ex-meta,.ex-list.compact .ex-note,.ex-list.compact .sets{display:none}
+.ex-list.compact .ex-top{padding:12px 16px;align-items:center}
+.ex-list.compact .ex-card{animation:none}
 @keyframes buzz{0%,100%{transform:scale(1.015)}25%{transform:scale(1.015) translateX(-2.5px)}75%{transform:scale(1.015) translateX(2.5px)}}
 .drag-ph{border:2px dashed var(--volt-dim);border-radius:var(--radius);background:rgba(198,255,61,.06);flex-shrink:0}
 body.dragging-active{cursor:grabbing;user-select:none}
@@ -471,10 +475,15 @@ $('exList').addEventListener('pointerdown', e => {
 function armDrag() {
   if (!drag) return;
   const { card } = drag;
-  const r = card.getBoundingClientRect();
   buzz(35);                                     // la finestra "vibra": da ora si può spostare
   drag.armed = true;
-  drag.offsetY = drag.startY - r.top;
+  // tutte le finestre si riducono al solo titolo per rilasciare più comodamente
+  $('exList').classList.add('compact');
+  // dopo la compattazione riporta la card sotto il dito
+  let r = card.getBoundingClientRect();
+  window.scrollBy(0, (r.top + r.height / 2) - drag.startY);
+  r = card.getBoundingClientRect();
+  drag.offsetY = Math.max(8, Math.min(r.height - 8, drag.startY - r.top));
   drag.ph = document.createElement('div');
   drag.ph.className = 'drag-ph';
   drag.ph.style.height = r.height + 'px';
@@ -482,7 +491,7 @@ function armDrag() {
   card.classList.add('dragging');
   card.style.position = 'fixed';
   card.style.left = r.left + 'px';
-  card.style.top = r.top + 'px';
+  card.style.top = (drag.startY - drag.offsetY) + 'px';
   card.style.width = r.width + 'px';
   document.body.classList.add('dragging-active');
   drag.raf = requestAnimationFrame(dragLoop);
@@ -527,6 +536,7 @@ function dragEnd() {
     card.classList.remove('dragging');
     card.style.position = card.style.left = card.style.top = card.style.width = '';
     document.body.classList.remove('dragging-active');
+    $('exList').classList.remove('compact');
     const order = [...$('exList').querySelectorAll('.ex-card')].map(c => +c.dataset.exidx);
     const exs = day().exercises;
     day().exercises = order.map(i => exs[i]);
@@ -547,6 +557,7 @@ function cancelDrag() {
     drag.card.classList.remove('dragging');
     drag.card.style.position = drag.card.style.left = drag.card.style.top = drag.card.style.width = '';
     document.body.classList.remove('dragging-active');
+    $('exList').classList.remove('compact');
   }
   document.removeEventListener('pointermove', dragMove);
   document.removeEventListener('pointerup', dragEnd);

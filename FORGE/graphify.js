@@ -112,21 +112,35 @@ const check = (name, cond, detail = '') => {
     return -1;
   });
 
-  // ── V4+V5a: giù, appena sotto la seconda card (autoscroll al bordo) ──
+  // ── V4+V7+V5a: pressione prolungata, card compatte, giù sotto la seconda ──
   const armed = await holdCard(0);
   check('V4: vibrazione + card armata dopo pressione prolungata', armed.vibrated && armed.dragging,
     `vibrazioni=${armed.vibrated}, dragging=${armed.dragging}`);
-  await page.mouse.move(armed.x, 800, { steps: 12 }); // zona di autoscroll in basso
-  let reached = false;
-  for (let i = 0; i < 100 && !reached; i++) {
-    reached = (await phIndex()) === 1;
-    if (!reached) await page.waitForTimeout(40);
-  }
+  const compact = await page.evaluate(() => {
+    const list = document.getElementById('exList');
+    const sets = list.querySelector('.ex-card:not(.dragging) .sets');
+    return list.classList.contains('compact') && getComputedStyle(sets).display === 'none';
+  });
+  check('V7: tutte le card ridotte al solo titolo durante il drag', compact);
+
+  // punto appena sotto il centro della prima card non trascinata (= seconda posizione)
+  const dropY = await page.evaluate(() => {
+    const c = document.querySelector('#exList .ex-card:not(.dragging)');
+    const r = c.getBoundingClientRect();
+    return r.top + r.height / 2 + 12;
+  });
+  await page.mouse.move(armed.x, dropY, { steps: 10 });
+  await page.waitForTimeout(250);
+  check('segnaposto in seconda posizione prima del rilascio', (await phIndex()) === 1);
   await page.screenshot({ path: path.join(OUT, '02-drag.png') });
   await page.mouse.up();
   await page.waitForTimeout(400);
   let names = await page.locator('.ex-info h3').allInnerTexts();
   check('V5a: card spostata SOTTO la seconda', names[1] === firstName, `ordine: [${names.join(', ')}]`);
+  const expanded = await page.evaluate(() =>
+    !document.getElementById('exList').classList.contains('compact') &&
+    getComputedStyle(document.querySelector('#exList .ex-card .sets')).display !== 'none');
+  check('V7b: card di nuovo estese dopo il rilascio', expanded);
 
   // ── V5b: di nuovo su, in cima ──
   await page.evaluate(() => window.scrollTo(0, 0));
