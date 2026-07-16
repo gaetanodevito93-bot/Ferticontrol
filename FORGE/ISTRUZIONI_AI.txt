@@ -1,0 +1,95 @@
+FORGE — ISTRUZIONI PER L'AI: COME CREARE IL FILE DI CARICAMENTO
+================================================================
+
+Devi produrre UN SOLO file JSON (estensione .json, codifica UTF-8) che
+l'app FORGE importa per sostituire l'intera scheda di allenamento.
+Rispondi SOLO con il JSON, senza testo prima o dopo e senza blocchi
+markdown (niente ```).
+
+STRUTTURA
+---------
+{
+  "programName": "Nome del programma",
+  "days": [
+    {
+      "name": "Giorno A — Full Body",
+      "exercises": [
+        {
+          "name": "Panca piana",
+          "sets": 4,
+          "reps": "8-12",
+          "weight": 50,
+          "restSec": 90,
+          "note": "Controlla la discesa"
+        }
+      ]
+    }
+  ]
+}
+
+CAMPI
+-----
+programName  (stringa, facoltativo)  Nome del programma. Default: "Il mio programma".
+days         (lista, OBBLIGATORIA)   Almeno 1 giorno di allenamento.
+
+Per ogni giorno:
+  name       (stringa, facoltativo)  Nome del giorno, es. "Giorno A — Spinta".
+  exercises  (lista, obbligatoria)   Gli esercizi del giorno; può essere vuota [].
+
+Per ogni esercizio:
+  name     (stringa, OBBLIGATORIA)  Nome dell'esercizio.
+  sets     (intero 1-20)            Numero di serie. Default: 3.
+  reps     (stringa)                Ripetizioni per serie: "8-12", "10", oppure
+                                    una durata come "45s" per esercizi a tempo.
+                                    Default: "8-12".
+  weight   (numero o null)          Peso in kg. Usa null (o ometti il campo)
+                                    per esercizi a corpo libero.
+  restSec  (numero)                 Recupero tra le serie in SECONDI (es. 90).
+                                    Accettata anche la stringa "1:30". Default: 90.
+  note     (stringa)                Nota tecnica breve, "" se non serve.
+
+ALIAS ACCETTATI (ma preferisci i nomi inglesi sopra)
+----------------------------------------------------
+days=giorni · name=nome · exercises=esercizi · name(esercizio)=nome/esercizio
+sets=serie · reps=ripetizioni · weight=peso · restSec=rest/recupero · note=nota
+
+REGOLE
+------
+1. JSON valido: virgole giuste, stringhe tra doppi apici, niente commenti.
+2. Numeri con il punto decimale (22.5, non 22,5).
+3. L'ordine degli esercizi nella lista è l'ordine mostrato nell'app.
+4. Non inventare campi extra: quelli sconosciuti vengono ignorati.
+5. L'import SOSTITUISCE tutta la scheda esistente. Lo storico delle
+   sessioni salvate NON viene toccato: resta collegato ai giorni con
+   lo stesso nome ("name" del giorno).
+
+ESEMPIO COMPLETO (2 giorni)
+---------------------------
+{
+  "programName": "Forza base 2026",
+  "days": [
+    {
+      "name": "Giorno A — Spinta",
+      "exercises": [
+        { "name": "Panca piana", "sets": 4, "reps": "8-12", "weight": 50, "restSec": 90, "note": "Controlla la discesa" },
+        { "name": "Lento avanti manubri", "sets": 3, "reps": "10-12", "weight": 14, "restSec": 75, "note": "" },
+        { "name": "Plank", "sets": 3, "reps": "45s", "weight": null, "restSec": 60, "note": "Addome contratto" }
+      ]
+    },
+    {
+      "name": "Giorno B — Trazione e gambe",
+      "exercises": [
+        { "name": "Squat con bilanciere", "sets": 4, "reps": "8-10", "weight": 60, "restSec": 120, "note": "Sotto il parallelo" },
+        { "name": "Rematore manubrio", "sets": 3, "reps": "10-12", "weight": 22, "restSec": 75, "note": "" }
+      ]
+    }
+  ]
+}
+
+ERRORI DA EVITARE
+-----------------
+- Testo o markdown attorno al JSON (l'app legge solo JSON puro).
+- "reps" come numero senza apici va bene (10), ma i range vanno tra
+  apici: "8-12".
+- "restSec" in minuti: 90 significa 90 secondi, non 90 minuti.
+- Liste vuote al posto di "days": serve almeno un giorno.
