@@ -318,6 +318,7 @@ header span{font-family:var(--mono);font-size:.66rem;opacity:.6;font-weight:400;
 .tab.active{color:var(--as);border-color:var(--vs);background:linear-gradient(135deg,var(--vm) 0%,var(--vs) 100%);box-shadow:0 4px 14px rgba(15,53,40,.25)}
 .panel{display:none;width:100%;max-width:900px;margin:0 auto;padding:14px 12px 40px}
 .panel.active{display:block}
+.panel.fasi-focus{padding-bottom:75vh}
 .card{width:100%;margin-bottom:16px;overflow:hidden;background:var(--bl);border:1px solid var(--bo);border-radius:var(--r);box-shadow:var(--sh);transition:var(--transition)}
 .card:hover{box-shadow:var(--sh-hover);transform:translateY(-1px)}
 .ch{position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px 16px 13px 18px;color:var(--cr);font-family:var(--disp);font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(135deg,var(--vs) 0%,var(--vm) 100%)}
@@ -1928,12 +1929,16 @@ document.getElementById('fasi-header-title').textContent =
 `${t('ricette.fasi')} — ${pEmoji} ${pNomeSel}`;
 document.getElementById('card-fasi-wrap').style.display='block';
 document.getElementById('ricetta-out-wrap').style.display='none';
+// Spazio extra sotto le fasi cosi' possono salire in cima sotto le tab.
+document.getElementById('tab-ricette').classList.add('fasi-focus');
 setTimeout(()=>document.getElementById('card-fasi-wrap').scrollIntoView({behavior:'smooth',block:'start'}),80);
 }
 function selFase(i){
 faseSel = piantaSel.fasi[i];
 document.querySelectorAll('.fase-btn').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));
 renderRicettaOut(piantaSel, faseSel, tipoRicettaSel);
+// La composizione riempie lo spazio: togliamo il padding di focus fasi.
+document.getElementById('tab-ricette').classList.remove('fasi-focus');
 document.getElementById('ricetta-out-wrap').style.display='block';
 setTimeout(()=>document.getElementById('ricetta-out-wrap').scrollIntoView({behavior:'smooth',block:'nearest'}),80);
 }
@@ -2029,6 +2034,7 @@ showTab('calcola');
 }
 function renderRicetteCustom(){
 piantaSel = null; faseSel = null; tipoRicettaSel = null;
+document.getElementById('tab-ricette').classList.remove('fasi-focus');
 document.getElementById('ricetta-out-wrap').style.display='none';
 document.getElementById('card-fasi-wrap').style.display='none';
 initPiante();
