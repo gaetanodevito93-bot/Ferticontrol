@@ -3793,7 +3793,36 @@ html+=`<div class="card" style="margin-top:12px">
           </div>
         </div>`;
 }
+} else if(aq && isFinite(aq.ph) && aq.ph > phFinale + 0.3){
+html+=`<div class="card" style="margin-top:12px">
+        <div class="ch" style="background:var(--ar)">${t('js.correzionePH')} → pH ${phFinale}</div>
+        <div class="cb">
+          <div class="alert al-inf"><span>ℹ️</span><span>${TT(`Acqua a bassa alcalinità (HCO₃⁻ ${aq.hco3||0} mg/L): pochissima capacità tampone. Il pH scende con quantità minime di acido, quindi <strong>non serve una dose fissa</strong>. Aggiungi acido diluito (HNO₃ o H₃PO₄) <strong>goccia a goccia misurando</strong> fino a <strong>pH ${phFinale}</strong>, nell'acqua di miscelazione prima dei sali.`,`Low-alkalinity water (HCO₃⁻ ${aq.hco3||0} mg/L): very little buffering. pH drops with tiny amounts of acid, so <strong>no fixed dose is needed</strong>. Add diluted acid (HNO₃ or H₃PO₄) <strong>drop by drop while measuring</strong> up to <strong>pH ${phFinale}</strong>, into the mixing water before the salts.`)}</span></div>
+        </div>
+      </div>`;
 }
+let driftIco, driftMsg;
+if(nh4frac > 0.10){
+driftIco='⬇️';
+driftMsg=TT(`Con N ammoniacale al ${Math.round(nh4frac*100)}% il pH in zona radicale <strong>tenderà a scendere</strong> nel tempo (radici e batteri nitrificanti rilasciano H⁺). Misura il pH del <strong>drenaggio</strong>: se scende sotto ~5.5, riduci la quota ammoniacale o alza leggermente il pH del feed.`,`With ammoniacal N at ${Math.round(nh4frac*100)}% the root-zone pH <strong>will tend to drop</strong> over time (roots and nitrifying bacteria release H⁺). Measure the <strong>drain</strong> pH: if it falls below ~5.5, lower the ammonium share or slightly raise the feed pH.`);
+} else if(nh4frac < 0.03){
+driftIco='⬆️';
+driftMsg=TT(`Azoto quasi tutto nitrico (NH₄ ${Math.round(nh4frac*100)}%): il pH in zona radicale <strong>tenderà a salire</strong> nel tempo (l'assorbimento di NO₃⁻ rilascia ioni alcalini). Se il pH del drenaggio supera ~6.5, abbassa il pH del feed con un filo di acido.`,`Nitrogen almost entirely nitric (NH₄ ${Math.round(nh4frac*100)}%): root-zone pH <strong>will tend to rise</strong> over time (NO₃⁻ uptake releases alkalinity). If the drain pH exceeds ~6.5, lower the feed pH with a touch of acid.`);
+} else {
+driftIco='⚖️';
+driftMsg=TT(`Quota ammoniacale equilibrata (${Math.round(nh4frac*100)}%): deriva del pH contenuta. Mantieni il feed a pH ${phFinale} e controlla il drenaggio periodicamente.`,`Balanced ammonium share (${Math.round(nh4frac*100)}%): limited pH drift. Keep the feed at pH ${phFinale} and check the drain periodically.`);
+}
+html+=`<div class="card" style="margin-top:12px">
+      <div class="ch" style="background:var(--vm)">${TT('🧪 Gestione pH in coltura','🧪 In-crop pH management')}</div>
+      <div class="cb">
+        <div class="alert al-inf" style="margin-bottom:8px"><span>${driftIco}</span><span>${driftMsg}</span></div>
+        <div style="font-size:.72rem;color:var(--ts);line-height:1.6">
+          ${TT('<strong>Target del feed (coco):</strong> pH 5.5–6.2. La misura che conta davvero è il <strong>pH del drenaggio</strong>, non solo quello della soluzione in ingresso.','<strong>Feed target (coco):</strong> pH 5.5–6.2. The value that really matters is the <strong>drain pH</strong>, not just the incoming solution.')}<br>
+          ${TT('<strong>Per abbassare il pH:</strong> HNO₃ o H₃PO₄ diluiti, poco alla volta, misurando.','<strong>To lower pH:</strong> diluted HNO₃ or H₃PO₄, a little at a time, while measuring.')}<br>
+          ${TT('<strong>Per alzare il pH:</strong> KOH molto diluito, in piccole dosi (molto caustico, usa i DPI).','<strong>To raise pH:</strong> very dilute KOH, in small doses (very caustic, wear PPE).')}
+        </div>
+      </div>
+    </div>`;
 const operNotes=[];
 if(targetRicetta && profilo.NO3>((targetRicetta.N||0)+20)) operNotes.push(TT('Azoto nitrico sopra target: è l\'anione di bilanciamento, normale.','Nitric nitrogen above target: it is the balancing anion, normal.'));
 if(si.CaSO4>-0.5&&si.CaSO4<=0) operNotes.push(TT('CaSO₄ prossimo a saturazione: monitorare EC e temperature.','CaSO₄ close to saturation: monitor EC and temperatures.'));

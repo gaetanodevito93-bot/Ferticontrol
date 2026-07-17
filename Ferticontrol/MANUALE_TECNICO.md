@@ -301,7 +301,7 @@ Due livelli di rilevamento (`coppiaIncompatibile`):
 
 Dopo l'assegnazione base, in sequenza:
 
-1. **Bicarbonati**: se HCO₃⁻ > 50 mg/L, prescrive i mL/L di acido nell'acqua di diluizione.
+1. **Bicarbonati**: se HCO₃⁻ > 50 mg/L, prescrive i mL/L di acido (HNO₃ o H₃PO₄) nell'acqua di diluizione, dimensionati sul pH target (`calcAcidVolume`, Henderson-Hasselbalch). Se invece l'acqua ha **bassa alcalinità** (HCO₃⁻ ≤ 50 mg/L) ma pH sopra il target, non prescrive una dose fissa — con poco tampone il pH crolla con quantità minime — ma consiglia di aggiungere acido *goccia a goccia misurando*.
 2. **Silicato**: se K₂SiO₃ convive con incompatibili, lo sposta in C (se attivo) o riorganizza gli altri sali, spiegando il perché.
 3. **Conflitti Ca/fosfati/solfati**: sposta i sali tra A e B per eliminare le coppie critiche.
 4. **Verifica SI nel concentrato**: se anche dopo gli spostamenti un serbatoio resta sovrasaturo, calcola la **diluizione massima sicura** e la propone, oppure segnala la necessità del **serbatoio C** (`checkNeedSerbC`).
@@ -319,6 +319,16 @@ Ultima rete di sicurezza: se la verifica fallisce ancora, un loop iterativo **ri
 ### 8.5 Ricalcolo con la scorta reale
 
 `ricalcolaConDisponibili` incrocia la ricetta con la scorta di magazzino: per ogni ingrediente mancante cerca in catalogo un'alternativa funzionalmente equivalente disponibile (stesso elemento portante), ricalcola le dosi e riporta ciò che resta scoperto.
+
+### 8.6 Gestione pH in coltura
+
+Oltre alla correzione dell'acqua di partenza (§8.3), i risultati includono una card **"Gestione pH in coltura"** che anticipa come il pH in zona radicale si muoverà *nel tempo*, sulla base della **frazione ammoniacale** della ricetta (`nh4frac = NH₄ / N totale`):
+
+- **NH₄⁺ alto** (> 10%): il pH **tenderà a scendere** — l'assorbimento radicale di ammonio e la sua nitrificazione rilasciano H⁺. La card invita a monitorare il pH del **drenaggio** e, se scende sotto ~5.5, a ridurre la quota ammoniacale o alzare leggermente il pH del feed.
+- **Azoto quasi tutto nitrico** (< 3%): il pH **tenderà a salire** — l'assorbimento di NO₃⁻ rilascia ioni alcalini. Se il drenaggio supera ~6.5, si abbassa il pH del feed con un filo di acido.
+- **Quota bilanciata** (fra i due): deriva contenuta.
+
+La card ricorda inoltre il target del feed per coco (pH 5.5–6.2), che la misura di riferimento è il **pH del drenaggio** e come intervenire (giù: HNO₃/H₃PO₄ diluiti; su: KOH molto diluito, con DPI). È un avviso agronomico, non un automatismo: non modifica le dosi.
 
 ---
 

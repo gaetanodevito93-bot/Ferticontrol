@@ -15,6 +15,10 @@
 //   S10. Round-trip export → reset → import
 //   S11. Fuzzing dell'import (JSON malformati e ostili)
 //   S12. Cambio lingua IT/EN
+//   S13. Profili acqua salvati (CRUD, persistenza, backup)
+//   S14. Dose acido dimensionata sul pH target (Henderson-Hasselbalch)
+//   S15. Temperatura acqua negli indici di saturazione
+//   S16. Consigli di miscelazione e gestione pH (ordine, deriva NH₄)
 //
 // Uso:  node Ferticontrol/tests/run-tests.js
 // Requisiti: Playwright + Chromium (vedi Ferticontrol/tests/README.md)
@@ -531,6 +535,67 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     return t;
   });
   check(`la temperatura è salvata nei profili acqua (28 → 12 → ricarica → ${tempProfilo})`, tempProfilo === '28');
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S16. Consigli di miscelazione e gestione pH ═══');
+  // Consigli di preparazione: ordine di scioglimento, separazione Ca, acido prima dei sali
+  const mix = await page.evaluate(() => {
+    setLang('it');
+    presetAcqua('dura'); // HCO3 320 → card acido/gestione pH sempre presenti
+    document.getElementById('diluizione').value = 100;
+    document.getElementById('ph-finale').value = 6.0;
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    calcola();
+    const out = document.getElementById('calc-out').innerText;
+    return {
+      // NB: innerText applica text-transform:uppercase dei titoli (.ch) ed
+      // espande i simboli ioni (Ca → "Ca (calcio)", N → "N (azoto)"): i match
+      // qui sotto sono perciò case-insensitive e tolleranti al testo interposto.
+      ordine: out.includes('chelati → nitrati → fosfati'),
+      caSeparato: /Ca[\s\S]{0,15}in un serbatoio/i.test(out),
+      acidoPrima: /acido[\s\S]{0,120}prima/i.test(out),
+      cardPh: /gestione pH in coltura/i.test(out),
+      drenaggio: /drenaggio/i.test(out),
+    };
+  });
+  check('procedura: ordine di scioglimento chelati → nitrati → fosfati', mix.ordine);
+  check('procedura: Ca separato da solfati/fosfati negli stock', mix.caSeparato);
+  check('procedura: acido nell\'acqua PRIMA dei sali (acqua alcalina)', mix.acidoPrima);
+  check('card "Gestione pH in coltura" presente', mix.cardPh);
+  check('gestione pH: cita il pH di drenaggio (la misura che conta)', mix.drenaggio);
+
+  // Deriva del pH secondo la frazione ammoniacale — nitrificazione fa scendere, NO₃⁻ fa salire
+  const drift = await page.evaluate(() => {
+    setLang('it');
+    presetAcqua('media');
+    document.getElementById('ph-finale').value = 6.0;
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    const run = (righe) => {
+      window._bilanciaRighe = righe; // forza un profilo dosi noto senza toccare il DOM
+      calcola();
+      const out = document.getElementById('calc-out').innerText;
+      const m = out.match(/NH₄ \/ N[\s\S]*?(\d+)\s*%/i);
+      return { nh4: m ? +m[1] : null, scende: /tenderà a scendere/.test(out), sale: /tenderà a salire/.test(out) };
+    };
+    const alto = run([{ id: 'CaN', dose: 500 }, { id: 'NH4NO3', dose: 400 }, { id: 'KNO3', dose: 150 }, { id: 'KH2PO4', dose: 120 }, { id: 'MgSO4', dose: 150 }]);
+    const nitrico = run([{ id: 'CaN', dose: 600 }, { id: 'KNO3', dose: 300 }, { id: 'KH2PO4', dose: 120 }, { id: 'MgSO4', dose: 150 }]);
+    return { alto, nitrico };
+  });
+  check(`alto NH₄ (${drift.alto.nh4}%): il pH "tenderà a scendere"`, drift.alto.nh4 > 10 && drift.alto.scende && !drift.alto.sale);
+  check(`tutto nitrico (${drift.nitrico.nh4}%): il pH "tenderà a salire"`, drift.nitrico.nh4 < 3 && drift.nitrico.sale && !drift.nitrico.scende);
+
+  // Advisory bassa alcalinità: acqua a pH alto ma pochi bicarbonati → nessuna dose fissa, goccia a goccia
+  const bassaAlc = await page.evaluate(() => {
+    setLang('it');
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    document.getElementById('ph-finale').value = 6.0;
+    document.getElementById('aq-hco3').value = 20;   // bassa alcalinità
+    document.getElementById('aq-ph').value = 7.5;    // ma pH sopra il target
+    calcola();
+    const out = document.getElementById('calc-out').innerText;
+    return { bassa: /bassa alcalinità/i.test(out), goccia: /goccia a goccia/i.test(out), noDose: !/HNO₃ 38%/.test(out) };
+  });
+  check('bassa alcalinità: advisory presente ("goccia a goccia", niente dose fissa)', bassaAlc.bassa && bassaAlc.goccia && bassaAlc.noDose);
 
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
