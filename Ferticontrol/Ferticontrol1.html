@@ -1735,6 +1735,11 @@ const tab=document.querySelector('.tab[aria-controls="tab-'+id+'"]');
 if(tab){ tab.classList.add('active'); tab.setAttribute('aria-selected','true'); }
 if(id==='dati'||id==='catalogo') setTimeout(aggiornaStat,0);
 }
+// Riporta la vista in cima al calcolatore dopo aver caricato una ricetta,
+// cosi' il pulsante "Calcola Dosaggi" resta piu' in basso nella schermata.
+function scrollCalcolaInCima(){
+setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),60);
+}
 function saveCatalogo(){ try{ localStorage.setItem('fc_catalogo', JSON.stringify(catalogo)); }catch(e){ console.warn('Salvataggio catalogo fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
 function saveRicette(){ try{ localStorage.setItem('fc_ricette', JSON.stringify(ricetteCustom)); }catch(e){ console.warn('Salvataggio ricette fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
 function openModal(id){ document.getElementById(id).classList.add('open') }
@@ -2031,6 +2036,7 @@ document.getElementById('lbl-modo-caricato').style.display='inline';
 document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style="background:var(--vm);color:#fff">${t('js.ricettaFissaG')}</span>`;
 renderCalcTabella();
 showTab('calcola');
+scrollCalcolaInCima();
 }
 function renderRicetteCustom(){
 piantaSel = null; faseSel = null; tipoRicettaSel = null;
@@ -2083,6 +2089,7 @@ document.getElementById('calc-tbody').innerHTML=`<tr><td colspan="5" style="padd
 if(f.modo==='target') window._targetAttivo={targets:f.targets, pianta:ric.nome, fase:f.nome};
 else window._targetAttivo=null;
 showTab('calcola');
+scrollCalcolaInCima();
 }
 function eliminaRicetta(ri){
 window._pendingDelete={tipo:'ricetta',ri};
