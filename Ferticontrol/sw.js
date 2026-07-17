@@ -7,7 +7,7 @@
  * ⚠️ Ad ogni modifica del file dell'app, incrementa CACHE_VERSION: forza
  *    l'aggiornamento della cache e il ricaricamento della nuova versione.
  */
-const CACHE_VERSION = 'v2.0.0';
+const CACHE_VERSION = 'v2.0.1';
 const CACHE_NAME = 'ferticontrol-' + CACHE_VERSION;
 
 // Risorse dell'app shell (percorsi relativi allo scope del SW).

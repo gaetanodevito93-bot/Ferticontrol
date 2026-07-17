@@ -628,6 +628,18 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   const iconFiles = ['icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'];
   check('icone PNG presenti su disco (192/512/maskable/apple)', iconFiles.every(f => fs.existsSync(path.join(APPDIR, f))));
 
+  // Splash: si mantiene lo splash animato dell'app. Il primo splash (di sistema,
+  // inevitabile) si fonde con esso usando lo stesso verde scuro come sfondo del
+  // manifest, così la sequenza è verde→verde e non "bianco poi verde".
+  check('manifest: background_color = verde scuro dello splash (#1a3a2a, no bianco)',
+    !!manifest && /^#1a3a2a$/i.test(manifest.background_color));
+  const ctxWeb = await browser.newContext();
+  const pgWeb = await ctxWeb.newPage();
+  await pgWeb.goto(APP);
+  const splashShown = await pgWeb.evaluate(() => !!document.getElementById('splash'));
+  await ctxWeb.close();
+  check('splash animato dell\'app presente all\'avvio', splashShown);
+
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
