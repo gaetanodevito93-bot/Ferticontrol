@@ -9,6 +9,12 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="it_IT">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232d5a3d'/><text x='16' y='23' text-anchor='middle' font-size='20'>🌿</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FertiControl">
 <title>FertiControl — Calcolatore Fertirrigazione</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4732,5 +4738,31 @@ Esporta un backup dalla sezione <strong>💾 Dati → Scarica JSON</strong> prim
 </div>
 <script>
 applyLang();
+</script>
+<!-- PWA: registrazione service worker + pulsante d'installazione.
+     Attivi solo su http(s); da file:// l'app resta identica a prima. -->
+<button id="pwa-install" class="no-print" style="display:none;position:fixed;right:14px;bottom:14px;z-index:9999;background:linear-gradient(135deg,var(--vs),var(--vm));color:var(--cr);border:none;border-radius:24px;padding:11px 18px;font-size:.78rem;font-weight:700;letter-spacing:.03em;box-shadow:0 6px 20px rgba(26,58,42,.35);cursor:pointer">⬇️ Installa app</button>
+<script>
+(function(){
+  if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
+  var deferred=null, btn=document.getElementById('pwa-install');
+  function label(){ return (typeof currentLang!=='undefined' && currentLang==='en') ? '⬇️ Install app' : '⬇️ Installa app'; }
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault(); deferred=e;
+    if(btn){ btn.textContent=label(); btn.style.display='block'; }
+  });
+  if(btn){
+    btn.addEventListener('click',function(){
+      if(!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.finally(function(){ deferred=null; btn.style.display='none'; });
+    });
+  }
+  window.addEventListener('appinstalled',function(){ if(btn) btn.style.display='none'; });
+})();
 </script></body>
 </html>

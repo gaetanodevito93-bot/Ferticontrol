@@ -57,6 +57,8 @@ L'intera applicazione vive in **un unico file HTML** (~5.500 righe, ~350 KB) che
 - **Portabilità totale**: il file si può inviare via mail o chiavetta; i dati personali restano nel browser di chi lo usa (vedi Capitolo 14).
 - L'unica risorsa esterna sono i **font Google** (Inter, JetBrains Mono): senza connessione l'app funziona comunque, con i font di sistema.
 
+Il singolo file resta il cuore dell'app; accanto ad esso vivono alcuni file **opzionali** che la trasformano in **Progressive Web App** (`manifest.webmanifest`, `sw.js`, `icons/`). Sono inerti se l'app è aperta da `file://` e non intaccano la portabilità: entrano in gioco solo quando l'app è servita via HTTP(S) (vedi §2.4).
+
 ### 2.2 Organizzazione interna del file
 
 Il file è ordinato in blocchi riconoscibili:
@@ -82,6 +84,20 @@ Il file è ordinato in blocchi riconoscibili:
 - **Unità dosi**: internamente ogni dose è espressa in **g/1000 L di soluzione finale** (equivale a mg/L di prodotto). La conversione a grammi reali nel serbatoio è `dose × volume_serbatoio × diluizione / 1000` (funzione `grConc`).
 - **Identificatori sali**: ogni sale ha un `id` corto stabile (`CaN`, `KNO3`, `KH2PO4`, `MixCh`…) usato come chiave in tutte le matrici di compatibilità e nei profili delle ricette.
 - **Stile difensivo**: ogni lettura da `localStorage` passa per `safeParse` (un dato corrotto non blocca l'app); ogni testo salvato passa per `stripTags` contro l'injection HTML; il calcolo lavora sempre su una **copia** delle dosi inserite (premere "Calcola" N volte non altera mai gli input).
+
+### 2.4 Progressive Web App
+
+Servita via HTTP(S), FertiControl è installabile e utilizzabile offline. I pezzi:
+
+| File | Ruolo |
+|---|---|
+| `manifest.webmanifest` | Metadati d'installazione: nome, `display: standalone`, `theme_color`, icone. `start_url` e `scope` sono **relativi**, così la PWA funziona anche da una sottocartella (es. GitHub Pages). |
+| `sw.js` | Service worker. **Install**: precache dell'app shell (HTML, manifest, icone). **Activate**: pulizia delle cache vecchie. **Fetch**: *network-first* per l'HTML (prende l'ultima versione se online, altrimenti la cache) e *cache-first* per gli asset statici. I font Google (cross-origin) restano in rete e offline degradano ai font di sistema. |
+| `icons/` | Icone PNG 192/512, una **maskable** 512 e l'apple-touch-icon 180. |
+
+Nell'`<head>` ci sono `<link rel="manifest">`, l'apple-touch-icon e i meta Apple; a fine `<body>` uno script registra il service worker **solo se `location.protocol`** inizia con `http` — da `file://` non fa nulla. Un pulsante flottante "Installa app" compare quando il browser emette `beforeinstallprompt` e sparisce dopo l'installazione.
+
+Regola operativa: **a ogni modifica dell'app, incrementa `CACHE_VERSION` in `sw.js`** per invalidare la cache e propagare la nuova versione ai dispositivi che l'hanno installata.
 
 ---
 

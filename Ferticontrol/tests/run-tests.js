@@ -19,6 +19,7 @@
 //   S14. Dose acido dimensionata sul pH target (Henderson-Hasselbalch)
 //   S15. Temperatura acqua negli indici di saturazione
 //   S16. Consigli di miscelazione e gestione pH (ordine, deriva NH₄)
+//   S17. PWA: manifest, service worker, icone
 //
 // Uso:  node Ferticontrol/tests/run-tests.js
 // Requisiti: Playwright + Chromium (vedi Ferticontrol/tests/README.md)
@@ -596,6 +597,36 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     return { bassa: /bassa alcalinità/i.test(out), goccia: /goccia a goccia/i.test(out), noDose: !/HNO₃ 38%/.test(out) };
   });
   check('bassa alcalinità: advisory presente ("goccia a goccia", niente dose fissa)', bassaAlc.bassa && bassaAlc.goccia && bassaAlc.noDose);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S17. PWA: manifest, service worker, icone ═══');
+  const APPDIR = path.resolve(__dirname, '..');
+  const htmlSrc = fs.readFileSync(path.join(APPDIR, 'Ferticontrol1.html'), 'utf8');
+  check('HTML: <link rel="manifest"> presente', /<link[^>]+rel=["']manifest["']/.test(htmlSrc));
+  check('HTML: apple-touch-icon presente', /rel=["']apple-touch-icon["']/.test(htmlSrc));
+  check('HTML: registrazione SW limitata a http(s) (non su file://)',
+    /serviceWorker/.test(htmlSrc) && /location\.protocol\.indexOf\('http'\)===0/.test(htmlSrc));
+  check('HTML: pulsante installa (beforeinstallprompt) gestito', /beforeinstallprompt/.test(htmlSrc));
+
+  let manifest = null;
+  try { manifest = JSON.parse(fs.readFileSync(path.join(APPDIR, 'manifest.webmanifest'), 'utf8')); } catch (e) { /* invalido */ }
+  check('manifest.webmanifest è JSON valido', manifest !== null);
+  if (manifest) {
+    check('manifest: name + short_name', !!manifest.name && !!manifest.short_name);
+    check('manifest: display "standalone"', manifest.display === 'standalone');
+    check('manifest: start_url e scope relativi (portabile su sottocartella)',
+      typeof manifest.start_url === 'string' && typeof manifest.scope === 'string' && !manifest.start_url.startsWith('/'));
+    check('manifest: theme_color = brand (#2d5a3d)', manifest.theme_color === '#2d5a3d');
+    const sizes = (manifest.icons || []).map(i => i.sizes);
+    check(`manifest: icone 192 e 512 presenti (${sizes.join(', ')})`, sizes.includes('192x192') && sizes.includes('512x512'));
+    check('manifest: almeno un\'icona maskable', (manifest.icons || []).some(i => (i.purpose || '').includes('maskable')));
+  }
+  const swSrc = fs.existsSync(path.join(APPDIR, 'sw.js')) ? fs.readFileSync(path.join(APPDIR, 'sw.js'), 'utf8') : '';
+  check('sw.js: lifecycle install/activate/fetch',
+    /addEventListener\(['"]install/.test(swSrc) && /addEventListener\(['"]activate/.test(swSrc) && /addEventListener\(['"]fetch/.test(swSrc));
+  check('sw.js: cache versionata (CACHE_VERSION)', /CACHE_VERSION/.test(swSrc));
+  const iconFiles = ['icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'];
+  check('icone PNG presenti su disco (192/512/maskable/apple)', iconFiles.every(f => fs.existsSync(path.join(APPDIR, f))));
 
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);

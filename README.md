@@ -49,6 +49,7 @@ Il calcolo tiene conto di:
 | **Output operativo** | Scheda miscela stampabile con dosi in grammi per serbatoio, EC/costi attesi, ordine di scioglimento e checklist di preparazione. |
 | **Backup dati** | Export/import JSON di catalogo, scorta, ricette e profili acqua; reset di fabbrica con doppia conferma. |
 | **Bilingue** | Interfaccia completa italiano/inglese, commutabile a runtime senza ricaricare. |
+| **App installabile (PWA)** | Quando è servita online, si installa sul dispositivo (desktop/mobile) e funziona **offline** grazie al service worker. |
 
 ---
 
@@ -71,6 +72,14 @@ Nessuna build, nessuna dipendenza per l'uso quotidiano.
 - **Dati** — esporta/importa il backup JSON o ripristina i valori di fabbrica.
 
 > 💡 Il file funziona anche **offline**: l'unica risorsa esterna sono i font Google, in loro assenza si usano i font di sistema.
+
+### 📲 Installazione come app (PWA)
+
+FertiControl è anche una **Progressive Web App**. Quando è **servita via HTTPS** (es. GitHub Pages o qualsiasi hosting statico), il browser propone di **installarla** come app: icona sul dispositivo, avvio a tutto schermo e **funzionamento offline** (l'app viene messa in cache da un service worker).
+
+- I service worker richiedono un contesto sicuro (`https://` o `localhost`): aperta con doppio clic da `file://` l'app resta pienamente funzionante, ma **non** installabile.
+- File a supporto della PWA (accanto all'app): [`manifest.webmanifest`](Ferticontrol/manifest.webmanifest), [`sw.js`](Ferticontrol/sw.js), [`icons/`](Ferticontrol/icons). Sono opzionali: non influiscono sull'uso da `file://`.
+- Percorsi relativi → la PWA funziona anche servita da una sottocartella. Dopo un aggiornamento dell'app, incrementa `CACHE_VERSION` in `sw.js` per propagare la nuova versione.
 
 ---
 
