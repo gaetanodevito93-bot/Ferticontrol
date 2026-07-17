@@ -38,6 +38,11 @@ Exit code `0` = tutti i test passati; `1` = almeno un fallimento (elencati in fo
 | S10 | Round-trip persistenza: export JSON → reset di fabbrica → import → stato identico (inclusi i campi nuovi dei sali custom) |
 | S11 | Fuzzing dell'import: JSON malformato, payload ostile (tentativi di injection HTML, valori negativi/enormi/tipo sbagliato), numeri estremi → nessun crash non gestito, nessuna injection nel DOM, app funzionante |
 | S12 | Cambio lingua IT/EN a runtime con calcolo completo in inglese |
+| S13 | Profili acqua salvati: CRUD (crea/carica/elimina), nome sanificato, persistenza in `localStorage`, inclusione nel backup JSON e ripristino da import |
+| S14 | Dose acido dimensionata sul pH target: più acido a pH più basso, tampone minimo 0.5 meq/L, zero acido se l'acqua è già acida, frazioni Henderson-Hasselbalch corrette, aggiornamento della card al variare del pH |
+| S15 | Temperatura dell'acqua negli indici di saturazione: Ksp fisicamente coerenti (brushite/struvite/calcite meno solubili a caldo), SI CaHPO₄ che cambia con la temperatura, lettura e persistenza del campo temperatura nei profili |
+| S16 | **Consigli di miscelazione e gestione pH**: ordine di scioglimento (chelati → nitrati → fosfati), separazione Ca dai fosfati/solfati, acido nell'acqua prima dei sali; card "Gestione pH in coltura" con deriva del pH corretta secondo la frazione ammoniacale (NH₄ alto → il pH scende per nitrificazione; tutto nitrico → il pH sale); advisory bassa alcalinità (goccia a goccia, nessuna dose fissa) |
+| S17 | **PWA**: `<link rel="manifest">` e apple-touch-icon nell'HTML, registrazione del service worker limitata a http(s), gestione del pulsante d'installazione; `manifest.webmanifest` valido (name, `standalone`, start_url/scope relativi, theme_color, icone 192/512 + maskable); `sw.js` con lifecycle install/activate/fetch e cache versionata; icone PNG presenti su disco |
 
 ## Note per chi estende la suite
 

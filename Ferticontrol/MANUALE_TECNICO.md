@@ -57,6 +57,8 @@ L'intera applicazione vive in **un unico file HTML** (~5.500 righe, ~350 KB) che
 - **Portabilità totale**: il file si può inviare via mail o chiavetta; i dati personali restano nel browser di chi lo usa (vedi Capitolo 14).
 - L'unica risorsa esterna sono i **font Google** (Inter, JetBrains Mono): senza connessione l'app funziona comunque, con i font di sistema.
 
+Il singolo file resta il cuore dell'app; accanto ad esso vivono alcuni file **opzionali** che la trasformano in **Progressive Web App** (`manifest.webmanifest`, `sw.js`, `icons/`). Sono inerti se l'app è aperta da `file://` e non intaccano la portabilità: entrano in gioco solo quando l'app è servita via HTTP(S) (vedi §2.4).
+
 ### 2.2 Organizzazione interna del file
 
 Il file è ordinato in blocchi riconoscibili:
@@ -82,6 +84,20 @@ Il file è ordinato in blocchi riconoscibili:
 - **Unità dosi**: internamente ogni dose è espressa in **g/1000 L di soluzione finale** (equivale a mg/L di prodotto). La conversione a grammi reali nel serbatoio è `dose × volume_serbatoio × diluizione / 1000` (funzione `grConc`).
 - **Identificatori sali**: ogni sale ha un `id` corto stabile (`CaN`, `KNO3`, `KH2PO4`, `MixCh`…) usato come chiave in tutte le matrici di compatibilità e nei profili delle ricette.
 - **Stile difensivo**: ogni lettura da `localStorage` passa per `safeParse` (un dato corrotto non blocca l'app); ogni testo salvato passa per `stripTags` contro l'injection HTML; il calcolo lavora sempre su una **copia** delle dosi inserite (premere "Calcola" N volte non altera mai gli input).
+
+### 2.4 Progressive Web App
+
+Servita via HTTP(S), FertiControl è installabile e utilizzabile offline. I pezzi:
+
+| File | Ruolo |
+|---|---|
+| `manifest.webmanifest` | Metadati d'installazione: nome, `display: standalone`, `theme_color`, icone. `start_url` e `scope` sono **relativi**, così la PWA funziona anche da una sottocartella (es. GitHub Pages). |
+| `sw.js` | Service worker. **Install**: precache dell'app shell (HTML, manifest, icone). **Activate**: pulizia delle cache vecchie. **Fetch**: *network-first* per l'HTML (prende l'ultima versione se online, altrimenti la cache) e *cache-first* per gli asset statici. I font Google (cross-origin) restano in rete e offline degradano ai font di sistema. |
+| `icons/` | Icone PNG 192/512, una **maskable** 512 e l'apple-touch-icon 180. |
+
+Nell'`<head>` ci sono `<link rel="manifest">`, l'apple-touch-icon e i meta Apple; a fine `<body>` uno script registra il service worker **solo se `location.protocol`** inizia con `http` — da `file://` non fa nulla. Un pulsante flottante "Installa app" compare quando il browser emette `beforeinstallprompt` e sparisce dopo l'installazione.
+
+Regola operativa: **a ogni modifica dell'app, incrementa `CACHE_VERSION` in `sw.js`** per invalidare la cache e propagare la nuova versione ai dispositivi che l'hanno installata.
 
 ---
 
@@ -301,7 +317,7 @@ Due livelli di rilevamento (`coppiaIncompatibile`):
 
 Dopo l'assegnazione base, in sequenza:
 
-1. **Bicarbonati**: se HCO₃⁻ > 50 mg/L, prescrive i mL/L di acido nell'acqua di diluizione.
+1. **Bicarbonati**: se HCO₃⁻ > 50 mg/L, prescrive i mL/L di acido (HNO₃ o H₃PO₄) nell'acqua di diluizione, dimensionati sul pH target (`calcAcidVolume`, Henderson-Hasselbalch). Se invece l'acqua ha **bassa alcalinità** (HCO₃⁻ ≤ 50 mg/L) ma pH sopra il target, non prescrive una dose fissa — con poco tampone il pH crolla con quantità minime — ma consiglia di aggiungere acido *goccia a goccia misurando*.
 2. **Silicato**: se K₂SiO₃ convive con incompatibili, lo sposta in C (se attivo) o riorganizza gli altri sali, spiegando il perché.
 3. **Conflitti Ca/fosfati/solfati**: sposta i sali tra A e B per eliminare le coppie critiche.
 4. **Verifica SI nel concentrato**: se anche dopo gli spostamenti un serbatoio resta sovrasaturo, calcola la **diluizione massima sicura** e la propone, oppure segnala la necessità del **serbatoio C** (`checkNeedSerbC`).
@@ -319,6 +335,16 @@ Ultima rete di sicurezza: se la verifica fallisce ancora, un loop iterativo **ri
 ### 8.5 Ricalcolo con la scorta reale
 
 `ricalcolaConDisponibili` incrocia la ricetta con la scorta di magazzino: per ogni ingrediente mancante cerca in catalogo un'alternativa funzionalmente equivalente disponibile (stesso elemento portante), ricalcola le dosi e riporta ciò che resta scoperto.
+
+### 8.6 Gestione pH in coltura
+
+Oltre alla correzione dell'acqua di partenza (§8.3), i risultati includono una card **"Gestione pH in coltura"** che anticipa come il pH in zona radicale si muoverà *nel tempo*, sulla base della **frazione ammoniacale** della ricetta (`nh4frac = NH₄ / N totale`):
+
+- **NH₄⁺ alto** (> 10%): il pH **tenderà a scendere** — l'assorbimento radicale di ammonio e la sua nitrificazione rilasciano H⁺. La card invita a monitorare il pH del **drenaggio** e, se scende sotto ~5.5, a ridurre la quota ammoniacale o alzare leggermente il pH del feed.
+- **Azoto quasi tutto nitrico** (< 3%): il pH **tenderà a salire** — l'assorbimento di NO₃⁻ rilascia ioni alcalini. Se il drenaggio supera ~6.5, si abbassa il pH del feed con un filo di acido.
+- **Quota bilanciata** (fra i due): deriva contenuta.
+
+La card ricorda inoltre il target del feed per coco (pH 5.5–6.2), che la misura di riferimento è il **pH del drenaggio** e come intervenire (giù: HNO₃/H₃PO₄ diluiti; su: KOH molto diluito, con DPI). È un avviso agronomico, non un automatismo: non modifica le dosi.
 
 ---
 
