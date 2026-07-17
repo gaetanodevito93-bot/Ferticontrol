@@ -279,7 +279,7 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 --disp:var(--mono);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
 html,body{width:100%;max-width:100%;overflow-x:clip}
 body{
 font-family:var(--sans);color:var(--tx);min-height:100vh;font-size:14px;
@@ -1928,6 +1928,7 @@ document.getElementById('fasi-header-title').textContent =
 `${t('ricette.fasi')} — ${pEmoji} ${pNomeSel}`;
 document.getElementById('card-fasi-wrap').style.display='block';
 document.getElementById('ricetta-out-wrap').style.display='none';
+setTimeout(()=>document.getElementById('card-fasi-wrap').scrollIntoView({behavior:'smooth',block:'start'}),80);
 }
 function selFase(i){
 faseSel = piantaSel.fasi[i];
