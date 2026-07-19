@@ -4759,6 +4759,17 @@ applyLang();
 <script>
 (function(){
   if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+    // Se arriva un nuovo SW (es. dopo un deploy), ricarica la pagina per
+    // mostrare subito la versione aggiornata anche nell'app installata.
+    // Ricarica solo se c'era GIA' un controller: cosi' un nuovo visitatore
+    // non subisce un reload al primo avvio, mentre l'app gia' installata
+    // (che ha un controller attivo) si aggiorna da sola.
+    var refreshing = false;
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (refreshing) return; refreshing = true; location.reload();
+      });
+    }
     window.addEventListener('load',function(){
       navigator.serviceWorker.register('sw.js').catch(function(){});
     });

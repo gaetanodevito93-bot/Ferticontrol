@@ -6,14 +6,14 @@
 
 *Dalla ricetta nutritiva alle soluzioni madri concentrate — con verifica chimica quantitativa, compatibilità dei serbatoi e scheda operativa stampabile.*
 
-[![Version](https://img.shields.io/badge/versione-v2.0-2d5a3d)](Ferticontrol/Ferticontrol1.html)
+[![Version](https://img.shields.io/badge/versione-v2.0-2d5a3d)](index.html)
 [![License: MIT](https://img.shields.io/badge/licenza-MIT-blue.svg)](LICENSE)
-[![Made with](https://img.shields.io/badge/stack-HTML%20%C2%B7%20CSS%20%C2%B7%20Vanilla%20JS-f8f6f1)](Ferticontrol/Ferticontrol1.html)
+[![Made with](https://img.shields.io/badge/stack-HTML%20%C2%B7%20CSS%20%C2%B7%20Vanilla%20JS-f8f6f1)](index.html)
 [![No backend](https://img.shields.io/badge/backend-nessuno-4a8c5e)](#-privacy-e-sicurezza)
-[![Tests](https://img.shields.io/badge/test-Playwright%20%C2%B7%20S1%E2%80%93S12-2471a3)](Ferticontrol/tests)
+[![Tests](https://img.shields.io/badge/test-Playwright%20%C2%B7%20S1%E2%80%93S12-2471a3)](tests)
 [![i18n](https://img.shields.io/badge/lingue-IT%20%C2%B7%20EN-d4660a)](#-internazionalizzazione)
 
-[Funzionalità](#-funzionalità) · [Come si usa](#-come-si-usa) · [Struttura](#-struttura-del-progetto) · [Test](#-test) · [Documentazione](Ferticontrol/MANUALE_TECNICO.md)
+[Funzionalità](#-funzionalità) · [Come si usa](#-come-si-usa) · [Struttura](#-struttura-del-progetto) · [Test](#-test) · [Documentazione](MANUALE_TECNICO.md)
 
 </div>
 
@@ -58,7 +58,7 @@ Il calcolo tiene conto di:
 Nessuna build, nessuna dipendenza per l'uso quotidiano.
 
 1. Scarica o clona il repository.
-2. Apri **[`Ferticontrol/Ferticontrol1.html`](Ferticontrol/Ferticontrol1.html)** con un doppio clic nel tuo browser.
+2. Apri **[`index.html`](index.html)** con un doppio clic nel tuo browser.
 3. Segui il flusso lineare dell'interfaccia (da sinistra a destra):
 
 ```
@@ -78,7 +78,7 @@ Nessuna build, nessuna dipendenza per l'uso quotidiano.
 FertiControl è anche una **Progressive Web App**. Quando è **servita via HTTPS** (es. GitHub Pages o qualsiasi hosting statico), il browser propone di **installarla** come app: icona sul dispositivo, avvio a tutto schermo e **funzionamento offline** (l'app viene messa in cache da un service worker).
 
 - I service worker richiedono un contesto sicuro (`https://` o `localhost`): aperta con doppio clic da `file://` l'app resta pienamente funzionante, ma **non** installabile.
-- File a supporto della PWA (accanto all'app): [`manifest.webmanifest`](Ferticontrol/manifest.webmanifest), [`sw.js`](Ferticontrol/sw.js), [`icons/`](Ferticontrol/icons). Sono opzionali: non influiscono sull'uso da `file://`.
+- File a supporto della PWA (accanto all'app): [`manifest.webmanifest`](manifest.webmanifest), [`sw.js`](sw.js), [`icons/`](icons). Sono opzionali: non influiscono sull'uso da `file://`.
 - Percorsi relativi → la PWA funziona anche servita da una sottocartella. Dopo un aggiornamento dell'app, incrementa `CACHE_VERSION` in `sw.js` per propagare la nuova versione.
 
 ---
@@ -86,11 +86,10 @@ FertiControl è anche una **Progressive Web App**. Quando è **servita via HTTPS
 ## 🗂 Struttura del progetto
 
 ```
-Ferticontrol/
-├── Ferticontrol1.html      # L'applicazione completa (CSS + markup + JS in un solo file)
+├── index.html              # L'applicazione completa (CSS + markup + JS in un solo file)
 ├── MANUALE_TECNICO.md      # Manuale tecnico: architettura, motore chimico, solver, sicurezza
 └── tests/
-    ├── run-tests.js        # Suite Playwright (S1–S12) sull'app reale in Chromium headless
+    ├── run-tests.js        # Suite Playwright (S1–S17) sull'app reale in Chromium headless
     └── README.md           # Cosa copre ogni sezione di test
 ```
 
@@ -120,17 +119,17 @@ npm install playwright
 npx playwright install chromium
 
 # Esecuzione
-node Ferticontrol/tests/run-tests.js
+node tests/run-tests.js
 ```
 
 Exit code `0` = tutti i test passati · `1` = almeno un fallimento · `2` = errore della suite.
-Dettagli in **[`Ferticontrol/tests/README.md`](Ferticontrol/tests/README.md)**.
+Dettagli in **[`tests/README.md`](tests/README.md)**.
 
 ---
 
 ## 📖 Documentazione
 
-Il **[Manuale Tecnico](Ferticontrol/MANUALE_TECNICO.md)** (17 capitoli) documenta in dettaglio filosofia di progetto, organizzazione del file, motore chimico, solver NNLS, sistema di compatibilità, verifica di sicurezza, persistenza, i18n, limiti/assunzioni e un glossario dei termini agronomici e chimici.
+Il **[Manuale Tecnico](MANUALE_TECNICO.md)** (17 capitoli) documenta in dettaglio filosofia di progetto, organizzazione del file, motore chimico, solver NNLS, sistema di compatibilità, verifica di sicurezza, persistenza, i18n, limiti/assunzioni e un glossario dei termini agronomici e chimici.
 
 ---
 
@@ -173,15 +172,15 @@ Beyond simple dose calculators, it includes a **quantitative chemistry engine** 
 
 Everything lives in **a single HTML file** — no install, no backend, no account, no tracking. All data stays in the browser's `localStorage`. The full UI is available in **Italian and English**, switchable at runtime.
 
-**Usage:** open [`Ferticontrol/Ferticontrol1.html`](Ferticontrol/Ferticontrol1.html) in any modern browser and follow the tabs: **Water → Recipes → Calculate** (with **Catalog** and **Data** as support).
+**Usage:** open [`index.html`](index.html) in any modern browser and follow the tabs: **Water → Recipes → Calculate** (with **Catalog** and **Data** as support).
 
 **Tests:** a Playwright suite (S1–S12) runs the real app in headless Chromium:
 
 ```bash
 npm install playwright && npx playwright install chromium
-node Ferticontrol/tests/run-tests.js
+node tests/run-tests.js
 ```
 
-See the [Technical Manual](Ferticontrol/MANUALE_TECNICO.md) (Italian) for full documentation. Licensed under **MIT**.
+See the [Technical Manual](MANUALE_TECNICO.md) (Italian) for full documentation. Licensed under **MIT**.
 
 </details>

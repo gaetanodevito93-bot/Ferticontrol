@@ -7,12 +7,12 @@
  * ⚠️ Ad ogni modifica del file dell'app, incrementa CACHE_VERSION: forza
  *    l'aggiornamento della cache e il ricaricamento della nuova versione.
  */
-const CACHE_VERSION = 'v2.0.3';
+const CACHE_VERSION = 'v2.0.4';
 const CACHE_NAME = 'ferticontrol-' + CACHE_VERSION;
 
 // Risorse dell'app shell (percorsi relativi allo scope del SW).
 const APP_SHELL = [
-  'Ferticontrol1.html',
+  'index.html',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',
@@ -56,7 +56,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((c) => c.put(req, copy));
           return res;
         })
-        .catch(() => caches.match(req).then((m) => m || caches.match('Ferticontrol1.html')))
+        .catch(() => caches.match(req).then((m) => m || caches.match('index.html')))
     );
   } else {
     // Cache-first per asset statici (icone, manifest).

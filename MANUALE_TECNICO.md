@@ -1,7 +1,7 @@
 # FertiControl — Manuale Tecnico
 
 **Versione applicazione:** v2.0
-**File:** `Ferticontrol/Ferticontrol1.html`
+**File:** `index.html`
 
 Questo documento spiega com'è pensato FertiControl, come è costruito e quali funzionalità offre. È rivolto a chi riceve il file e vuole capirne la logica interna: utenti avanzati, sviluppatori e chiunque voglia modificarlo o estenderlo.
 
@@ -515,4 +515,4 @@ La lingua scelta persiste in `fc_lang` e si cambia dall'header senza ricaricare.
 
 ---
 
-*Manuale generato per la versione v2.0 del file `Ferticontrol1.html`. In caso di modifiche al codice, aggiornare i riferimenti alle righe indicati nel Capitolo 2.*
+*Manuale generato per la versione v2.0 del file `index.html`. In caso di modifiche al codice, aggiornare i riferimenti alle righe indicati nel Capitolo 2.*

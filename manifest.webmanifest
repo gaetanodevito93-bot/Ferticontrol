@@ -5,7 +5,7 @@
   "lang": "it",
   "dir": "ltr",
   "id": "./",
-  "start_url": "Ferticontrol1.html",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

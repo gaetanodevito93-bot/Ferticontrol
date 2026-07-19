@@ -21,8 +21,8 @@
 //   S16. Consigli di miscelazione e gestione pH (ordine, deriva NH₄)
 //   S17. PWA: manifest, service worker, icone
 //
-// Uso:  node Ferticontrol/tests/run-tests.js
-// Requisiti: Playwright + Chromium (vedi Ferticontrol/tests/README.md)
+// Uso:  node tests/run-tests.js
+// Requisiti: Playwright + Chromium (vedi tests/README.md)
 // ════════════════════════════════════════════════════════════════
 const fs = require('fs');
 const path = require('path');
@@ -48,7 +48,7 @@ let chromium;
   }
 }
 
-const APP = 'file://' + path.resolve(__dirname, '..', 'Ferticontrol1.html');
+const APP = 'file://' + path.resolve(__dirname, '..', 'index.html');
 const EXEC = process.env.CHROMIUM_PATH || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
 
 let pass = 0, fail = 0;
@@ -601,7 +601,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   // ────────────────────────────────────────────────
   console.log('\n═══ S17. PWA: manifest, service worker, icone ═══');
   const APPDIR = path.resolve(__dirname, '..');
-  const htmlSrc = fs.readFileSync(path.join(APPDIR, 'Ferticontrol1.html'), 'utf8');
+  const htmlSrc = fs.readFileSync(path.join(APPDIR, 'index.html'), 'utf8');
   check('HTML: <link rel="manifest"> presente', /<link[^>]+rel=["']manifest["']/.test(htmlSrc));
   check('HTML: apple-touch-icon presente', /rel=["']apple-touch-icon["']/.test(htmlSrc));
   check('HTML: registrazione SW limitata a http(s) (non su file://)',
