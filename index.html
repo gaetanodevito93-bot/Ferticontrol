@@ -1222,7 +1222,12 @@ return ions;
 function ionicStrength(i){
 return 0.5*(i.Ca*4+i.Mg*4+i.K+i.NH4+i.Na+i.NO3+i.Cl+i.SO4*4+i.H2PO4+i.HPO4*4+i.PO4*9+i.HCO3+i.CO3*4);
 }
-function davies(I,z){if(I<=0)I=1e-12;var sq=Math.sqrt(I);return Math.pow(10,-DAVIES_A*z*z*(sq/(1+sq)-0.3*I));}
+function davies(I,z){
+if(I<=0)I=1e-12;
+var sq=Math.sqrt(I);
+var b = I > 0.5 ? 0.3 / (1 + 0.5 * (I - 0.5)) : 0.3;
+return Math.pow(10,-DAVIES_A*z*z*(sq/(1+sq)-b*I));
+}
 function siForIons(s,ph,Tc){
 var i=speciate(s,ph),I=ionicStrength(i);if(I<=0)I=1e-12;
 var g1=davies(I,1),g2=davies(I,2),g3=davies(I,3);
@@ -1305,7 +1310,8 @@ return {
 meq:acidMeq,
 residuo:hco3meq-acidMeq,
 volHNO3:acidMeq/1000.0*prodL/molPerL.nitric*1000.0,
-volH3PO4:acidMeq/1000.0*prodL/molPerL.phosphoric*1000.0
+volH3PO4:acidMeq/1000.0*prodL/molPerL.phosphoric*1000.0,
+pMgL_H3PO4:acidMeq * MM.P
 };
 }
 const SERB_SI_PH = 6.0, SERB_SI_TC = 20;
@@ -2422,7 +2428,12 @@ const EL_MACRO = ['N','P','K','Ca','Mg','S'];
 const t = {};
 if (aq) {
 t.N  = Math.max(0, (targets.N ||0) - (aq.no3||0)*(14.007/62.00));
-t.P  = targets.P || 0;
+let pAcid = 0;
+if (aq.hco3 > 50) {
+const av = calcAcidVolume(aq, 1, 6.0);
+if (av.pMgL_H3PO4 > 0 && catalogo.some(s=>s.id==='H3PO4'&&isDisponibile('H3PO4'))) pAcid = av.pMgL_H3PO4;
+}
+t.P  = Math.max(0, (targets.P ||0) - pAcid);
 t.K  = Math.max(0, (targets.K ||0) - (aq.k  ||0));
 t.Ca = Math.max(0, (targets.Ca||0) - (aq.ca ||0));
 t.Mg = Math.max(0, (targets.Mg||0) - (aq.mg ||0));
@@ -2797,7 +2808,7 @@ const av = calcAcidVolume(aq, 1, phT);
 if(av.meq > 0.01){
 interventi.push({
 tipo:'acido', icona:'🧪',
-msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${av.volHNO3.toFixed(2)} mL/L di HNO₃ 38%</strong> (o ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%) nell'acqua di diluizione prima dei sali per portare il pH a <strong>${phT}</strong> (neutralizzati ${av.meq.toFixed(2)} meq/L, tampone residuo ${av.residuo.toFixed(2)} meq/L).`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${av.volHNO3.toFixed(2)} mL/L of HNO₃ 38%</strong> (or ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%) to the dilution water before the salts to bring the pH to <strong>${phT}</strong> (${av.meq.toFixed(2)} meq/L neutralized, ${av.residuo.toFixed(2)} meq/L residual buffer).`)
+msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${av.volHNO3.toFixed(2)} mL/L di HNO₃ 38%</strong> (o ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%, apporta ${av.pMgL_H3PO4.toFixed(1)} mg/L di P) nell'acqua di diluizione prima dei sali per portare il pH a <strong>${phT}</strong> (neutralizzati ${av.meq.toFixed(2)} meq/L, tampone residuo ${av.residuo.toFixed(2)} meq/L). ⚠️ <em>pH Rebound: la CO₂ prodotta degasa nelle 12–48h in serbatoi aperti, facendo risalire il pH (+0.3–0.6). Ricontrollare prima dell'uso.</em>`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${av.volHNO3.toFixed(2)} mL/L of HNO₃ 38%</strong> (or ${av.volH3PO4.toFixed(2)} mL/L H₃PO₄ 75%, adds ${av.pMgL_H3PO4.toFixed(1)} mg/L P) to dilution water before salts to bring pH to <strong>${phT}</strong> (${av.meq.toFixed(2)} meq/L neutralized, ${av.residuo.toFixed(2)} meq/L residual buffer). ⚠️ <em>pH Rebound: CO₂ degassing over 12–48h in open tanks causes pH to drift up (+0.3–0.6). Recheck before use.</em>`)
 });
 }
 }
@@ -3175,6 +3186,18 @@ conflitti.push({gravita:'C', titolo:TT(`${lab} nella soluzione finale`,`${lab} i
 }
 }
 });
+if(phFinale > 6.2 && siFin.CaHPO4 > -0.3){
+audit.push({
+check: TT('Rischio Fosfato Tricalcico Ca₃(PO₄)₂ (pH > 6.2)', 'Tricalcium Phosphate Ca₃(PO₄)₂ risk (pH > 6.2)'),
+esito: 'AVVISO',
+dettaglio: TT(`A pH ${phFinale} > 6.2 aumenta il rischio di precipitazione di specie tricalciche/ACP nei gocciolatori. Mantenere il pH ≤ 6.0.`, `At pH ${phFinale} > 6.2 the risk of tricalcium/ACP precipitation in drippers increases. Keep pH ≤ 6.0.`)
+});
+conflitti.push({
+gravita: 'A',
+titolo: TT('Rischio Ca₃(PO₄)₂ a pH > 6.2', 'Ca₃(PO₄)₂ risk at pH > 6.2'),
+dettaglio: TT(`pH ${phFinale} > 6.2 favorisce la formazione di fosfato tricalcico insolubile. Ridurre il pH a 5.8–6.0.`, `pH ${phFinale} > 6.2 favors insoluble tricalcium phosphate formation. Lower pH to 5.8–6.0.`)
+});
+}
 if(aq && aq.hco3>30){
 const caMM = righe.reduce((a,r)=>{ const inf=getSale(r.id); return a+(inf?.el?.Ca?r.dose*inf.el.Ca/100:0); },0)/40.08 + aq.ca/40.08;
 const fco3 = 1 / (1 + Math.pow(10, PKA2_CARB - aq.ph));

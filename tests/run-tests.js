@@ -641,6 +641,37 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check('splash animato dell\'app presente all\'avvio', splashShown);
 
   // ────────────────────────────────────────────────
+  console.log('\n═══ S18. Perfezionamento Motore Chimico (Davies, pH Rebound, H₃PO₄ P, ACP) ═══');
+  const chemPerf = await page.evaluate(() => {
+    // 1. Verifico Davies per I > 0.5 M
+    const dHigh = davies(1.5, 1);
+    const daviesStable = isFinite(dHigh) && dHigh > 0.01 && dHigh < 1.0;
+
+    // 2. Verifico calcAcidVolume restituisca pMgL_H3PO4
+    const aq = { ec: 0.7, ph: 7.8, hco3: 320, ca: 180, mg: 45 };
+    const av = calcAcidVolume(aq, 1, 6.0);
+    const pCalculated = av.pMgL_H3PO4 > 10;
+
+    // 3. Verifico avviso pH Rebound e P acido nel log autoRisolvi
+    const resAuto = autoRisolvi([], 100, aq, 6.0);
+    const hasRebound = resAuto.interventi.some(i => i.msg && i.msg.includes('pH Rebound'));
+    const hasPInfo = resAuto.interventi.some(i => i.msg && i.msg.includes('apporta'));
+
+    // 4. Verifico audit Fosfato Tricalcico a pH > 6.2
+    const righeSali = [{ id: 'CaN', dose: 1000 }, { id: 'KH2PO4', dose: 200 }];
+    const secHigh = verificaSicurezza(righeSali, 100, null, 6.5);
+    const hasACP = secHigh.audit.some(a => a.check.includes('Ca₃(PO₄)₂'));
+
+    return { daviesStable, pCalculated, hasRebound, hasPInfo, hasACP };
+  });
+
+  check('Davies esteso per I > 0.5 M: stabilità matematica', chemPerf.daviesStable);
+  check('calcAcidVolume calcola apporto P da H₃PO₄ (> 10 mg/L)', chemPerf.pCalculated);
+  check('autoRisolvi: avviso pH Rebound presente', chemPerf.hasRebound);
+  check('autoRisolvi: indicazione P da H₃PO₄ presente', chemPerf.hasPInfo);
+  check('verificaSicurezza: audit Ca₃(PO₄)₂ attivo a pH > 6.2', chemPerf.hasACP);
+
+  // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
   if (failures.length) { console.log('\nFallimenti:'); failures.forEach(f => console.log('  • ' + f)); }
