@@ -317,8 +317,11 @@ header span{font-family:var(--mono);font-size:.66rem;opacity:.6;font-weight:400;
 .tab:hover{color:var(--vm);background:rgba(63,146,104,.1);border-color:var(--vc)}
 .tab.active{color:var(--as);border-color:var(--vs);background:linear-gradient(135deg,var(--vm) 0%,var(--vs) 100%);box-shadow:0 4px 14px rgba(15,53,40,.25)}
 .panel{display:none;width:100%;max-width:900px;margin:0 auto;padding:14px 12px 40px}
-.panel.active{display:block}
+.panel.active{display:block;animation:panelFadeIn .28s cubic-bezier(.22,1,.36,1) both}
 .panel.fasi-focus{padding-bottom:75vh}
+@keyframes panelFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+#card-fasi-wrap, #ricetta-out-wrap{animation:subViewFadeIn .3s cubic-bezier(.22,1,.36,1) both}
+@keyframes subViewFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .card{width:100%;margin-bottom:16px;overflow:hidden;background:var(--bl);border:1px solid var(--bo);border-radius:var(--r);box-shadow:var(--sh);transition:var(--transition)}
 .card:hover{box-shadow:var(--sh-hover);transform:translateY(-1px)}
 .ch{position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px 16px 13px 18px;color:var(--cr);font-family:var(--disp);font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(135deg,var(--vs) 0%,var(--vm) 100%)}
@@ -363,10 +366,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vc);back
 .mono,code,.num{font-family:var(--mono)}
 .sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .sec-h h4{font-family:var(--disp);font-size:.92rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--vs)}
-.modal-bg{display:none;position:fixed;inset:0;z-index:100;padding:20px 12px;overflow-y:auto;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
-.modal-bg.open{display:flex}
-.modal{width:100%;max-width:520px;margin:auto;background:#fff;border-radius:var(--r-lg);box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fcModalIn .3s ease-out}
-@keyframes fcModalIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+.modal-bg{display:none;position:fixed;inset:0;z-index:100;padding:20px 12px;overflow-y:auto;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);opacity:0;transition:opacity .22s cubic-bezier(.22,1,.36,1),backdrop-filter .22s ease;pointer-events:none}
+.modal-bg.open{display:flex;opacity:1;pointer-events:auto}
+.modal-bg.closing{opacity:0;pointer-events:none}
+.modal-bg.closing .modal{animation:fcModalOut .20s cubic-bezier(.4,0,1,1) forwards}
+.modal{width:100%;max-width:520px;margin:auto;background:#fff;border-radius:var(--r-lg);box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fcModalIn .25s cubic-bezier(.22,1,.36,1) both}
+@keyframes fcModalIn{from{opacity:0;transform:scale(.95) translateY(-14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes fcModalOut{from{opacity:1;transform:scale(1) translateY(0)}to{opacity:0;transform:scale(.95) translateY(-14px)}}
 .modal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;color:var(--cr);background:linear-gradient(135deg,var(--vs),var(--vm));border-radius:var(--r-lg) var(--r-lg) 0 0}
 .modal-h h3{font-family:var(--disp);font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .modal-close{background:rgba(255,255,255,.15);border:none;color:var(--cr);font-size:1.2rem;line-height:1;cursor:pointer;padding:6px 10px;border-radius:8px;transition:var(--transition)}
@@ -418,6 +424,7 @@ input[type="number"],input[type="text"],select,textarea{min-height:44px}
 #splash,#splash *{animation:none!important}
 #splash .splash-liquid{transform:scaleY(1)}
 #splash .splash-bar{display:none}
+.panel.active,.modal,.modal-bg,.modal-bg.closing .modal,#card-fasi-wrap,#ricetta-out-wrap,.ricetta-card-body{animation:none!important;transition:none!important}
 }
 </style>
 </head>
@@ -1748,8 +1755,8 @@ setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),60);
 }
 function saveCatalogo(){ try{ localStorage.setItem('fc_catalogo', JSON.stringify(catalogo)); }catch(e){ console.warn('Salvataggio catalogo fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
 function saveRicette(){ try{ localStorage.setItem('fc_ricette', JSON.stringify(ricetteCustom)); }catch(e){ console.warn('Salvataggio ricette fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
-function openModal(id){ document.getElementById(id).classList.add('open') }
-function closeModal(id){ document.getElementById(id).classList.remove('open') }
+function openModal(id){ var el=document.getElementById(id); if(!el) return; el.classList.remove('closing'); el.classList.add('open'); }
+function closeModal(id){ var el=document.getElementById(id); if(!el||!el.classList.contains('open')) return; el.classList.add('closing'); setTimeout(function(){ el.classList.remove('open'); el.classList.remove('closing'); }, 200); }
 function esc(s){
 return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
