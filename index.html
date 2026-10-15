@@ -3701,7 +3701,7 @@ html+=`</ul>
       </div>
     </div>`;
 } else if(interventi.length>0 || correzioniAcqua.length>0){
-html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.corretto')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli superati. Nessuna precipitazione attesa una volta miscelati i sali nei serbatoi indicati. Vedi log interventi e audit qui sotto.`,`All ${sicurezza.audit.length} checks passed. No precipitation expected once the salts are mixed in the indicated tanks. See the intervention and audit log below.`)}</span></div>`;
+html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.corretto')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli superati. Nessuna precipitazione attesa una volta miscelati i sali nei serbatoi indicati. Vedi log interventi qui sotto; audit completo in <em>Info tecniche</em>.`,`All ${sicurezza.audit.length} checks passed. No precipitation expected once the salts are mixed in the indicated tanks. See the intervention and audit log below (full audit under <em>Technical info</em>).`)}</span></div>`;
 } else {
 html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.ok')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.`,`All ${sicurezza.audit.length} compatibility checks passed. No precipitation expected.`)}</span></div>`;
 }
@@ -3898,7 +3898,7 @@ const si = siForIons(profilo, pH, tempC);
 const ecPrecisa = ecFromIons(profilo, pH);
 const bal = meqBalance(profilo, pH);
 const siConc = worstSerbSI(wRighe, aq, dil);
-html+=`<div class="card" style="margin-top:12px">
+html+=`<div class="card tech-info" style="margin-top:12px">
       <div class="ch" style="background:#1a5a8a">${TT('🔬 Verifica Chimica Precisa (motore FertiControl v2)','🔬 Precise Chemical Verification (FertiControl v2 engine)')}</div>
       <div class="cb">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
@@ -3922,7 +3922,7 @@ function siRowHTML(name,sub,siVal){
 const st=siStatus(siVal);
 return `<div class="si-row"><span class="dot" style="background:${st.c}"></span><span class="nm">${name} <span style="color:var(--ts);font-size:.65rem">${sub}</span></span><span class="v" style="color:${st.c}">SI ${(siVal>=0?'+':'')}${siVal.toFixed(2)}</span></div>`;
 }
-html+=`<div class="card" style="margin-top:12px">
+html+=`<div class="card tech-info" style="margin-top:12px">
       <div class="ch" style="background:var(--vm)">${TT('⚠️ Verifica Anti-Precipitazione','⚠️ Anti-Precipitation Check')}</div>
       <div class="cb">
         <p style="font-size:.72rem;color:var(--ts);margin-bottom:10px">${TT(`Indici di saturazione a ${tempC}°C e pH ${pH}. Ksp corretti con la temperatura. Attività da equazione di Davies (I = ${si.I.toFixed(3)} mol/L).`,`Saturation indices at ${tempC}°C and pH ${pH}. Ksp temperature-corrected. Activities from the Davies equation (I = ${si.I.toFixed(3)} mol/L).`)}</p>
@@ -3985,9 +3985,12 @@ TT('Riduci NH₄⁺ (usa solo forme NO₃⁻: KNO₃, CaN, MgNO₃)','Reduce NH�
 TT('Riduci fosfati (KH₂PO₄)','Reduce phosphates (KH₂PO₄)'),
 TT('Mantieni Mg²⁺ e PO₄³⁻ in serbatoi separati','Keep Mg²⁺ and PO₄³⁻ in separate tanks')
 ]});
+// Riquadri d'azione (pH suggerito, bilancia, correzione applicata): restano
+// visibili fuori dalla scheda tecnica, che si apre solo con "Info tecniche".
+let azioniSI = '';
 if(viciniSat.length > 0){
 if(autoBalanceApplied){
-html+=`<div style="background:#e8f5e9;border:2px solid var(--vc);border-radius:var(--r);padding:12px 14px;margin-top:12px">
+azioniSI+=`<div style="background:#e8f5e9;border:2px solid var(--vc);border-radius:var(--r);padding:12px 14px;margin-top:12px">
           <div style="display:flex;gap:10px;align-items:flex-start">
             <span style="font-size:1.2rem;flex-shrink:0">✅</span>
             <div style="flex:1">
@@ -4007,7 +4010,7 @@ html+=`<div style="background:#e8f5e9;border:2px solid var(--vc);border-radius:v
         </div>`;
 } else if(sicurezza.phSuggerito){
 const peggioFin = viciniSat.reduce((a,b) => a.si > b.si ? a : b);
-html+=`<div style="background:#e7f5ff;border:2px solid #1c7ed6;border-radius:var(--r);padding:12px 14px;margin-top:12px">
+azioniSI+=`<div style="background:#e7f5ff;border:2px solid #1c7ed6;border-radius:var(--r);padding:12px 14px;margin-top:12px">
           <div style="display:flex;gap:10px;align-items:flex-start">
             <span style="font-size:1.2rem;flex-shrink:0">🧪</span>
             <div style="flex:1">
@@ -4033,7 +4036,7 @@ const peggio = viciniSat.reduce((a,b) => a.si > b.si ? a : b);
 const tuttiConsigli = viciniSat.flatMap(v => v.consigli.map(c => ({composto:v.nome, si:v.si, consiglio:c})));
 const visti = new Set();
 const unici = tuttiConsigli.filter(c => { if(visti.has(c.consiglio)) return false; visti.add(c.consiglio); return true; });
-html+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var(--r);padding:12px 14px;margin-top:12px">
+azioniSI+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var(--r);padding:12px 14px;margin-top:12px">
           <div style="display:flex;gap:10px;align-items:flex-start">
             <span style="font-size:1.2rem;flex-shrink:0">🔔</span>
             <div style="flex:1">
@@ -4065,6 +4068,7 @@ html+=`
         </div>
       </div>
     </div>`;
+html += azioniSI;
 if(autoBalanceApplied && bilanciaReportData){
 html += renderBilanciaReport(bilanciaReportData, true);
 } else if(window._bilanciaReport){
@@ -4076,7 +4080,7 @@ const imbpct=bal.an>0?Math.abs(imb)/bal.an*100:0;
 const ibCls=imbpct<5?'ok':imbpct<12?'warn':'danger';
 const ibColor=ibCls==='ok'?'var(--vc)':ibCls==='warn'?'var(--ar)':'var(--ro)';
 const ibMsg=ibCls==='ok'?TT('Ricetta elettro-coerente.','Electrically consistent recipe.'):ibCls==='warn'?TT('Lieve squilibrio: rivedi i rapporti.','Slight imbalance: review the ratios.'):TT('Squilibrio marcato: il profilo richiesto non è del tutto coerente.','Marked imbalance: the requested profile is not fully consistent.');
-html+=`<div class="card" style="margin-top:12px">
+html+=`<div class="card tech-info" style="margin-top:12px">
       <div class="ch" style="background:var(--vm)">${TT('⚖️ Bilancio Ionico','⚖️ Ionic Balance')}</div>
       <div class="cb">
         <div class="charge-bar">
@@ -4119,7 +4123,7 @@ if(kMg>4)    ratioWarn.push(TT(`K/Mg meq ${kMg.toFixed(2)} > 4: K elevato può b
 if(caMg<1.5) ratioWarn.push(TT(`Ca/Mg meq ${caMg.toFixed(2)} < 1.5: Mg dominante può inibire Ca²⁺ (ottimale 2–3.5).`,`Ca/Mg meq ${caMg.toFixed(2)} < 1.5: dominant Mg can inhibit Ca²⁺ (optimal 2–3.5).`));
 if(caMg>4.5) ratioWarn.push(TT(`Ca/Mg meq ${caMg.toFixed(2)} > 4.5: Ca dominante può inibire Mg²⁺.`,`Ca/Mg meq ${caMg.toFixed(2)} > 4.5: dominant Ca can inhibit Mg²⁺.`));
 if(feMn!==null&&(feMn<2||feMn>6)) ratioWarn.push(TT(`Fe/Mn ${feMn.toFixed(1)} fuori range 2–6: rapporto micro sbilanciato.`,`Fe/Mn ${feMn.toFixed(1)} out of range 2–6: unbalanced micro ratio.`));
-html+=`<div class="card" style="margin-top:12px">
+html+=`<div class="card tech-info" style="margin-top:12px">
       <div class="ch" style="background:var(--vm)">${t('js.ratioAgro')}</div>
       <div class="cb">
         <div class="ratio-grid">
@@ -4199,11 +4203,11 @@ html+=`<div class="alert al-inf" style="margin-top:12px"><span>ℹ️</span><spa
 const contrib = contributoPerSostanza(wRighe);
 if (contrib.length > 1) {
 const EL_C = ['N','P','K','Ca','Mg','S','Fe'];
-html+=`<div class="card" style="margin-top:12px">
+html+=`<div class="card tech-info" style="margin-top:12px">
       <div class="ch" style="cursor:pointer;justify-content:space-between;user-select:none" onclick="const b=document.getElementById('contrib-body');b.style.display=b.style.display==='none'?'block':'none'">
         <span>${t('js.contribPerSost')}</span><span style="font-size:.8rem">▼</span>
       </div>
-      <div class="cb" id="contrib-body" style="display:none;overflow-x:auto;padding:0">
+      <div class="cb" id="contrib-body" style="display:block;overflow-x:auto;padding:0">
         <table style="width:100%;border-collapse:collapse;font-size:.72rem;min-width:520px">
           <thead><tr style="background:var(--cs)">
             <th style="text-align:left;padding:5px 8px">${t('js.sale')}</th>
@@ -4241,7 +4245,7 @@ html+=`<div class="card" style="margin-top:12px">
       <li>${TT('Misura EC e pH finali al punto di consegna. Drain EC target = input + 0.5–1.0 mS/cm.','Measure final EC and pH at the delivery point. Drain EC target = input + 0.5–1.0 mS/cm.')}</li>
     </ol></div>
   </div>`;
-html+=`<div class="card" style="margin-top:12px">
+html+=`<div class="card tech-info" style="margin-top:12px">
     <div class="ch" style="cursor:pointer;justify-content:space-between" onclick="document.getElementById('audit-body').style.display=document.getElementById('audit-body').style.display==='none'?'block':'none'">
       <span>${t('js.audit')} (${sicurezza.audit.length})</span>
       <span style="font-size:.8rem">▼</span>
@@ -4260,10 +4264,19 @@ html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 14px
 });
 html+=`</div></div>`;
 html+=`</div>`;
-html+=`<div class="no-print" style="display:flex;gap:8px;margin:16px 0 24px">
+html+=`<div class="no-print" style="display:flex;gap:8px;margin:16px 0 24px;flex-wrap:wrap">
     <button class="btn btn-pr" onclick="stampaMiscela()" style="flex:1">${t('js.stampa')}</button>
-  </div>`;
+    <button class="btn btn-se" id="btn-info-tecniche" onclick="toggleInfoTecniche()" aria-expanded="false" aria-controls="info-tecniche" style="flex:1">${TT('🔬 Info tecniche','🔬 Technical info')}</button>
+  </div>
+  <div id="info-tecniche" style="display:none"></div>`;
 document.getElementById('calc-out').innerHTML=html;
+// Le schede tecniche (verifiche chimiche, bilancio ionico, rapporti agronomici,
+// contributo per sostanza, audit) vanno nel pannello "Info tecniche", chiuso
+// dopo ogni calcolo: il risultato resta leggero. La stampa non le usa.
+{
+const pannello = document.getElementById('info-tecniche');
+document.querySelectorAll('#risultato-stampa .tech-info').forEach(c=>pannello.appendChild(c));
+}
 document.getElementById('calc-out').scrollIntoView({behavior:'smooth', block:'start'});
 } catch(err) {
 console.error('Errore in calcola():', err);
@@ -4606,6 +4619,18 @@ td{padding:2px 5px;border-bottom:1px solid #eee;font-size:7.5pt;vertical-align:t
 </main>
 </body></html>`;
 lanciaStampaIframe(htmlStampa);
+}
+function toggleInfoTecniche(forza){
+const pannello = document.getElementById('info-tecniche');
+const btn = document.getElementById('btn-info-tecniche');
+if(!pannello) return;
+const apri = typeof forza === 'boolean' ? forza : pannello.style.display === 'none';
+pannello.style.display = apri ? 'block' : 'none';
+if(btn){
+btn.setAttribute('aria-expanded', apri ? 'true' : 'false');
+btn.textContent = apri ? TT('🔬 Nascondi info tecniche','🔬 Hide technical info') : TT('🔬 Info tecniche','🔬 Technical info');
+}
+if(apri) pannello.scrollIntoView({behavior:'smooth', block:'start'});
 }
 function mostraErrCalc(msg){
 document.getElementById('calc-out').innerHTML=`<div class="alert al-err" style="margin-top:12px"><span>🚫</span><span>${msg}</span></div>`;

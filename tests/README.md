@@ -68,6 +68,7 @@ Variabili utili:
 | S24 | **Serbatoi**: silicato senza serbatoio C non porta Ca insieme ai fosfati; con C sta da solo; sali di calcio custom separati per gruppo ionico; molibdato mai col calcio |
 | S25 | **Speciazione con attività**: [HPO₄²⁻]/[H₂PO₄⁻] = 10^(pH−pKa₂)·γ₁/γ₂, bilancio di massa del P, autoconsistenza nel concentrato |
 | S26 | **Correzioni minori**: costo per 1000 L indipendente dai volumi dei serbatoi, EC del concentrato senza moltiplicare l'acqua, calcite non "GESTITO" senza acido prescritto, cap NH₄NO₃ esatto, acido nel profilo finale, micro oltre 3× soglia = critico, coefficienti EC allineati, "Ripristina dosi originali" che non ri-bilancia |
+| S27 | **Risultati leggeri**: dopo il calcolo le 6 schede tecniche (verifiche, bilancio ionico, rapporti agronomici, contributo per sostanza, audit) sono nel pannello "Info tecniche" chiuso; il pulsante lo apre/chiude, un nuovo calcolo lo richiude, i riquadri d'azione restano visibili, la stampa è identica a pannello aperto o chiuso |
 
 ## Note per chi estende la suite
 

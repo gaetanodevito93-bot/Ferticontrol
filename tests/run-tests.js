@@ -30,6 +30,7 @@
 //   S24. Serbatoi: gravità dei conflitti, silicato, sali custom
 //   S25. Speciazione con coefficienti di attività
 //   S26. Correzioni minori (costo, EC concentrato, calcite, NH₄, acido, UI)
+//   S27. Pannello "Info tecniche": schede tecniche nascoste dopo il calcolo
 //
 // Uso:  node tests/run-tests.js   (in automatico: hook tests/hooks/pre-commit e GitHub Actions)
 // Requisiti: Playwright + Chromium (vedi tests/README.md)
@@ -566,6 +567,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     const leggi = (t) => {
       document.getElementById('aq-temp').value = t;
       calcola();
+      toggleInfoTecniche(true); // la card SI è tra le info tecniche
       const out = document.getElementById('calc-out').innerText;
       const m = out.match(/indici di saturazione a ([\d.]+)°c/i) || out.match(/a ([\d.]+)°C e pH/i);
       const siM = out.match(/CaHPO₄[^\n]*\n?[^\n]*SI ([+\-][\d.]+)/i);
@@ -604,6 +606,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     document.getElementById('ph-finale').value = 6.0;
     selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
     calcola();
+    toggleInfoTecniche(true); // la nota sugli stock è nella card anti-precipitazione
     const out = document.getElementById('calc-out').innerText;
     return {
       // NB: innerText applica text-transform:uppercase dei titoli (.ch) ed
@@ -631,6 +634,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     const run = (righe) => {
       window._bilanciaRighe = righe; // forza un profilo dosi noto senza toccare il DOM
       calcola();
+      toggleInfoTecniche(true); // il rapporto NH₄/N è nei rapporti agronomici
       const out = document.getElementById('calc-out').innerText;
       const m = out.match(/NH₄ \/ N[\s\S]*?(\d+)\s*%/i);
       return { nh4: m ? +m[1] : null, scende: /tenderà a scendere/.test(out), sale: /tenderà a salire/.test(out) };
@@ -1067,6 +1071,55 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check(`acido scelto persistito (fc_acido = ${acSel.salvato}) e letto da getAcqua`, acSel.salvato === 'H3PO4' && acSel.aqAcido === 'HNO3');
   check('con H₃PO₄ l\'intervento prescrive l\'acido fosforico e il P che apporta', acSel.interventoP);
   check('nuove card (ribilanciamento, fedeltà) tradotte in inglese senza NaN', acSel.enOk);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S27. Risultati leggeri: pannello "Info tecniche" ═══');
+  await resetMotore();
+  const info = await page.evaluate(() => {
+    const titoli = ['Verifica Chimica Precisa', 'Verifica Anti-Precipitazione', 'Bilancio Ionico', 'Rapporti Agronomici', 'Contributo', 'Audit'];
+    const visibile = (re) => re.test(document.getElementById('calc-out').innerText);
+    // titoli delle schede (.ch) effettivamente visibili: le semplici citazioni nel testo non contano
+    const titoliSchede = () => [...document.querySelectorAll('#calc-out .card > .ch')].filter(h => h.offsetParent !== null).map(h => h.innerText).join(' | ');
+    const catturaStampa = () => { let h = null; const o = window.lanciaStampa; window.lanciaStampa = x => { h = x; }; stampaMiscela(); window.lanciaStampa = o; return (h || '').replace(/\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4},?\s*\d{1,2}:\d{2}/g, ''); };
+    selPianta('pomodoro', 'builtin'); selFase(2); caricaRicettaCorrente();
+    calcola();
+    const pannello = document.getElementById('info-tecniche');
+    const chiuso = {
+      nascosto: pannello && pannello.style.display === 'none',
+      nSchede: pannello ? pannello.querySelectorAll('.card').length : 0,
+      titoliVisibili: titoli.filter(t => new RegExp(t, 'i').test(titoliSchede())),
+      rapportiVisibili: /Rapporti agronomici/i.test(titoliSchede()) || visibile(/NH₄ \/ N totale/i),
+      dosiVisibili: !!document.querySelector('#risultato-stampa .serb-card'),
+      riepilogoVisibile: visibile(/Riepilogo/i),
+      pulsante: !!document.getElementById('btn-info-tecniche'),
+    };
+    const stampaChiuso = catturaStampa();
+    document.getElementById('btn-info-tecniche').click();
+    const aperto = {
+      visibile: pannello.style.display === 'block',
+      titoliVisibili: titoli.filter(t => new RegExp(t, 'i').test(titoliSchede())),
+      aria: document.getElementById('btn-info-tecniche').getAttribute('aria-expanded'),
+    };
+    const stampaAperto = catturaStampa();
+    document.getElementById('btn-info-tecniche').click();
+    const richiuso = pannello.style.display === 'none';
+    calcola(); // nuovo calcolo → pannello di nuovo chiuso
+    const dopoRicalcolo = document.getElementById('info-tecniche').style.display === 'none';
+    // i riquadri d'azione (pH suggerito / bilancia) restano visibili a pannello chiuso
+    calcRighe = [{ id: 'CaN', nome: 'CaN', dose: 1500, prezzo: 0 }, { id: 'KH2PO4', nome: 'KH2PO4', dose: 500, prezzo: 0 }];
+    document.getElementById('ph-finale').value = 6.8; renderCalcTabella(); calcola();
+    const azione = visibile(/Basta correggere il pH|Bilancia Sali|Correzione applicata/i);
+    document.getElementById('ph-finale').value = 6.0;
+    return { chiuso, aperto, richiuso, dopoRicalcolo, azione, stampaUguale: stampaChiuso.length > 500 && stampaChiuso === stampaAperto };
+  });
+  check('dopo il calcolo il pannello "Info tecniche" è chiuso e il pulsante è presente', info.chiuso.nascosto && info.chiuso.pulsante);
+  check(`le 6 schede tecniche sono nel pannello (${info.chiuso.nSchede})`, info.chiuso.nSchede === 6);
+  check(`a pannello chiuso nessuna scheda tecnica visibile (${info.chiuso.titoliVisibili.join(', ') || 'nessuna'})`, info.chiuso.titoliVisibili.length === 0 && !info.chiuso.rapportiVisibili);
+  check('dosi per serbatoio e riepilogo restano visibili', info.chiuso.dosiVisibili && info.chiuso.riepilogoVisibile);
+  check(`il pulsante apre tutte le schede (${info.aperto.titoliVisibili.length}/6 titoli, aria-expanded=${info.aperto.aria})`, info.aperto.visibile && info.aperto.titoliVisibili.length === 6 && info.aperto.aria === 'true');
+  check('secondo click richiude; un nuovo calcolo riparte chiuso', info.richiuso && info.dopoRicalcolo);
+  check('i riquadri d\'azione (pH suggerito / bilancia) restano visibili a pannello chiuso', info.azione);
+  check('la stampa è identica con pannello aperto o chiuso', info.stampaUguale);
 
   // Ripristino dosi originali: torna alle dosi inserite e NON ri-bilancia
   await resetMotore();
