@@ -451,9 +451,12 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check(`tampone minimo 0.5 meq/L rispettato anche a pH 5.5 (residuo ${acido.res55.toFixed(2)})`, acido.res55 >= 0.5 - 1e-9);
   check('acqua già al pH target → zero acido', acido.giaAcida === 0);
   check(`retrocompatibile senza pH target (${acido.legacy.toFixed(2)} = alcalinità − 0.5)`, close(acido.legacy, acido.hco3meq - 0.5, 0.01));
-  // Frazioni Henderson-Hasselbalch attese: pH 5.8 → 78%, pH 7.0 → 18%
-  check('frazione H-H corretta a pH 5.8 (~78%)', close(acido.ph58 / acido.hco3meq, 0.78, 0.02));
-  check('frazione H-H corretta a pH 7.0 (~18%)', close(acido.ph70 / acido.hco3meq, 0.183, 0.02));
+  // Henderson-Hasselbalch in sistema chiuso: alla CO₂ già presente al pH
+  // dell'acqua (7.8) si somma quella generata dall'acido.
+  //   a = (1 − c0·r) / (1 + r),  r = 10^(pH−6.35),  c0 = 10^(6.35−7.8)
+  const frazAttesa = (ph) => { const r = Math.pow(10, ph - 6.35), c0 = Math.pow(10, 6.35 - 7.8); return (1 - c0 * r) / (1 + r); };
+  check(`frazione H-H corretta a pH 5.8 (~${(frazAttesa(5.8) * 100).toFixed(0)}%)`, close(acido.ph58 / acido.hco3meq, frazAttesa(5.8), 0.005));
+  check(`frazione H-H corretta a pH 7.0 (~${(frazAttesa(7.0) * 100).toFixed(0)}%, CO₂ iniziale inclusa)`, close(acido.ph70 / acido.hco3meq, frazAttesa(7.0), 0.005));
 
   // End-to-end: cambiare il pH nel calcolatore aggiorna la card acido
   const acidoUI = await page.evaluate(() => {
