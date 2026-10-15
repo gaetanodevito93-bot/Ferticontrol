@@ -1402,70 +1402,70 @@ return worst;
 }
 const SALI_DEFAULT = [
 {id:"CaN",   nome:"Nitrato di Calcio Ca(NO₃)₂·4H₂O", cat:"macro",serb:"B",
-el:{N:11.8,Ca:17},  ecC:0.95, dose:945, prezzo:0.9,
+el:{N:11.8,Ca:17},  ecC:0.98, dose:945, prezzo:0.9,
 note:"Serbatoio B obbligatorio: precipita con fosfati e solfati nel concentrato. Sciogliere in acqua tiepida."},
 {id:"KNO3",  nome:"Nitrato di Potassio KNO₃",          cat:"macro",serb:"A",
-el:{N:13.8,K:38.7}, ecC:0.74, dose:810, prezzo:1.1,
+el:{N:13.8,K:38.7}, ecC:1.27, dose:810, prezzo:1.1,
 note:"Prima scelta per K e N nitrico. Altamente solubile."},
 {id:"MgNO3", nome:"Nitrato di Magnesio Mg(NO₃)₂·6H₂O",cat:"macro",serb:"A",
-el:{N:10.9,Mg:9.5}, ecC:0.82, dose:500, prezzo:1.4,
+el:{N:10.9,Mg:9.5}, ecC:0.86, dose:500, prezzo:1.4,
 note:"Preferibile al solfato in coco per non accumulare zolfo. Fornisce Mg e N senza S."},
 {id:"MgSO4", nome:"Solfato di Magnesio MgSO₄·7H₂O",   cat:"macro",serb:"A",
-el:{Mg:9.9,S:13},   ecC:0.50, dose:500, prezzo:0.5,
+el:{Mg:9.9,S:13},   ecC:0.65, dose:500, prezzo:0.5,
 note:"Sale Epsom. Economico ma apporta S: moderare in coco per evitare accumulo solfati."},
 {id:"KH2PO4",nome:"Fosfato Monopotassico KH₂PO₄",      cat:"macro",serb:"A",
-el:{P:22.8,K:28.7}, ecC:0.36, dose:340, prezzo:1.8,
+el:{P:22.8,K:28.7}, ecC:0.70, dose:340, prezzo:1.8,
 note:"P + K, abbassa il pH. Forma CaHPO₄ precipitato se incontra calcio: sempre in A."},
 {id:"MAP",   nome:"Fosfato Monoammonico MAP NH₄H₂PO₄",cat:"macro",serb:"A",
-el:{N:12,P:26.9},   ecC:0.40, dose:230, prezzo:1.2,
+el:{N:12,P:26.9},   ecC:0.82, dose:230, prezzo:1.2,
 note:"Fonte P con N-NH₄. Max 10% dell'N totale in coco per evitare tossicità da ammonio."},
 {id:"K2SO4", nome:"Solfato di Potassio K₂SO₄",         cat:"macro",serb:"A",
-el:{K:44.9,S:18.4}, ecC:0.42, dose:400, prezzo:1.3,
+el:{K:44.9,S:18.4}, ecC:1.50, dose:400, prezzo:1.3,
 note:"K senza azoto: ideale in fioritura. Aggiunge S."},
 {id:"NH4NO3",nome:"Nitrato di Ammonio NH₄NO₃",          cat:"macro",serb:"A",
-el:{N:35},           ecC:0.58, dose:80,  prezzo:0.7,
+el:{N:35},           ecC:1.60, dose:80,  prezzo:0.7,
 note:"NH₄ max 5% N totale in coco. Evitare in estate."},
 {id:"CaCl2", nome:"Cloruro di Calcio CaCl₂·2H₂O",      cat:"macro",serb:"B",
-el:{Ca:27.3,Cl:48.2}, ecC:0.72, dose:0,  prezzo:0.6,
+el:{Ca:27.3,Cl:48.2}, ecC:1.60, dose:0,  prezzo:0.6,
 note:"Supplemento Ca alternativo. Cl in eccesso danneggia radici: solo per carenza Ca specifica."},
 {id:"FeEDTA",nome:"Chelato Ferro Fe-EDTA 13%",          cat:"micro",serb:"A",
-el:{Fe:13},          ecC:0,    dose:25,  prezzo:8.0,
+el:{Fe:13},          ecC:0.08,    dose:25,  prezzo:8.0,
 note:"Stabile pH 4.5–6.5. Prima scelta in coco a pH corretto. Se pH tende a salire sopra 6.5 (cicli lunghi), usare Fe-DTPA o Fe-EDDHA."},
 {id:"FeDTPA",nome:"Chelato Ferro Fe-DTPA 11%",          cat:"micro",serb:"A",
-el:{Fe:11},          ecC:0,    dose:25,  prezzo:9.5,
+el:{Fe:11},          ecC:0.07,    dose:25,  prezzo:9.5,
 note:"Stabile fino pH 7. Preferibile al Fe-EDTA se pH tende a salire sopra 6.5."},
 {id:"FeEDDHA",nome:"Chelato Ferro Fe-EDDHA 6%",         cat:"micro",serb:"A",
-el:{Fe:6},           ecC:0,    dose:15,  prezzo:15.0,
+el:{Fe:6},           ecC:0.06,    dose:15,  prezzo:15.0,
 note:"Il chelato più stabile (fino pH 9). Per clorosi ferrica cronica."},
 {id:"MixCh", nome:"Mix Chelati EDTA (Fe+Mn+Zn+Cu+B+Mo)",cat:"micro",serb:"A",
-el:{Fe:7,Mn:2,Zn:0.4,Cu:0.1,B:1.5,Mo:0.12},ecC:0,dose:30,prezzo:6.0,
+el:{Fe:7,Mn:2,Zn:0.4,Cu:0.1,B:1.5,Mo:0.12},ecC:0.05,dose:30,prezzo:6.0,
 note:"Tutti i micro in un prodotto (Fe+Mn+Zn+Cu+B+Mo). Se lo usi NON aggiungere micro separati."},
 {id:"FeSO4", nome:"Solfato Ferro FeSO₄·7H₂O",          cat:"micro",serb:"A",
-el:{Fe:20,S:11.5},   ecC:0,    dose:25,  prezzo:1.5,
+el:{Fe:20,S:11.5},   ecC:0.96,    dose:25,  prezzo:1.5,
 note:"Economico ma instabile: si ossida a Fe³⁺. Aggiungere acido citrico per stabilizzare."},
 {id:"MnSO4", nome:"Solfato Manganese MnSO₄·H₂O",        cat:"micro",serb:"A",
-el:{Mn:32.5,S:18.8}, ecC:0,    dose:6,   prezzo:2.5,
+el:{Mn:32.5,S:18.8}, ecC:1.58,    dose:6,   prezzo:2.5,
 note:"Dose bassa: eccesso causa tossicità. Non aggiungere se usi Mix Chelati."},
 {id:"ZnSO4", nome:"Solfato Zinco ZnSO₄·7H₂O",           cat:"micro",serb:"A",
-el:{Zn:22.7,S:11},   ecC:0,    dose:2.2, prezzo:2.0,
+el:{Zn:22.7,S:11},   ecC:0.92,    dose:2.2, prezzo:2.0,
 note:"Dose molto bassa: Zn fitotossico in eccesso. Non aggiungere se usi Mix Chelati."},
 {id:"H3BO3", nome:"Acido Borico H₃BO₃",                 cat:"micro",serb:"A",
-el:{B:17.5},          ecC:0,    dose:2.8, prezzo:1.8,
+el:{B:17.5},          ecC:0.02,    dose:2.8, prezzo:1.8,
 note:"Sciogliere in acqua calda. Margine carenza/tossicità stretto: rispettare la dose."},
 {id:"NaMoO4",nome:"Molibdato Sodio Na₂MoO₄·2H₂O",       cat:"micro",serb:"A",
-el:{Mo:39.7},         ecC:0,    dose:0.12,prezzo:12.0,
+el:{Mo:39.7},         ecC:0.91,    dose:0.12,prezzo:12.0,
 note:"Il micro in quantità minore. Preparare soluzione madre 1 g/L e dosare da quella."},
 {id:"HNO3",  nome:"Acido Nitrico HNO₃ 38%",              cat:"ph",   serb:"A",
-el:{N:8.45},            ecC:0,    dose:0,   prezzo:0.8, isLiquid:true, density:1.24,
+el:{N:8.45},            ecC:1.40,    dose:0,   prezzo:0.8, isLiquid:true, density:1.24,
 note:"Correttore pH verso il basso. DPI obbligatori. Sempre in A."},
 {id:"H3PO4", nome:"Acido Fosforico H₃PO₄ 75%",           cat:"ph",   serb:"A",
-el:{P:23},            ecC:0,    dose:0,   prezzo:1.2, isLiquid:true, density:1.58,
+el:{P:23},            ecC:1.30,    dose:0,   prezzo:1.2, isLiquid:true, density:1.58,
 note:"Più sicuro dell'HNO₃. Non mescolare con Ca nel concentrato."},
 {id:"KOH",   nome:"Idrossido Potassio KOH 50%",           cat:"ph",   serb:"A",
-el:{K:35},            ecC:0,    dose:0,   prezzo:1.5, isLiquid:true, density:1.52,
+el:{K:35},            ecC:2.42,    dose:0,   prezzo:1.5, isLiquid:true, density:1.52,
 note:"Alza pH. Molto caustico. Sempre diluito."},
 {id:"K2SiO3",nome:"Silicato di Potassio K₂SiO₃ (sol. ~49%)",cat:"ph",   serb:"B",
-el:{K:25,Si:9},      ecC:0,    dose:50,  prezzo:2.0, isLiquid:true, density:1.40,
+el:{K:25,Si:9},      ecC:0.72,    dose:50,  prezzo:2.0, isLiquid:true, density:1.40,
 note:"Prodotto commerciale liquido ~49% K₂SiO₃ (pH 11-12). Silicio (Si) rafforza pareti cellulari. ⚠️ Incompatibile con Ca, fosfati, chelati e acidi: precipita CaSiO₃ e degrada i chelati. Il motore lo sposta automaticamente in Serbatoio C se disponibile; non mescolarlo mai manualmente con CaN, KH₂PO₄ o Fe-chelati."},
 ];
 const CAT={macro:{label:"Macro",bg:"#2d5a3d"},micro:{label:"Micro",bg:"#7b3f9e"},ph:{label:"pH/Add",bg:"#b8530a"}};
@@ -1476,7 +1476,7 @@ try{ const v = JSON.parse(localStorage.getItem(key)||'null'); return v===null ? 
 catch(e){ console.warn('Dati corrotti in '+key+', uso i default:', e.message); return fallback; }
 }
 function stripTags(s){ return typeof s==='string' ? s.replace(/[<>"]/g,'') : s; }
-const CATALOG_VERSION = 2;
+const CATALOG_VERSION = 3;
 function mergeCatalogoDefaults(saved){
 const defaultIds = new Set(SALI_DEFAULT.map(s=>s.id));
 const base = SALI_DEFAULT.map(d=>{
@@ -3024,9 +3024,36 @@ function assegnaSerbatoi(righe){
 return righe.map(r=>{
 let serb = 'A';
 if(CALCIO_IDS.includes(r.id)) serb='B';
-if(r.id==='K2SiO3')           serb='B';
+if(r.id==='K2SiO3')           serb=usaSerbC?'C':'B';
 return {...r, serb};
 });
+}
+// Frazione ammoniacale sull'N TOTALE della soluzione finale (sali + nitrato
+// dell'acqua + N dell'acido): è quella che conta per la radice.
+function rapportoNH4(righe, aq, ph){
+const p = profiloDaRighe(righe, aq, acidoPrescritto(aq, ph||6.0));
+return { nh4:p.NH4, nTot:p.N, ratio: p.N>0 ? p.NH4/p.N : 0 };
+}
+// Riduce l'NH₄NO₃ quanto basta per NH₄ ≤ 10% dell'N totale. Il nitrato di
+// ammonio porta x di N-NH₄ e x di N-NO₃, quindi il massimo è
+//   x ≤ (cap·N_altro − NH₄_altro)/(1 − 2·cap)
+// (la formula precedente ignorava che riducendolo cala anche l'N totale).
+function capNH4NO3(righe, aq, ph){
+const r0 = rapportoNH4(righe, aq, ph);
+if(r0.ratio <= NH4_CAP + 1e-9) return null;
+const idx = righe.findIndex(r=>r.id==='NH4NO3' && r.dose>0);
+if(idx<0) return null;
+const elN = getSale('NH4NO3')?.el?.N || 35;
+const kNH4 = elN/100*fracNH4('NH4NO3');
+const xOld = righe[idx].dose*kNH4;
+const nAltro = r0.nTot - righe[idx].dose*elN/100;
+const nh4Altro = r0.nh4 - xOld;
+const den = 1 - NH4_CAP/fracNH4('NH4NO3');
+const xMax = den > 0 ? Math.max(0, (NH4_CAP*nAltro - nh4Altro)/den) : 0;
+const nuova = Math.max(0, Math.floor(xMax/kNH4*10)/10);
+if(nuova >= righe[idx].dose) return null;
+const out = righe.map((r,i)=> i===idx ? {...r, dose:nuova} : r);
+return { righe:out, vecchia:righe[idx].dose, nuova, ratio:r0.ratio };
 }
 function autoRisolvi(righeInput, dil, aq, phFinale){
 let righe = assegnaSerbatoi(righeInput.map(r=>({...r})));
@@ -3044,100 +3071,78 @@ tipo:'acido', icona:'🧪',
 msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${vol.toFixed(2)} mL/L di ${nomeAc}</strong> nell'acqua di diluizione prima dei sali per portare il pH a <strong>${phT}</strong> (neutralizzati ${acidoPr.meq.toFixed(2)} meq/L, tampone residuo ${acidoPr.residuoMeq.toFixed(2)} meq/L). L'acido apporta ${apporto}, già conteggiati nelle dosi dei sali. ⚠️ <em>pH Rebound: la CO₂ prodotta degasa nelle 12–48h in serbatoi aperti, facendo risalire il pH (+0.3–0.6). Ricontrollare prima dell'uso.</em>`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${vol.toFixed(2)} mL/L of ${nomeAc}</strong> to the dilution water before the salts to bring pH to <strong>${phT}</strong> (${acidoPr.meq.toFixed(2)} meq/L neutralized, ${acidoPr.residuoMeq.toFixed(2)} meq/L residual buffer). The acid adds ${apportoEn}, already accounted for in the salt doses. ⚠️ <em>pH Rebound: CO₂ degassing over 12–48h in open tanks causes pH to drift up (+0.3–0.6). Recheck before use.</em>`)
 });
 }
-const hasSiO3 = righe.some(r=>r.id==='K2SiO3');
-if(hasSiO3){
-const siSerb = righe.find(r=>r.id==='K2SiO3').serb;
-const incompSiO3 = ['CaN','CaCl2','KH2PO4','MAP','H3PO4','HNO3','FeSO4','FeEDTA','FeDTPA','FeEDDHA','MixCh','MgSO4'];
-const conflittiSi = righe.filter(r=>r.serb===siSerb && r.id!=='K2SiO3' && incompSiO3.includes(r.id));
-if(conflittiSi.length>0){
-if(usaSerbC){
-righe = righe.map(r=>r.id==='K2SiO3'?{...r,serb:'C'}:r);
-interventi.push({tipo:'sposta',icona:'🔀',msg:TT(`<strong>Silicato di Potassio</strong> spostato in Serb. C: incompatibile con Ca, fosfati, chelati e acidi (pH 11-12 precipita CaSiO₃ e distrugge i chelati).`,`<strong>Potassium Silicate</strong> moved to Tank C: incompatible with Ca, phosphates, chelates and acids (pH 11-12 precipitates CaSiO₃ and destroys chelates).`)});
-} else {
-conflittiSi.forEach(r=>{
-const altrSerb = siSerb==='B'?'A':'B';
-righe = righe.map(rr=>rr.id===r.id?{...rr,serb:altrSerb}:rr);
-interventi.push({tipo:'sposta',icona:'🔀',msg:TT(`<strong>${r.nome||r.id}</strong> spostato in Serb. ${altrSerb}: incompatibile con Silicato di Potassio (pH 11-12 nel serbatoio silicato).`,`<strong>${r.nome||r.id}</strong> moved to Tank ${altrSerb}: incompatible with Potassium Silicate (pH 11-12 in the silicate tank).`)});
+// ── Separazione dei sali incompatibili ─────────────────────────────────
+// Ogni sale ha un punteggio di conflitto nel suo serbatoio (critico = 10,
+// avviso = 1, da matrice per ID o per gruppo ionico, quindi anche sali custom).
+// Si sposta, una alla volta, la riga il cui spostamento riduce di più il
+// punteggio totale: ogni mossa lo abbassa strettamente, quindi il ciclo
+// termina e non oscilla. Se nessuno spostamento migliora (es. silicato senza
+// serbatoio C) le righe restano dove sono — Ca e fosfati restano separati —
+// e il conflitto residuo viene segnalato da checkNeedSerbC/verificaSicurezza.
+const serbDisp = usaSerbC ? ['A','B','C'] : ['A','B'];
+const PESO_GRAV = {C:10, A:1};
+const saleDi = r => getSale(r.id) || r;
+const attiva = r => r.id && r.id!=='__custom' && (+r.dose||0) > 0;
+const conflittoCon = (i, j) => coppiaIncompatibile(saleDi(righe[i]), saleDi(righe[j]));
+const punteggio = (i, serb) => righe.reduce((tot, o, j) => {
+if(j===i || o.serb!==serb || !attiva(o)) return tot;
+const c = conflittoCon(i, j);
+return tot + (c.incompat ? (PESO_GRAV[c.gravita]||1) : 0);
+}, 0);
+for(let it=0; it<40; it++){
+let mossa = null;
+righe.forEach((r, i)=>{
+if(!attiva(r)) return;
+const attuale = punteggio(i, r.serb);
+if(attuale===0) return;
+serbDisp.forEach(dest=>{
+if(dest===r.serb) return;
+const guadagno = attuale - punteggio(i, dest);
+if(guadagno <= 0) return;
+// a parità di guadagno si spostano gli altri sali, non Ca/silicato
+const pref = (CALCIO_IDS.includes(r.id) || r.id==='K2SiO3') ? -0.5 : 0;
+if(!mossa || guadagno + pref > mossa.valore) mossa = {i, dest, valore: guadagno + pref};
 });
+});
+if(!mossa) break;
+const r = righe[mossa.i];
+let motivo = null;
+righe.forEach((o, j)=>{
+if(j===mossa.i || o.serb!==r.serb || !attiva(o)) return;
+const c = conflittoCon(mossa.i, j);
+if(c.incompat && (!motivo || (c.gravita==='C' && motivo.gravita!=='C'))) motivo = c;
+});
+r.serb = mossa.dest;
+if(motivo){
+const mainMsg = motivo.gravita==='C' ? TT('🔴 Critico','🔴 Critical') : TT('🟡 Attenzione','🟡 Warning');
+interventi.push({ tipo:'sposta', icona:'🔀',
+msg:`<strong>${r.nome||r.id}</strong> → ${TT('Serb.','Tank')} ${mossa.dest} [${mainMsg}]: ${M(motivo.m)} <em>(${M(motivo.p)})</em>` });
 }
 }
+const siRiga = righe.find(r=>r.id==='K2SiO3' && attiva(r));
+if(siRiga && usaSerbC && siRiga.serb==='C' && righe.filter(r=>r.serb==='C' && attiva(r)).length===1){
+interventi.push({tipo:'sposta',icona:'🔀',msg:TT(`<strong>Silicato di Potassio</strong> in Serb. C da solo: incompatibile con Ca, fosfati, chelati e acidi (pH 11-12 precipita CaSiO₃ e distrugge i chelati).`,`<strong>Potassium Silicate</strong> alone in Tank C: incompatible with Ca, phosphates, chelates and acids (pH 11-12 precipitates CaSiO₃ and destroys chelates).`)});
 }
-const serbatoi_chk = usaSerbC ? ['A','B','C'] : ['A','B'];
+const serbatoi_chk = serbDisp;
 serbatoi_chk.forEach(s => {
 const righeS = righe.filter(r => r.serb === s);
 if(!righeS.length) return;
 const si = serbSIs(righeS, aq, dil);
 if (si.CaSO4 <= -0.5) return;
 righeS.filter(r => ['MgSO4','K2SO4'].includes(r.id)).forEach(r => {
-const candidati = (usaSerbC ? ['A','B','C'] : ['A','B']).filter(x => x !== s);
-const dest = candidati.find(x => !righe.some(rr => rr.serb===x && CALCIO_IDS.includes(rr.id))) || candidati[0];
+const candidati = serbDisp.filter(x => x !== s);
+const dest = candidati.find(x => !righe.some(rr => rr.serb===x && CALCIO_IDS.includes(rr.id)));
 if (dest) {
-righe = righe.map(rr => rr.id === r.id ? {...rr, serb:dest} : rr);
+r.serb = dest;
 interventi.push({tipo:'sposta', icona:'🔀',
 msg:TT(`<strong>${r.nome||r.id}</strong> → Serb. ${dest}: SI CaSO₄ = ${si.CaSO4.toFixed(2)} nel Serb. ${s} concentrato (×${dil}, pH 6, Davies). Solfati separati dal Calcio.`,`<strong>${r.nome||r.id}</strong> → Tank ${dest}: SI CaSO₄ = ${si.CaSO4.toFixed(2)} in Tank ${s} concentrate (×${dil}, pH 6, Davies). Sulfates separated from Calcium.`)});
 }
 });
 });
-let iterazioni = 0;
-let conflittoRisolto = true;
-while(conflittoRisolto && iterazioni < 10){
-conflittoRisolto = false;
-iterazioni++;
-for(const regola of INCOMPAT_MATRIX){
-const ra = righe.find(r=>r.id===regola.a);
-const rb = righe.find(r=>r.id===regola.b);
-if(!ra || !rb) continue;
-if(ra.serb !== rb.serb) continue;
-const prioritaB = ['CaN','CaCl2','K2SiO3'];
-const prioritaA = ['KH2PO4','MAP','H3PO4','HNO3','FeEDTA','FeDTPA','FeEDDHA','MixCh','KNO3','MgNO3','MgSO4','K2SO4','NH4NO3'];
-let daSposta = ra;
-if(prioritaB.includes(ra.id) && !prioritaB.includes(rb.id)) daSposta = rb;
-else if(prioritaB.includes(rb.id) && !prioritaB.includes(ra.id)) daSposta = ra;
-else if(CALCIO_IDS.includes(ra.id)) daSposta = rb;
-else if(CALCIO_IDS.includes(rb.id)) daSposta = ra;
-const serbAttuali = ['A','B','C'];
-let destSerb = null;
-for(const s of (usaSerbC?['A','B','C']:['A','B'])){
-if(s === daSposta.serb) continue;
-const idsInS = righe.filter(r=>r.serb===s && r.id!==daSposta.id).map(r=>r.id);
-const haConflitti = INCOMPAT_MATRIX.some(reg=>{
-const match = (reg.a===daSposta.id&&idsInS.includes(reg.b)) || (reg.b===daSposta.id&&idsInS.includes(reg.a));
-return match;
-});
-if(!haConflitti){ destSerb=s; break; }
-}
-if(!destSerb) destSerb = usaSerbC?'C':(daSposta.serb==='A'?'B':'A');
-righe = righe.map(r=>r.id===daSposta.id?{...r,serb:destSerb}:r);
-const nomeA = ra.nome||ra.id, nomeB = rb.nome||rb.id;
-const mainMsg = regola.g==='C' ? TT('🔴 Critico','🔴 Critical') : TT('🟡 Attenzione','🟡 Warning');
-interventi.push({
-tipo:'sposta', icona:'🔀',
-msg:`<strong>${daSposta.nome||daSposta.id}</strong> → ${TT('Serb.','Tank')} ${destSerb} [${mainMsg}]: ${M(regola.m)} <em>(${M(regola.p)})</em>`
-});
-conflittoRisolto = true;
-break;
-}
-}
-const riCalcIoni = calcolaIoniDaSali(righe);
-const ratioNH4 = riCalcIoni.N_total>0 ? riCalcIoni.N_NH4/riCalcIoni.N_total : 0;
-const NH4_CAP = 0.10;
-if(ratioNH4 > NH4_CAP){
-righe = righe.map(r=>{
-if(r.id==='NH4NO3' && r.dose>0){
-const vecchia=r.dose;
-const infoNH4 = getSale('NH4NO3');
-const elN = infoNH4?.el?.N || 35;
-const nN = riCalcIoni.N_total - riCalcIoni.N_NH4;
-const nNH4max = NH4_CAP * riCalcIoni.N_total;
-const nDaNH4 = nNH4max - (riCalcIoni.N_NH4 - r.dose*elN/100*0.5);
-const nuova = Math.max(0, Math.round(nDaNH4 / (elN/100*0.5) * 10) / 10);
-if(nuova < vecchia){
-interventi.push({tipo:'riduzione',icona:'⬇️',msg:TT(`<strong>NH₄NO₃</strong> ridotto da ${vecchia}→${nuova} g/1000L: NH₄⁺ era ${(ratioNH4*100).toFixed(0)}% dell'N totale (cap: 10%). NH₄⁺ in eccesso blocca Ca e Mg e brucia le radici.`,`<strong>NH₄NO₃</strong> reduced from ${vecchia}→${nuova} g/1000L: NH₄⁺ was ${(ratioNH4*100).toFixed(0)}% of total N (cap: 10%). Excess NH₄⁺ locks out Ca and Mg and burns the roots.`)});
-return {...r, dose:nuova};
-}
-}
-return r;
-});
+const capNH4 = capNH4NO3(righe, aq, phFinale);
+if(capNH4){
+righe = capNH4.righe;
+interventi.push({tipo:'riduzione',icona:'⬇️',msg:TT(`<strong>NH₄NO₃</strong> ridotto da ${capNH4.vecchia}→${capNH4.nuova} g/1000L: NH₄⁺ era ${(capNH4.ratio*100).toFixed(0)}% dell'N totale (cap: 10%). NH₄⁺ in eccesso blocca Ca e Mg e brucia le radici.`,`<strong>NH₄NO₃</strong> reduced from ${capNH4.vecchia}→${capNH4.nuova} g/1000L: NH₄⁺ was ${(capNH4.ratio*100).toFixed(0)}% of total N (cap: 10%). Excess NH₄⁺ locks out Ca and Mg and burns the roots.`)});
 }
 if(righe.some(r=>r.id==='FeSO4')){
 interventi.push({tipo:'avviso',icona:'⚗️',msg:TT(`<strong>FeSO₄</strong> in uso: il Fe²⁺ si ossida a Fe³⁺ rapidamente a pH >4. Aggiungere <strong>acido citrico</strong> (0.5–1 g/L nel serbatoio) per stabilizzare. In alternativa, sostituire con Fe-EDTA o Fe-DTPA.`,`<strong>FeSO₄</strong> in use: Fe²⁺ oxidizes to Fe³⁺ quickly at pH >4. Add <strong>citric acid</strong> (0.5–1 g/L in the tank) to stabilize. Alternatively, replace with Fe-EDTA or Fe-DTPA.`)});
@@ -3186,16 +3191,17 @@ msg:TT(`EC concentrato = ${ecConcCritica.toFixed(0)} mS/cm anche con diluizione 
 const needsSerbC = checkNeedSerbC(righe, dil, aq);
 return { righe, interventi, needsSerbC, ecFin: ecFin2, ecPerSerb, dilSuggerito };
 }
+// SI nella soluzione finale: sali + acqua + acido prescritto per quel pH.
 function siFinaleSoluzione(righe, aq, ph){
-return siForIons(profiloDaRighe(righe, aq), ph, tcAcqua(aq));
+return siForIons(profiloDaRighe(righe, aq, acidoPrescritto(aq, ph)), ph, tcAcqua(aq));
 }
 function phSicuroFinale(righe, aq, phMax){
-const prof = profiloDaRighe(righe, aq);
 const tc = tcAcqua(aq);
-if(siForIons(prof, 6.0, tc).CaSO4 > 0) return null;
+const prof = ph => profiloDaRighe(righe, aq, acidoPrescritto(aq, ph));
+if(siForIons(prof(6.0), 6.0, tc).CaSO4 > 0) return null;
 const lim = Math.min(phMax, 6.3);
 for(let ph=lim; ph>=4.8; ph=Math.round((ph-0.1)*10)/10){
-const s = siForIons(prof, ph, tc);
+const s = siForIons(prof(ph), ph, tc);
 if(s.CaHPO4 < 0 && s.struvite < 0 && s.CaCO3 < 0) return ph;
 }
 return null;
@@ -3205,7 +3211,10 @@ opts = opts || {};
 const phFinale = opts.phFinale || 6.0;
 const forza = !!opts.forzaRiduzione;
 const maxIter = 80, stepPct = 0.06;
-const SOGLIA_CONC = -0.5;
+// In automatico si punta a togliere i soli conflitti critici (SI > 0) con un
+// piccolo margine; puntare a −0.5 tagliava dosi ben oltre il necessario.
+// Su richiesta esplicita (pulsante "Bilancia") si cerca l'ampio margine.
+const SOGLIA_CONC = forza ? -0.5 : -0.05;
 const SOGLIA_FIN  = 0.0;
 const MIN_DOSE = {CaN:150, KNO3:100, MgNO3:50, MgSO4:50, KH2PO4:30, MAP:20, K2SO4:50, NH4NO3:10, CaCl2:50};
 const REDUCE_ORDER = {
@@ -3262,20 +3271,8 @@ if(!ridotto){
 iterations = iter + 1;
 break;
 }
-const ioniCheck = calcolaIoniDaSali(righe);
-if(ioniCheck.N_total > 0 && ioniCheck.N_NH4 / ioniCheck.N_total > 0.10){
-const idxNH4 = righe.findIndex(r => r.id === 'NH4NO3');
-if(idxNH4 >= 0 && righe[idxNH4].dose > 5){
-const infoNH4 = getSale('NH4NO3');
-const elN = infoNH4?.el?.N || 35;
-const nNH4max = 0.10 * ioniCheck.N_total;
-const nDaNH4 = nNH4max - (ioniCheck.N_NH4 - righe[idxNH4].dose * elN / 100 * 0.5);
-const nuova = Math.max(5, Math.round(nDaNH4 / (elN / 100 * 0.5) * 10) / 10);
-if(nuova < righe[idxNH4].dose){
-righe[idxNH4] = {...righe[idxNH4], dose: nuova};
-}
-}
-}
+const capB = capNH4NO3(righe, aq, phFinale);
+if(capB) righe = capB.righe;
 iterations = iter + 1;
 }
 const siConcFinal = worstSerbSI(righe, aq, dil);
@@ -3340,7 +3337,7 @@ const conflitti = [];
 const serbs = usaSerbC ? ['A','B','C'] : ['A','B'];
 let coppieControllate = 0, coppieConflitto = 0;
 serbs.forEach(s=>{
-const righeS = righe.filter(r=>r.serb===s);
+const righeS = righe.filter(r=>r.serb===s && (+r.dose||0) > 0);
 for(let i=0;i<righeS.length;i++){
 for(let j=i+1;j<righeS.length;j++){
 coppieControllate++;
@@ -3437,26 +3434,41 @@ const co3 = (aq.hco3/61.0)*fco3;
 const IAP_mol = (caMM/1000)*(co3/1000);
 const KspCaCO3 = kspCalcite(tcOper);
 const ok = IAP_mol <= KspCaCO3;
-audit.push({check:TT('Prodotto solubilità CaCO₃ (acqua di partenza)','CaCO₃ solubility product (source water)'), esito: ok?'OK':'GESTITO', dettaglio: ok?TT(`IAP CaCO₃ sotto soglia (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`,`IAP CaCO₃ below threshold (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`):TT(`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → neutralizzazione acido prescritta`,`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → acid neutralization prescribed`)});
+// "GESTITO" solo se l'acido è davvero prescritto (HCO₃⁻ > 50 e pH acqua sopra il target)
+const acidoOk = !!acidoPrescritto(aq, phFinale);
+const esitoCaCO3 = ok ? 'OK' : (acidoOk ? 'GESTITO' : 'AVVISO');
+audit.push({check:TT('Prodotto solubilità CaCO₃ (acqua di partenza)','CaCO₃ solubility product (source water)'), esito: esitoCaCO3,
+dettaglio: ok ? TT(`IAP CaCO₃ sotto soglia (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`,`IAP CaCO₃ below threshold (Ksp=${KspCaCO3.toExponential(2)} mol²/L²)`)
+: acidoOk ? TT(`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → neutralizzazione acido prescritta`,`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp → acid neutralization prescribed`)
+: TT(`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp e nessuna dose fissa di acido prescritta: acidifica l'acqua (goccia a goccia, misurando) prima di aggiungere i sali.`,`IAP = ${(IAP_mol/KspCaCO3).toFixed(1)}× Ksp and no fixed acid dose prescribed: acidify the water (drop by drop, measuring) before adding the salts.`)});
+if(esitoCaCO3==='AVVISO') conflitti.push({gravita:'A', titolo:TT('Calcare (CaCO₃) dall\'acqua di partenza','Limescale (CaCO₃) from source water'), dettaglio:TT('Acqua sovrasatura di calcite una volta aggiunto il calcio: acidifica prima dei sali.','Water supersaturated with calcite once calcium is added: acidify before the salts.')});
 }
-let ecFin=0; righe.forEach(r=>{ const coeff = ecCoeffSale(r.id); ecFin+=(r.dose/1000)*coeff; });
-if(aq) ecFin+=aq.ec;
-const ecConc = ecFin*dil;
+let ecSali=0; righe.forEach(r=>{ const coeff = ecCoeffSale(r.id); ecSali+=(r.dose/1000)*coeff; });
+// Il concentrato è fatto con la stessa acqua: si concentrano i sali, non l'acqua.
+const ecConc = ecSali*dil + (aq ? aq.ec : 0);
 audit.push({check:TT('EC nel concentrato','EC in the concentrate'), esito:'INFO', dettaglio:TT(`${ecConc.toFixed(0)} mS/cm — la sicurezza è verificata dagli indici di saturazione (SI), non da soglie EC arbitrarie`,`${ecConc.toFixed(0)} mS/cm — safety is verified by saturation indices (SI), not by arbitrary EC thresholds`)});
 const ioni = calcolaIoniDaSali(righe);
-const ratioNH4 = ioni.N_total>0 ? ioni.N_NH4/ioni.N_total : 0;
-audit.push({check:TT('Rapporto NH₄⁺/N totale','NH₄⁺/total N ratio'), esito: ratioNH4<=0.10?'OK':'GESTITO', dettaglio:TT(`${(ratioNH4*100).toFixed(0)}% (limite coco 10%)`,`${(ratioNH4*100).toFixed(0)}% (coco limit 10%)`)});
+const rNH4 = rapportoNH4(righe, aq, phFinale);
+const nh4Alto = rNH4.ratio > NH4_CAP + 0.005;
+audit.push({check:TT('Rapporto NH₄⁺/N totale','NH₄⁺/total N ratio'), esito: nh4Alto?'AVVISO':'OK', dettaglio:TT(`${(rNH4.ratio*100).toFixed(0)}% dell'N totale (sali + acqua + acido; limite coco 10%)`,`${(rNH4.ratio*100).toFixed(0)}% of total N (salts + water + acid; coco limit 10%)`)});
+if(nh4Alto) conflitti.push({gravita:'A', titolo:TT('Azoto ammoniacale alto','High ammonium nitrogen'), dettaglio:TT(`NH₄⁺ = ${(rNH4.ratio*100).toFixed(0)}% dell'N totale (limite coco 10%): riduci MAP/sali ammoniacali o sostituiscili con forme nitriche.`,`NH₄⁺ = ${(rNH4.ratio*100).toFixed(0)}% of total N (coco limit 10%): reduce MAP/ammonium salts or replace them with nitrate forms.`)});
 const microTox = [];
-if(ioni.Mn>2)    microTox.push(TT(`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (tossicità documentata oltre 2–5 mg/L)`,`Mn ${ioni.Mn.toFixed(2)} mg/L > 2 (toxicity documented above 2–5 mg/L)`));
-if(ioni.Zn>0.5) microTox.push(TT(`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (fitotossico in molte colture oltre 0.5 mg/L)`,`Zn ${ioni.Zn.toFixed(2)} mg/L > 0.5 (phytotoxic in many crops above 0.5 mg/L)`));
-if(ioni.B>0.5)  microTox.push(TT(`B ${ioni.B.toFixed(2)} mg/L > 0.5 (tossicità a 0.5 mg/L per colture sensibili)`,`B ${ioni.B.toFixed(2)} mg/L > 0.5 (toxicity at 0.5 mg/L for sensitive crops)`));
-if(ioni.Cu>0.15) microTox.push(TT(`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (tossicità in idroponica documentata a 0.1–0.3 mg/L)`,`Cu ${ioni.Cu.toFixed(2)} mg/L > 0.15 (hydroponic toxicity documented at 0.1–0.3 mg/L)`));
-audit.push({check:TT('Tossicità micronutrienti','Micronutrient toxicity'), esito: microTox.length===0?'OK':'AVVISO', dettaglio: microTox.length===0?TT('Tutti i micro sotto soglia','All micros below threshold'):microTox.join(', ')});
+const MICRO_TOX_TXT = {
+Mn:[`tossicità documentata oltre 2–5 mg/L`,`toxicity documented above 2–5 mg/L`],
+Zn:[`fitotossico in molte colture oltre 0.5 mg/L`,`phytotoxic in many crops above 0.5 mg/L`],
+B:[`tossicità a 0.5 mg/L per colture sensibili`,`toxicity at 0.5 mg/L for sensitive crops`],
+Cu:[`tossicità in idroponica documentata a 0.1–0.3 mg/L`,`hydroponic toxicity documented at 0.1–0.3 mg/L`]};
+Object.entries(MICRO_TOX).forEach(([el, lim])=>{
+const v = ioni[el]||0;
+if(v > lim) microTox.push({ grave: v > 3*lim, msg: TT(`${el} ${v.toFixed(2)} mg/L > ${lim} (${MICRO_TOX_TXT[el][0]})`,`${el} ${v.toFixed(2)} mg/L > ${lim} (${MICRO_TOX_TXT[el][1]})`) });
+});
+audit.push({check:TT('Tossicità micronutrienti','Micronutrient toxicity'), esito: microTox.length===0?'OK':(microTox.some(m=>m.grave)?'CONFLITTO':'AVVISO'), dettaglio: microTox.length===0?TT('Tutti i micro sotto soglia','All micros below threshold'):microTox.map(m=>m.msg).join(', ')});
 const hasMixCh = righe.some(r=>r.id==='MixCh');
 const consiglioMicro = hasMixCh
-? TT(' — la dose del Mix Chelati è dimensionata sul micro più esigente: riduci il Mix e integra il micro carente con un sale singolo.',' — the Chelate Mix dose is sized on the most demanding micro: reduce the Mix and supplement the deficient micro with a single salt.')
+? TT(' — riduci il Mix Chelati e integra il micro carente con un sale singolo.',' — reduce the Chelate Mix and supplement the deficient micro with a single salt.')
 : TT(' — ridurre la dose manualmente.',' — reduce the dose manually.');
-microTox.forEach(msgTox=>conflitti.push({gravita:'A', titolo:TT('Micronutriente in eccesso','Micronutrient in excess'), dettaglio:msgTox+consiglioMicro}));
+// Oltre 3× la soglia è un errore di dosaggio (es. un sale sbagliato), non una sfumatura: critico.
+microTox.forEach(m=>conflitti.push({gravita: m.grave?'C':'A', titolo:TT('Micronutriente in eccesso','Micronutrient in excess'), dettaglio:m.msg+consiglioMicro}));
 {
 const clSali = ioni.Cl||0;
 const clTot  = clSali + (aq?(aq.cl||0):0);
@@ -3855,7 +3867,10 @@ html+=`</div>`;
 html+=`</div>`;
 const volMin = Math.min(...serbatoi.map(s=>s.vol));
 const volFinale1000L = volMin * dil;
-const costoPerMille = costoTot > 0 ? (costoTot / volFinale1000L * 1000) : 0;
+// Costo per 1000 L finali dalle dosi (g/1000L × €/kg): indipendente dai
+// volumi dei serbatoi. Prima si divideva il costo di TUTTI i serbatoi per la
+// resa del più piccolo, gonfiando il valore se i volumi erano diversi.
+const costoPerMille = wRighe.reduce((s,r)=>s + (+r.dose||0)*(r.prezzo||0)/1000, 0);
 html+=`<div class="card" style="margin-top:12px">
     <div class="ch" style="background:var(--ar)">${TT('📊 Riepilogo — Diluizione','📊 Summary — Dilution')} 1:${dil}</div>
     <div class="cb">
