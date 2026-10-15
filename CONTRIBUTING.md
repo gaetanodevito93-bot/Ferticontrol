@@ -14,6 +14,16 @@ node tests/run-tests.js
 
 Exit code `0` = tutto verde. Se tocchi la chimica, il solver o la persistenza, **ogni bug corretto deve diventare un nuovo test** nella suite: è la garanzia che non ritorni.
 
+Per non dimenticarlo, attiva l'hook che esegue la suite a ogni commit che tocca l'app o i test (una volta per clone):
+
+```bash
+git config core.hooksPath tests/hooks
+```
+
+La stessa suite gira su GitHub Actions a ogni push e pull request. Per verificare che un nuovo test catturi davvero il bug, puoi eseguirlo su una copia dell'app in cui reintroduci il difetto: `FC_APP=/percorso/copia/index.html node tests/run-tests.js`.
+
+Dopo ogni modifica all'app incrementa `CACHE_VERSION` in `sw.js`, così le installazioni PWA ricevono la nuova versione.
+
 ## Come proporre una modifica
 
 1. **Forka** il repository e crea un branch descrittivo (`fix/precipitazione-brushite`, `feat/ricetta-basilico`).

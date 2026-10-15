@@ -6,11 +6,12 @@
 //   S2. Golden test: bilancio ionico chiuso per ogni sale macro
 //   S3. Golden test: EC calcolata vs range EC dichiarato dalle ricette
 //   S4. Invarianti: tutte le ricette builtin → calcolo senza errori,
-//       niente NaN, input immutabile, risultato idempotente
+//       niente NaN, input immutabile, risultato idempotente; fedeltà
+//       del profilo finale dopo la correzione acqua
 //   S5. Stress: acque difficili × diluizioni estreme
 //   S6. Motore serbatoi: nessuna coppia critica nello stesso tank
 //   S7. verificaSicurezza rileva i conflitti forzati
-//   S8. Solver NNLS: i target vengono effettivamente raggiunti
+//   S8. Solver NNLS: i target vengono effettivamente raggiunti (S libero)
 //   S9. Regressione fix sali custom (B/Cu/Mo, EC, NH4, liquidi)
 //   S10. Round-trip export → reset → import
 //   S11. Fuzzing dell'import (JSON malformati e ostili)
@@ -20,8 +21,17 @@
 //   S15. Temperatura acqua negli indici di saturazione
 //   S16. Consigli di miscelazione e gestione pH (ordine, deriva NH₄)
 //   S17. PWA: manifest, service worker, icone
+//   S18. Perfezionamento motore (Davies, pH rebound, P da H₃PO₄, ACP)
+//   S19. NNLS Lawson-Hanson: KKT, recupero esatto, casi limite
+//   S20. Correzione acqua basata sul profilo (regressione N perso)
+//   S21. Ricalcolo con ingredienti disponibili (regressione MnSO₄/P=0)
+//   S22. Modalità target senza doppia correzione (regressione)
+//   S23. Solver target: S libero, scorta, acido, micro entro soglie
+//   S24. Serbatoi: gravità dei conflitti, silicato, sali custom
+//   S25. Speciazione con coefficienti di attività
+//   S26. Correzioni minori (costo, EC concentrato, calcite, NH₄, acido, UI)
 //
-// Uso:  node tests/run-tests.js
+// Uso:  node tests/run-tests.js   (in automatico: hook tests/hooks/pre-commit e GitHub Actions)
 // Requisiti: Playwright + Chromium (vedi tests/README.md)
 // ════════════════════════════════════════════════════════════════
 const fs = require('fs');
@@ -48,7 +58,8 @@ let chromium;
   }
 }
 
-const APP = 'file://' + path.resolve(__dirname, '..', 'index.html');
+// FC_APP permette di eseguire la suite su un'altra copia dell'app (es. test di mutazione)
+const APP = 'file://' + path.resolve(process.env.FC_APP || path.join(__dirname, '..', 'index.html'));
 const EXEC = process.env.CHROMIUM_PATH || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
 
 let pass = 0, fail = 0;
@@ -153,6 +164,50 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check(`${invar.length} fasi calcolate: output presente, senza NaN, input immutabile, idempotente`,
     bad.length === 0, JSON.stringify(bad.slice(0, 3)));
 
+  // Fedeltà: il profilo FINALE (sali + acqua + acido) deve restare vicino al
+  // profilo della ricetta per ogni fase builtin e ogni acqua. È l'invariante
+  // che avrebbe intercettato il crollo dell'N (−80%) della vecchia correzione.
+  const fed = await page.evaluate(() => {
+    const acque = {
+      osmosi: { ec: 0.02, ph: 6.5, temp: 20, ca: 2, mg: 1, k: 0, na: 2, so4: 1, cl: 2, hco3: 5, no3: 1, fe: 0.01 },
+      media: { ec: 0.3, ph: 7.2, temp: 20, ca: 80, mg: 20, k: 5, na: 30, so4: 40, cl: 50, hco3: 150, no3: 10, fe: 0.1 },
+      dura: { ec: 0.7, ph: 7.8, temp: 20, ca: 180, mg: 45, k: 8, na: 60, so4: 90, cl: 80, hco3: 320, no3: 15, fe: 0.2 },
+    };
+    const out = [];
+    for (const [nome, aq] of Object.entries(acque)) {
+      PIANTE_BUILTIN.forEach(pl => pl.fasi.forEach((f, fi) => {
+        const righe = f.sali.map(s => ({ id: s.id, dose: s.g }));
+        const ric = profiloDaRighe(righe, null);
+        const c = correggiDosi(righe, aq, { phFinale: 6.0 });
+        const fin = profiloDaRighe(c.righe, aq, c.acido);
+        const acq = contributoAcqua(aq, c.acido);
+        const dev = {};
+        ['N', 'P', 'K', 'Ca', 'Mg'].forEach(el => {
+          // elemento raggiungibile solo se l'acqua da sola non lo supera già
+          dev[el] = (ric[el] > 0 && acq[el] < ric[el]) ? (fin[el] - ric[el]) / ric[el] : 0;
+        });
+        const negative = c.righe.some(r => r.dose < 0);
+        out.push({ id: `${nome}:${pl.id}/${fi}`, acqua: nome, dev, negative, nh4: fin.N > 0 ? fin.NH4 / fin.N : 0, nh4Ric: ric.N > 0 ? ric.NH4 / ric.N : 0 });
+      }));
+    }
+    return out;
+  });
+  const peggio = (acqua, el) => fed.filter(f => f.acqua === acqua).reduce((a, f) => Math.abs(f.dev[el]) > Math.abs(a.dev[el]) ? f : a);
+  ['N', 'P', 'K', 'Ca', 'Mg'].forEach(el => {
+    const w = peggio('osmosi', el);
+    check(`osmosi: ${el} entro ±3% in tutte le fasi (peggiore ${w.id} ${(w.dev[el] * 100).toFixed(1)}%)`, Math.abs(w.dev[el]) <= 0.03);
+  });
+  ['media', 'dura'].forEach(acqua => {
+    const wN = peggio(acqua, 'N'), wP = peggio(acqua, 'P'), wK = peggio(acqua, 'K');
+    check(`${acqua}: N mai sotto −30% (peggiore ${wN.id} ${(wN.dev.N * 100).toFixed(1)}%; vecchia correzione −80%)`, wN.dev.N >= -0.30);
+    check(`${acqua}: P entro ±15% (peggiore ${wP.id} ${(wP.dev.P * 100).toFixed(1)}%)`, Math.abs(wP.dev.P) <= 0.15);
+    check(`${acqua}: K entro ±15% (peggiore ${wK.id} ${(wK.dev.K * 100).toFixed(1)}%)`, Math.abs(wK.dev.K) <= 0.15);
+  });
+  check('correzione acqua: nessuna dose negativa', fed.every(f => !f.negative));
+  // la correzione non deve mai portare l'NH₄ oltre il 10% (o oltre la quota già scelta dalla ricetta)
+  const nh4Over = fed.filter(f => f.nh4 > Math.max(0.10, f.nh4Ric) + 1e-3);
+  check(`correzione acqua: NH₄ ≤ max(10%, quota della ricetta) in tutte le fasi`, nh4Over.length === 0, nh4Over.slice(0, 3).map(f => f.id + ' ' + (f.nh4 * 100).toFixed(1) + '%').join('; '));
+
   // ────────────────────────────────────────────────
   console.log('\n═══ S5. Stress: acque difficili × diluizioni estreme ═══');
   const stress = await page.evaluate(() => {
@@ -220,15 +275,14 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     return { targets, got: { N: +p.N.toFixed(1), P: +p.P.toFixed(1), K: +p.K.toFixed(1), Ca: +p.Ca.toFixed(1), Mg: +p.Mg.toFixed(1), Fe: +p.Fe.toFixed(2) }, nRighe: righe.length, negativi: righe.filter(r => r.dose < 0).length };
   });
   check('nessuna dose negativa dal solver', nnlsRes.negativi === 0);
+  // S non specificato = libero: i macro "veri" devono restare entro il 10%
+  // (prima S=0 era un target rigido e Ca/Mg finivano a −13%/−21%).
   ['N', 'P', 'K', 'Ca', 'Mg'].forEach(el => {
     const t = nnlsRes.targets[el], g = nnlsRes.got[el];
-    check(`target ${el}=${t} → ottenuto ${g} (entro 15%)`, Math.abs(g - t) / t <= 0.15);
+    check(`target ${el}=${t} → ottenuto ${g} (entro 10%, S libero)`, Math.abs(g - t) / t <= 0.10);
   });
-  // Fe può superare il target: il MixCh è dimensionato sul micro più esigente
-  // (qui il Cu) e porta Fe in eccesso — comportamento documentato nel codice.
-  // Vincoli: mai SOTTO il target, mai oltre il tetto agronomico di 5 mg/L.
-  check(`target Fe=2 → ottenuto ${nnlsRes.got.Fe} (≥ target, ≤ 5 mg/L; overshoot da MixCh atteso)`,
-    nnlsRes.got.Fe >= 2 && nnlsRes.got.Fe <= 5);
+  // Fe coperto (MixCh + chelato per il residuo) senza eccessi.
+  check(`target Fe=2 → ottenuto ${nnlsRes.got.Fe} (entro ±10%)`, Math.abs(nnlsRes.got.Fe - 2) <= 0.2);
 
   // ────────────────────────────────────────────────
   console.log('\n═══ S9. Regressione fix sali custom ═══');
@@ -451,9 +505,12 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check(`tampone minimo 0.5 meq/L rispettato anche a pH 5.5 (residuo ${acido.res55.toFixed(2)})`, acido.res55 >= 0.5 - 1e-9);
   check('acqua già al pH target → zero acido', acido.giaAcida === 0);
   check(`retrocompatibile senza pH target (${acido.legacy.toFixed(2)} = alcalinità − 0.5)`, close(acido.legacy, acido.hco3meq - 0.5, 0.01));
-  // Frazioni Henderson-Hasselbalch attese: pH 5.8 → 78%, pH 7.0 → 18%
-  check('frazione H-H corretta a pH 5.8 (~78%)', close(acido.ph58 / acido.hco3meq, 0.78, 0.02));
-  check('frazione H-H corretta a pH 7.0 (~18%)', close(acido.ph70 / acido.hco3meq, 0.183, 0.02));
+  // Henderson-Hasselbalch in sistema chiuso: alla CO₂ già presente al pH
+  // dell'acqua (7.8) si somma quella generata dall'acido.
+  //   a = (1 − c0·r) / (1 + r),  r = 10^(pH−6.35),  c0 = 10^(6.35−7.8)
+  const frazAttesa = (ph) => { const r = Math.pow(10, ph - 6.35), c0 = Math.pow(10, 6.35 - 7.8); return (1 - c0 * r) / (1 + r); };
+  check(`frazione H-H corretta a pH 5.8 (~${(frazAttesa(5.8) * 100).toFixed(0)}%)`, close(acido.ph58 / acido.hco3meq, frazAttesa(5.8), 0.005));
+  check(`frazione H-H corretta a pH 7.0 (~${(frazAttesa(7.0) * 100).toFixed(0)}%, CO₂ iniziale inclusa)`, close(acido.ph70 / acido.hco3meq, frazAttesa(7.0), 0.005));
 
   // End-to-end: cambiare il pH nel calcolatore aggiorna la card acido
   const acidoUI = await page.evaluate(() => {
@@ -670,6 +727,364 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check('autoRisolvi: avviso pH Rebound presente', chemPerf.hasRebound);
   check('autoRisolvi: indicazione P da H₃PO₄ presente', chemPerf.hasPInfo);
   check('verificaSicurezza: audit Ca₃(PO₄)₂ attivo a pH > 6.2', chemPerf.hasACP);
+
+  // Stato pulito per le sezioni del motore: acqua media, 2 serbatoi, scorta piena.
+  const resetMotore = () => page.evaluate(() => {
+    setLang('it');
+    usaSerbC = false;
+    // catalogo di fabbrica: le sezioni precedenti (fuzzing dell'import) lasciano
+    // sali custom ostili (es. "big" con Ca/N/K al 100%) che falserebbero il solver
+    catalogo = SALI_DEFAULT.map(s => ({ ...s }));
+    scorta = new Set(catalogo.map(s => s.id));
+    presetAcqua('media');
+    document.getElementById('diluizione').value = 100;
+    document.getElementById('ph-finale').value = 6.0;
+    document.getElementById('volA').value = 100;
+    document.getElementById('volB').value = 100;
+    document.getElementById('acido-tipo').value = 'HNO3';
+    window._bilanciaRighe = null; window._ricalcoloReport = null;
+    resetStatoCalc(null);
+  });
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S19. NNLS (Lawson-Hanson): ottimalità e casi limite ═══');
+  const nn = await page.evaluate(() => {
+    // generatore pseudo-casuale deterministico (riproducibile)
+    let seed = 12345;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    const kkt = [];
+    for (let t = 0; t < 40; t++) {
+      const m = 3 + Math.floor(rnd() * 5), n = 2 + Math.floor(rnd() * 7);
+      const A = Array.from({ length: m }, () => Array.from({ length: n }, () => rnd() * 2 - 0.5));
+      const b = Array.from({ length: m }, () => rnd() * 4 - 1);
+      const x = nnls(A, b);
+      const r = b.map((bi, i) => bi - A[i].reduce((s, v, j) => s + v * x[j], 0));
+      const w = Array.from({ length: n }, (_, j) => A.reduce((s, row, i) => s + row[j] * r[i], 0));
+      // KKT: x ≥ 0; gradiente ≤ 0 dove x = 0; ≈ 0 dove x > 0
+      const ok = x.every(v => v >= 0) && x.every((v, j) => v > 1e-9 ? Math.abs(w[j]) < 1e-6 : w[j] < 1e-6);
+      kkt.push(ok);
+    }
+    // recupero esatto di dosi note (sistema determinato)
+    const A = [[0.118, 0.138, 0], [0.17, 0, 0], [0, 0.387, 0.287]];
+    const x0 = [945, 300, 200];
+    const b = A.map(r => r.reduce((s, v, i) => s + v * x0[i], 0));
+    const xr = nnls(A, b);
+    // un problema in cui la vecchia euristica sbagliava: la variabile più
+    // negativa nel LS libero è necessaria nella soluzione vincolata
+    const A2 = [[1, 0, 1], [0, 1, 1], [1, 1, 0]], b2 = [1, 1, 0.2];
+    const x2 = nnls(A2, b2);
+    const res2 = b2.map((bi, i) => bi - A2[i].reduce((s, v, j) => s + v * x2[j], 0)).reduce((s, v) => s + v * v, 0);
+    return { kktOk: kkt.filter(Boolean).length, kktTot: kkt.length, xr, x2, res2, vuoto: nnls([[1]], [-1]) };
+  });
+  check(`KKT soddisfatte in ${nn.kktOk}/${nn.kktTot} problemi casuali (ottimo vincolato vero)`, nn.kktOk === nn.kktTot);
+  check(`recupero esatto di dosi note (${nn.xr.map(v => v.toFixed(2)).join(', ')})`, close(nn.xr[0], 945, 0.05) && close(nn.xr[1], 300, 0.05) && close(nn.xr[2], 200, 0.05));
+  check(`soluzione ottima su problema "trappola" (residuo² ${nn.res2.toFixed(4)})`, nn.res2 < 0.02);
+  check('b negativo con colonna positiva → x = 0', nn.vuoto[0] === 0);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S20. Correzione acqua basata sul profilo (regressione) ═══');
+  await resetMotore();
+  const corr = await page.evaluate(() => {
+    const aqMedia = getAcqua();
+    const pom = PIANTE_BUILTIN.find(p => p.id === 'pomodoro');
+    const veg = pom.fasi[1].sali.map(s => ({ id: s.id, dose: s.g }));
+    const ric = profiloDaRighe(veg, null);
+    const c = correggiDosi(veg, aqMedia, { phFinale: 6.0 });
+    const fin = profiloDaRighe(c.righe, aqMedia, c.acido);
+    // acqua più ricca di Ca della ricetta: il nitrato di calcio sparisce,
+    // ma l'N che portava va recuperato da altre fonti
+    const dura = { ...aqMedia, ca: 180, mg: 45, hco3: 320, ph: 7.8 };
+    const cd = correggiDosi(veg, dura, { phFinale: 6.0 });
+    const finD = profiloDaRighe(cd.righe, dura, cd.acido);
+    // idempotenza e immutabilità
+    const copia = JSON.stringify(veg);
+    const c2 = correggiDosi(veg, aqMedia, { phFinale: 6.0 });
+    // senza acqua nessuna modifica
+    const nulla = correggiDosi(veg, null);
+    return {
+      ricN: ric.N, finN: fin.N, ricP: ric.P, finP: fin.P, ricK: ric.K, finK: fin.K, ricCa: ric.Ca, finCa: fin.Ca,
+      acidoN: c.acido ? c.acido.N : 0, fedelta: !!c.fedelta && c.fedelta.length === 6,
+      duraCaN: (cd.righe.find(r => r.id === 'CaN') || {}).dose, duraN: finD.N,
+      immutato: JSON.stringify(veg) === copia, idem: JSON.stringify(c.righe) === JSON.stringify(c2.righe),
+      nullaUguale: JSON.stringify(nulla.righe) === JSON.stringify(veg),
+    };
+  });
+  // Con Ca e Mg dell'acqua che "liberano" nitrato di calcio e di magnesio, l'N
+  // perso si recupera solo con KNO₃ (vincolato dal K) e NH₄ (≤ 10%): il limite
+  // fisico è ~−5%. La vecchia correzione arrivava a 125 (−39%).
+  check(`pomodoro veg + acqua media: N ${corr.finN.toFixed(0)} vs ricetta ${corr.ricN.toFixed(0)} (≥ 90%; prima 125)`, corr.finN >= 0.90 * corr.ricN && corr.finN <= 1.05 * corr.ricN);
+  check(`pomodoro veg + acqua media: P, K, Ca entro 5% (P ${corr.finP.toFixed(0)}/${corr.ricP.toFixed(0)}, K ${corr.finK.toFixed(0)}/${corr.ricK.toFixed(0)}, Ca ${corr.finCa.toFixed(0)}/${corr.ricCa.toFixed(0)})`,
+    [['finP', 'ricP'], ['finK', 'ricK'], ['finCa', 'ricCa']].every(([f, r]) => Math.abs(corr[f] - corr[r]) / corr[r] <= 0.05));
+  check(`l'N dell'acido nitrico è conteggiato (${corr.acidoN.toFixed(1)} mg/L)`, corr.acidoN > 10);
+  check('tabella di fedeltà prodotta (6 macro)', corr.fedelta);
+  check(`acqua con più Ca della ricetta: CaN → ${corr.duraCaN} g, N ancora ${corr.duraN.toFixed(0)} mg/L (≥ 80% di ${corr.ricN.toFixed(0)})`,
+    corr.duraCaN === 0 && corr.duraN >= 0.8 * corr.ricN);
+  check('input immutato, risultato deterministico, senza acqua nessuna modifica', corr.immutato && corr.idem && corr.nullaUguale);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S21. Ricalcolo con ingredienti disponibili (regressione) ═══');
+  await resetMotore();
+  const sost = await page.evaluate(() => {
+    const base = [{ id: 'CaN', dose: 900, nome: 'CaN' }, { id: 'KNO3', dose: 500, nome: 'KNO3' }, { id: 'MgSO4', dose: 500, nome: 'MgSO4' },
+      { id: 'KH2PO4', dose: 200, nome: 'KH2PO4' }, { id: 'MixCh', dose: 30, nome: 'MixCh' }];
+    const prova = (manca) => {
+      manca.forEach(id => scorta.delete(id));
+      const r = sostituisciNonDisponibili(base);
+      manca.forEach(id => scorta.add(id));
+      const prima = profiloDaRighe(base, null), dopo = profiloDaRighe(r.righe, null);
+      return { ids: r.righe.map(x => x.id), prima, dopo, non: r.nonCoperti.map(c => c.el), usaMancanti: r.righe.some(x => manca.includes(x.id)) };
+    };
+    const mg = prova(['MgSO4']), kp = prova(['KH2PO4']), mix = prova(['MixCh']), ca = prova(['CaN']);
+    // UI end-to-end: barra "ricalcola" e card di report
+    calcRighe = base.map(r => ({ ...r }));
+    scorta.delete('MgSO4'); renderCalcTabella();
+    ricalcolaConDisponibili();
+    const out = document.getElementById('calc-out').innerText;
+    scorta.add('MgSO4');
+    return { mg, kp, mix, ca, card: /Ricalcolo con gli ingredienti disponibili/i.test(out), tabSenzaMgSO4: !calcRighe.some(r => r.id === 'MgSO4') };
+  });
+  const rel = (o, el) => o.prima[el] > 0 ? Math.abs(o.dopo[el] - o.prima[el]) / o.prima[el] : 0;
+  check(`MgSO₄ mancante: niente MnSO₄ (Mn ${sost.mg.dopo.Mn.toFixed(2)} = ${sost.mg.prima.Mn.toFixed(2)} mg/L; prima 112)`, !sost.mg.ids.includes('MnSO4') && close(sost.mg.dopo.Mn, sost.mg.prima.Mn, 0.01));
+  check(`MgSO₄ mancante: Mg e S coperti entro 5% (Mg ${sost.mg.dopo.Mg.toFixed(0)}, S ${sost.mg.dopo.S.toFixed(0)})`, rel(sost.mg, 'Mg') <= 0.05 && rel(sost.mg, 'S') <= 0.05);
+  check(`KH₂PO₄ mancante: P coperto entro 10% (${sost.kp.dopo.P.toFixed(1)} vs ${sost.kp.prima.P.toFixed(1)}; prima 0)`, rel(sost.kp, 'P') <= 0.10);
+  check('nessun sostituto è a sua volta non disponibile', !sost.mg.usaMancanti && !sost.kp.usaMancanti && !sost.mix.usaMancanti && !sost.ca.usaMancanti);
+  check(`Mix Chelati mancante: Fe/Mn/Zn/B/Mo da sali singoli (Fe ${sost.mix.dopo.Fe.toFixed(2)}, B ${sost.mix.dopo.B.toFixed(2)})`,
+    ['Fe', 'Mn', 'Zn', 'B', 'Mo'].every(el => rel(sost.mix, el) <= 0.12));
+  check(`Mix Chelati mancante: Cu segnalato come non coperto (${sost.mix.non.join(',')})`, sost.mix.non.includes('Cu'));
+  check(`CaN mancante senza altre fonti di Ca: Ca segnalato (${sost.ca.non.join(',')}), CaCl₂ non introdotto`, sost.ca.non.includes('Ca') && !sost.ca.ids.includes('CaCl2'));
+  check('UI: card di report del ricalcolo e sale mancante rimosso dalla tabella', sost.card && sost.tabSenzaMgSO4);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S22. Modalità target: nessuna doppia correzione (regressione) ═══');
+  await resetMotore();
+  const tgt = await page.evaluate(() => {
+    presetAcqua('dura');
+    ricetteCustom.push({ nome: 'Target Test', emoji: '🎯', note: '', fasi: [{ nome: 'T', icon: '🎯', ec: [1, 2], ph: [5.8, 6.2], note: '', modo: 'target', sali: [],
+      targets: { N: 200, P: 50, K: 300, Ca: 180, Mg: 50, Fe: 2, Mn: 0.5, B: 0.3, Zn: 0.1, Cu: 0.05, Mo: 0.05 } }] });
+    const ri = ricetteCustom.length - 1;
+    caricaCustomInCalcola(ri, 0);
+    let chiamate = 0;
+    const orig = window.correggiDosi;
+    window.correggiDosi = function () { chiamate++; return orig.apply(this, arguments); };
+    const fed = () => /Fedeltà alla ricetta/i.test(document.getElementById('calc-out').innerText);
+    calcola(); const d1 = JSON.stringify(calcRighe), f1 = fed();
+    calcola(); const d2 = JSON.stringify(calcRighe), f2 = fed();
+    document.getElementById('ph-finale').value = 5.8;
+    document.getElementById('ph-finale').dispatchEvent(new Event('change'));
+    const d3 = JSON.stringify(calcRighe), f3 = fed();
+    const chiamateTarget = chiamate;
+    // modifica manuale di una dose: si esce dalla modalità target, ma le dosi
+    // restano "nette" e l'acqua non va sottratta di nuovo
+    calcRighe[0].dose = calcRighe[0].dose + 10; segnaModificaManuale();
+    calcola();
+    const dopoModifica = { target: !!statoCalc.target, nette: statoCalc.nette, chiamate };
+    window.correggiDosi = orig;
+    ricetteCustom.splice(ri, 1);
+    document.getElementById('ph-finale').value = 6.0;
+    return { idem: d1 === d2, f1, f2, f3, pHcambia: d3 !== d1, chiamateTarget, dopoModifica };
+  });
+  check('due calcoli consecutivi → stesse dosi (prima il secondo sottraeva di nuovo l\'acqua)', tgt.idem);
+  check('tabella di fedeltà presente anche al 2° calcolo e dopo il cambio di pH', tgt.f1 && tgt.f2 && tgt.f3);
+  check('cambiando il pH il solver si riesegue (acido e quindi N cambiano)', tgt.pHcambia);
+  check(`correggiDosi mai chiamata in modalità target (${tgt.chiamateTarget})`, tgt.chiamateTarget === 0);
+  check('dose modificata a mano → fine modalità target, dosi nette, nessuna correzione acqua',
+    !tgt.dopoModifica.target && tgt.dopoModifica.nette && tgt.dopoModifica.chiamate === 0);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S23. Solver target: S libero, scorta, acido, micro ═══');
+  await resetMotore();
+  const sv = await page.evaluate(() => {
+    const T = { N: 200, P: 50, K: 300, Ca: 180, Mg: 50 };
+    const conS = solverTarget({ ...T, S: 60 }, 100, 100, 100, null, 6.0);
+    const pS = profiloDaRighe(conS, null);
+    // scorta: senza KNO3 il solver non deve usarlo
+    scorta.delete('KNO3');
+    const senzaKNO3 = solverTarget(T, 100, 100, 100, null, 6.0);
+    scorta.add('KNO3');
+    // acido: con HNO3 il solver riduce i nitrati, con H3PO4 i fosfati
+    // alcalinità moderata: con H₃PO₄ l'acido porta ~1/3 del P del target
+    const aq = { ec: 0.4, ph: 7.6, temp: 20, ca: 0, mg: 0, k: 0, na: 0, so4: 0, cl: 0, hco3: 120, no3: 0, fe: 0 };
+    const conHNO3 = profiloDaRighe(solverTarget(T, 100, 100, 100, { ...aq, acido: 'HNO3' }, 6.0), null);
+    const conH3PO4 = profiloDaRighe(solverTarget(T, 100, 100, 100, { ...aq, acido: 'H3PO4' }, 6.0), null);
+    const finH3PO4 = profiloDaRighe(solverTarget(T, 100, 100, 100, { ...aq, acido: 'H3PO4' }, 6.0), { ...aq, acido: 'H3PO4' }, acidoPrescritto({ ...aq, acido: 'H3PO4' }, 6.0));
+    // micro coi target di default: nessuno oltre soglia di tossicità
+    const micro = profiloDaRighe(solverTarget({ ...T, Fe: 2, Mn: 0.5, B: 0.3, Zn: 0.1, Cu: 0.05, Mo: 0.05 }, 100, 100, 100, null, 6.0), null);
+    // senza MixCh in scorta: sali singoli
+    scorta.delete('MixCh');
+    const singoli = solverTarget({ ...T, Fe: 2, Mn: 0.5, B: 0.3, Zn: 0.1, Mo: 0.05 }, 100, 100, 100, null, 6.0);
+    scorta.add('MixCh');
+    // acqua molto dura + H₃PO₄: l'acido da solo eccede il P → avviso
+    const duraP = autoRisolvi([{ id: 'KNO3', dose: 300 }], 100, { ec: 0.7, ph: 7.8, temp: 20, ca: 0, mg: 0, k: 0, na: 0, so4: 0, cl: 0, hco3: 320, no3: 0, fe: 0, acido: 'H3PO4' }, 6.0);
+    return {
+      avvisoP: duraP.interventi.some(i => /apporta da solo/.test(i.msg)),
+      pS, usaKNO3: senzaKNO3.some(r => r.id === 'KNO3'), pSenza: profiloDaRighe(senzaKNO3, null),
+      salNHNO3: conHNO3.N, salNH3PO4: conH3PO4.N, salPHNO3: conHNO3.P, salPH3PO4: conH3PO4.P, finPH3PO4: finH3PO4.P,
+      micro, singoli: singoli.map(r => r.id),
+      cacl2: conS.some(r => r.id === 'CaCl2'),
+    };
+  });
+  // S è l'anione di bilanciamento (priorità più bassa): tolleranza 10%, gli altri 5%
+  ['N', 'P', 'K', 'Ca', 'Mg', 'S'].forEach(el => {
+    const t = { N: 200, P: 50, K: 300, Ca: 180, Mg: 50, S: 60 }[el], tol = el === 'S' ? 0.10 : 0.05;
+    check(`con S esplicito: ${el}=${t} → ${sv.pS[el].toFixed(1)} (entro ${tol * 100}%)`, Math.abs(sv.pS[el] - t) / t <= tol);
+  });
+  check('CaCl₂ mai scelto dal solver (cloruro)', !sv.cacl2);
+  check(`scorta rispettata: KNO₃ non disponibile → non usato (K ${sv.pSenza.K.toFixed(0)})`, !sv.usaKNO3);
+  check(`acido HNO₃: il solver mette meno N dai sali (${sv.salNHNO3.toFixed(0)} < ${sv.salNH3PO4.toFixed(0)} con H₃PO₄)`, sv.salNHNO3 < sv.salNH3PO4 - 10);
+  check(`acido H₃PO₄: meno P dai sali (${sv.salPH3PO4.toFixed(0)} < ${sv.salPHNO3.toFixed(0)}), P finale col P dell'acido ≈ 50 (${sv.finPH3PO4.toFixed(1)})`,
+    sv.salPH3PO4 < sv.salPHNO3 - 5 && Math.abs(sv.finPH3PO4 - 50) / 50 <= 0.05);
+  check('acqua molto dura + H₃PO₄: avviso P in eccesso dall\'acido (consiglia HNO₃)', sv.avvisoP);
+  check(`micro coi target di default sotto le soglie (Mn ${sv.micro.Mn.toFixed(2)}, B ${sv.micro.B.toFixed(2)}, Zn ${sv.micro.Zn.toFixed(2)}, Cu ${sv.micro.Cu.toFixed(3)})`,
+    sv.micro.Mn <= 2 && sv.micro.B <= 0.5 && sv.micro.Zn <= 0.5 && sv.micro.Cu <= 0.15);
+  check(`B mai oltre il 125% del target (${sv.micro.B.toFixed(3)} ≤ 0.375; prima 0.75 col Mix sul Cu)`, sv.micro.B <= 0.375 + 1e-6);
+  check(`senza Mix Chelati in scorta → sali singoli (${sv.singoli.filter(id => !['CaN', 'KNO3', 'MgNO3', 'MgSO4', 'KH2PO4', 'MAP', 'K2SO4', 'NH4NO3'].includes(id)).join(', ')})`,
+    !sv.singoli.includes('MixCh') && ['MnSO4', 'ZnSO4', 'H3BO3', 'NaMoO4'].every(id => sv.singoli.includes(id)));
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S24. Serbatoi: gravità dei conflitti, silicato, sali custom ═══');
+  await resetMotore();
+  const tk = await page.evaluate(() => {
+    const serb = (res, id) => (res.righe.find(r => r.id === id) || {}).serb;
+    const critStessoTank = (res) => {
+      const out = [];
+      ['A', 'B', 'C'].forEach(s => {
+        const rs = res.righe.filter(r => r.serb === s && r.dose > 0);
+        for (let i = 0; i < rs.length; i++) for (let j = i + 1; j < rs.length; j++) {
+          const c = coppiaIncompatibile(getSale(rs[i].id) || rs[i], getSale(rs[j].id) || rs[j]);
+          if (c.incompat && c.gravita === 'C') out.push(rs[i].id + '+' + rs[j].id);
+        }
+      });
+      return out;
+    };
+    const ric = [{ id: 'CaN', dose: 900 }, { id: 'KH2PO4', dose: 200 }, { id: 'FeEDTA', dose: 20 }, { id: 'K2SiO3', dose: 50 }];
+    usaSerbC = false;
+    const noC = autoRisolvi(ric, 100, null, 6.0);
+    usaSerbC = true;
+    const conC = autoRisolvi(ric, 100, null, 6.0);
+    usaSerbC = false;
+    // sale custom di calcio (sconosciuto alla matrice per ID): rilevato per gruppo e separato dai fosfati
+    catalogo.push({ id: 'testCaChel', nome: 'Calcio custom', cat: 'macro', el: { Ca: 10, N: 5 } });
+    const cust = autoRisolvi([{ id: 'testCaChel', dose: 300 }, { id: 'KH2PO4', dose: 200 }, { id: 'MAP', dose: 50 }], 100, null, 6.0);
+    catalogo.pop();
+    // molibdato: mai insieme al calcio
+    const mo = autoRisolvi([{ id: 'CaN', dose: 900 }, { id: 'KH2PO4', dose: 200 }, { id: 'ZnSO4', dose: 2 }, { id: 'MnSO4', dose: 5 }, { id: 'NaMoO4', dose: 0.12 }], 100, null, 6.0);
+    return {
+      noC: { ca: serb(noC, 'CaN'), p: serb(noC, 'KH2PO4'), needC: noC.needsSerbC.length },
+      conC: { si: serb(conC, 'K2SiO3'), soloSi: conC.righe.filter(r => r.serb === 'C').length, crit: critStessoTank(conC) },
+      cust: { ca: serb(cust, 'testCaChel'), p: serb(cust, 'KH2PO4'), crit: critStessoTank(cust) },
+      mo: { mo: serb(mo, 'NaMoO4'), ca: serb(mo, 'CaN'), crit: critStessoTank(mo) },
+    };
+  });
+  check(`silicato senza serb. C: Ca (${tk.noC.ca}) e fosfati (${tk.noC.p}) restano separati, serve C segnalato`, tk.noC.ca !== tk.noC.p && tk.noC.needC > 0);
+  check(`silicato con serb. C: da solo in C, nessun conflitto critico (${tk.conC.crit.join(',') || 'nessuno'})`, tk.conC.si === 'C' && tk.conC.soloSi === 1 && tk.conC.crit.length === 0);
+  check(`sale di calcio custom separato dai fosfati (Ca ${tk.cust.ca}, P ${tk.cust.p})`, tk.cust.ca !== tk.cust.p && tk.cust.crit.length === 0);
+  check(`molibdato mai col calcio (Mo ${tk.mo.mo}, Ca ${tk.mo.ca}) e nessun critico`, tk.mo.mo !== tk.mo.ca && tk.mo.crit.length === 0);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S25. Speciazione con coefficienti di attività ═══');
+  const spc = await page.evaluate(() => {
+    const prof = profiloDaRighe([{ id: 'CaN', dose: 900 }, { id: 'KH2PO4', dose: 200 }, { id: 'MgSO4', dose: 300 }], null);
+    const ph = 6.0;
+    const i = speciate(prof, ph);
+    const I = ionicStrength(i);
+    const g1 = davies(I, 1), g2 = davies(I, 2);
+    const atteso = Math.pow(10, ph - PKA2_PHOS) * g1 / g2;
+    const Pt = prof.P / 1000 / MM.P;
+    // concentrato ×100: la correzione γ₁/γ₂ pesa di più
+    const conc = {}; Object.keys(prof).forEach(k => { conc[k] = prof[k] * 100; });
+    const ic = speciate(conc, ph);
+    const Ic = ionicStrength(ic);
+    return {
+      rapporto: i.HPO4 / i.H2PO4, atteso, ideale: Math.pow(10, ph - PKA2_PHOS),
+      massaP: (i.H2PO4 + i.HPO4 + i.PO4) / Pt,
+      rapConc: ic.HPO4 / ic.H2PO4, attConc: Math.pow(10, ph - PKA2_PHOS) * davies(Ic, 1) / davies(Ic, 2),
+    };
+  });
+  check(`[HPO₄²⁻]/[H₂PO₄⁻] = 10^(pH−pKa₂)·γ₁/γ₂ (${spc.rapporto.toFixed(4)} vs ${spc.atteso.toFixed(4)})`, Math.abs(spc.rapporto - spc.atteso) / spc.atteso < 0.01);
+  check(`l'attività aumenta HPO₄²⁻ rispetto alla speciazione ideale (${spc.rapporto.toFixed(4)} > ${spc.ideale.toFixed(4)})`, spc.rapporto > spc.ideale * 1.2);
+  check(`bilancio di massa del P conservato (${(spc.massaP * 100).toFixed(3)}%)`, close(spc.massaP, 1, 1e-9));
+  check(`autoconsistente anche nel concentrato ×100 (${spc.rapConc.toFixed(4)} vs ${spc.attConc.toFixed(4)})`, Math.abs(spc.rapConc - spc.attConc) / spc.attConc < 0.02);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S26. Correzioni minori del motore ═══');
+  await resetMotore();
+  const mn = await page.evaluate(() => {
+    const out = {};
+    // costo per 1000 L indipendente dai volumi dei serbatoi
+    const costoUI = () => { const m = document.getElementById('calc-out').innerText.match(/Costo per 1000 L finali\s*€\s*([\d.,]+)/i); return m ? m[1] : null; };
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    document.getElementById('volA').value = 100; document.getElementById('volB').value = 100; calcola(); out.costoUguali = costoUI();
+    document.getElementById('volA').value = 300; calcola(); out.costoDiversi = costoUI();
+    document.getElementById('volA').value = 100;
+    // EC del concentrato: l'acqua non si moltiplica per la diluizione
+    const righe = [{ id: 'KNO3', dose: 500, serb: 'A' }, { id: 'CaN', dose: 500, serb: 'B' }];
+    const ecSali = (500 / 1000) * ecCoeffSale('KNO3') + (500 / 1000) * ecCoeffSale('CaN');
+    const v = verificaSicurezza(righe, 100, { ec: 0.7, ph: 7.0, temp: 20, ca: 0, mg: 0, k: 0, na: 0, so4: 0, cl: 0, hco3: 0, no3: 0, fe: 0 }, 6.0);
+    out.ecConc = parseFloat(v.audit.find(a => /EC nel concentrato/.test(a.check)).dettaglio);
+    out.ecConcAtteso = ecSali * 100 + 0.7;
+    // calcite: "GESTITO" solo se l'acido è davvero prescritto
+    const aqLieve = { ec: 0.3, ph: 8.3, temp: 20, ca: 150, mg: 0, k: 0, na: 0, so4: 0, cl: 0, hco3: 45, no3: 0, fe: 0 };
+    const vc = verificaSicurezza([{ id: 'CaN', dose: 900, serb: 'B' }], 100, aqLieve, 6.0);
+    out.calcite = (vc.audit.find(a => /CaCO₃/.test(a.check) && /acqua/.test(a.check)) || {}).esito;
+    // cap NH4 esatto sull'N totale
+    const cap = autoRisolvi([{ id: 'CaN', dose: 500 }, { id: 'NH4NO3', dose: 400 }, { id: 'KNO3', dose: 150 }], 100, null, 6.0);
+    out.nh4 = rapportoNH4(cap.righe, null, 6.0).ratio;
+    // il profilo finale include l'acido (N dell'HNO3, HCO3 residuo)
+    const aqH = { ec: 0.7, ph: 7.8, temp: 20, ca: 0, mg: 0, k: 0, na: 0, so4: 0, cl: 0, hco3: 320, no3: 0, fe: 0, acido: 'HNO3' };
+    const ac = acidoPrescritto(aqH, 6.0);
+    const pa = profiloDaRighe([], aqH, ac);
+    out.acidoN = pa.N; out.acidoNatteso = ac.meq * 14.007; out.hco3Res = pa.HCO3meq; out.hco3ResAtteso = ac.residuoMeq;
+    // micro >3× soglia = critico (es. sostituzione sbagliata MgSO4 → MnSO4)
+    const vm = verificaSicurezza([{ id: 'MnSO4', dose: 346, serb: 'A' }, { id: 'CaN', dose: 900, serb: 'B' }], 100, null, 6.0);
+    out.mnCritico = !vm.sicuro && vm.critici.some(c => /Micronutriente/.test(c.titolo));
+    // coefficienti EC del catalogo allineati a quelli usati dal motore
+    out.ecAllineati = SALI_DEFAULT.every(s => EC_COEFF_GLOBAL[s.id] == null || s.ecC === EC_COEFF_GLOBAL[s.id]);
+    return out;
+  });
+  check(`costo per 1000 L uguale con serbatoi da 100/100 e 300/100 L (${mn.costoUguali} = ${mn.costoDiversi})`, mn.costoUguali !== null && mn.costoUguali === mn.costoDiversi);
+  check(`EC concentrato = sali×diluizione + EC acqua (${mn.ecConc} ≈ ${mn.ecConcAtteso.toFixed(0)})`, Math.abs(mn.ecConc - mn.ecConcAtteso) <= 1);
+  check(`calcite con HCO₃⁻ 45 mg/L (nessuna dose di acido): esito "${mn.calcite}" (non GESTITO)`, mn.calcite === 'AVVISO');
+  check(`cap NH₄NO₃ esatto: NH₄ = ${(mn.nh4 * 100).toFixed(2)}% dell'N totale (≤ 10%, ≥ 9.5%)`, mn.nh4 <= 0.10 + 1e-6 && mn.nh4 >= 0.095);
+  check(`profilo finale include l'N dell'acido (${mn.acidoN.toFixed(1)} = ${mn.acidoNatteso.toFixed(1)} mg/L) e l'HCO₃⁻ residuo`, close(mn.acidoN, mn.acidoNatteso, 0.01) && close(mn.hco3Res, mn.hco3ResAtteso, 1e-9));
+  check('micronutriente oltre 3× la soglia → conflitto critico', mn.mnCritico);
+  check('coefficienti EC del catalogo allineati a EC_COEFF_GLOBAL', mn.ecAllineati);
+
+  // Selettore acido: persistito e usato dal motore (intervento e card)
+  await resetMotore();
+  const acSel = await page.evaluate(() => {
+    presetAcqua('media');
+    const sel = document.getElementById('acido-tipo');
+    sel.value = 'H3PO4'; sel.dispatchEvent(new Event('change'));
+    const salvato = localStorage.getItem('fc_acido');
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente(); calcola();
+    const outP = document.getElementById('calc-out').innerText;
+    setLang('en'); calcola();
+    const outEn = document.getElementById('calc-out').innerText;
+    setLang('it');
+    sel.value = 'HNO3'; sel.dispatchEvent(new Event('change'));
+    return { salvato, aqAcido: getAcqua().acido, interventoP: /mL\/L di H₃PO₄ 75%[\s\S]{0,400}mg\/L di P/.test(outP), enOk: /Doses rebalanced|Recipe fidelity/i.test(outEn) && !/NaN|undefined/.test(outEn) };
+  });
+  check(`acido scelto persistito (fc_acido = ${acSel.salvato}) e letto da getAcqua`, acSel.salvato === 'H3PO4' && acSel.aqAcido === 'HNO3');
+  check('con H₃PO₄ l\'intervento prescrive l\'acido fosforico e il P che apporta', acSel.interventoP);
+  check('nuove card (ribilanciamento, fedeltà) tradotte in inglese senza NaN', acSel.enOk);
+
+  // Ripristino dosi originali: torna alle dosi inserite e NON ri-bilancia
+  await resetMotore();
+  const rip = await page.evaluate(() => {
+    presetAcqua('osmosi');
+    // gesso sovrasaturo nella soluzione finale: non risolvibile col pH → bilanciamento
+    calcRighe = [{ id: 'CaN', nome: 'CaN', dose: 3000, prezzo: 0 }, { id: 'MgSO4', nome: 'MgSO4', dose: 3000, prezzo: 0 }, { id: 'K2SO4', nome: 'K2SO4', dose: 2000, prezzo: 0 }];
+    renderCalcTabella();
+    calcola();
+    const bilanciato = autoBalanceApplied || !!bilanciaReportData;
+    const snapshot = JSON.stringify(origDosiSnapshot && origDosiSnapshot.map(r => r.dose));
+    ripristinaDosiOriginali();
+    const dosi = calcRighe.map(r => r.dose);
+    return { bilanciato, snapshot, dosi, rebilanciato: autoBalanceApplied, salta: statoCalc.saltaBilanciamento };
+  });
+  check('caso sovrasaturo: l\'auto-bilanciamento interviene', rip.bilanciato);
+  check(`ripristina → dosi inserite (${rip.dosi.join(', ')}) e nessun nuovo auto-bilanciamento`,
+    JSON.stringify(rip.dosi) === '[3000,3000,2000]' && !rip.rebilanciato && rip.salta);
 
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
