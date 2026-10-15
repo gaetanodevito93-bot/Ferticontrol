@@ -1,0 +1,22 @@
+#!/bin/sh
+# FertiControl — hook pre-commit: esegue la suite di test quando il commit
+# tocca l'app o i test. Un fallimento blocca il commit.
+#
+# Attivazione (una volta per clone):   git config core.hooksPath tests/hooks
+# Salto eccezionale (sconsigliato):    git commit --no-verify
+
+if ! git diff --cached --name-only | grep -qE '^(index\.html|sw\.js|tests/)'; then
+  exit 0
+fi
+
+echo "▶ FertiControl: modifiche all'app/test → eseguo la suite…"
+LOG=$(mktemp)
+node tests/run-tests.js >"$LOG" 2>&1
+RC=$?
+grep -E '❌|RISULTATO FINALE|ERRORE SUITE' "$LOG"
+if [ $RC -ne 0 ]; then
+  echo "✖ Test falliti (exit $RC): commit bloccato. Log completo: $LOG"
+  exit 1
+fi
+rm -f "$LOG"
+echo "✔ Suite verde."

@@ -3066,6 +3066,11 @@ const vol = isN ? acidoPr.volHNO3 : acidoPr.volH3PO4;
 const nomeAc = isN ? 'HNO₃ 38%' : 'H₃PO₄ 75%';
 const apporto = isN ? `${acidoPr.N.toFixed(1)} mg/L di N` : `${acidoPr.P.toFixed(1)} mg/L di P`;
 const apportoEn = isN ? `${acidoPr.N.toFixed(1)} mg/L N` : `${acidoPr.P.toFixed(1)} mg/L P`;
+// Con acqua molto dura l'acido fosforico da solo può superare il fabbisogno
+// di P della coltura (es. HCO₃⁻ 320 → ~110 mg/L di P): meglio l'HNO₃.
+if(!isN && acidoPr.P > 40){
+interventi.push({tipo:'avviso', icona:'⚠️', msg:TT(`Con questa acqua l'<strong>H₃PO₄</strong> apporta da solo <strong>${acidoPr.P.toFixed(0)} mg/L di P</strong>, più di quanto serve alla maggior parte delle colture (30–60 mg/L): usa <strong>HNO₃</strong> (o un mix dei due) per i bicarbonati.`,`With this water <strong>H₃PO₄</strong> alone adds <strong>${acidoPr.P.toFixed(0)} mg/L of P</strong>, more than most crops need (30–60 mg/L): use <strong>HNO₃</strong> (or a mix of both) for the bicarbonates.`)});
+}
 interventi.push({
 tipo:'acido', icona:'🧪',
 msg:TT(`HCO₃⁻ ${aq.hco3} mg/L nell'acqua: aggiungere <strong>${vol.toFixed(2)} mL/L di ${nomeAc}</strong> nell'acqua di diluizione prima dei sali per portare il pH a <strong>${phT}</strong> (neutralizzati ${acidoPr.meq.toFixed(2)} meq/L, tampone residuo ${acidoPr.residuoMeq.toFixed(2)} meq/L). L'acido apporta ${apporto}, già conteggiati nelle dosi dei sali. ⚠️ <em>pH Rebound: la CO₂ prodotta degasa nelle 12–48h in serbatoi aperti, facendo risalire il pH (+0.3–0.6). Ricontrollare prima dell'uso.</em>`,`HCO₃⁻ ${aq.hco3} mg/L in the water: add <strong>${vol.toFixed(2)} mL/L of ${nomeAc}</strong> to the dilution water before the salts to bring pH to <strong>${phT}</strong> (${acidoPr.meq.toFixed(2)} meq/L neutralized, ${acidoPr.residuoMeq.toFixed(2)} meq/L residual buffer). The acid adds ${apportoEn}, already accounted for in the salt doses. ⚠️ <em>pH Rebound: CO₂ degassing over 12–48h in open tanks causes pH to drift up (+0.3–0.6). Recheck before use.</em>`)
