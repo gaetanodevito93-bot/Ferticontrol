@@ -31,6 +31,7 @@
 //   S25. Speciazione con coefficienti di attività
 //   S26. Correzioni minori (costo, EC concentrato, calcite, NH₄, acido, UI)
 //   S27. Pannello "Info tecniche": schede tecniche nascoste dopo il calcolo
+//   S28. 3 soluzioni madri su 3 serbatoi, pH di default 5.8, acido automatico
 //
 // Uso:  node tests/run-tests.js   (in automatico: hook tests/hooks/pre-commit e GitHub Actions)
 // Requisiti: Playwright + Chromium (vedi tests/README.md)
@@ -735,7 +736,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   // Stato pulito per le sezioni del motore: acqua media, 2 serbatoi, scorta piena.
   const resetMotore = () => page.evaluate(() => {
     setLang('it');
-    usaSerbC = false;
+    usaSerbC = false; serbCManuale = false;
     // catalogo di fabbrica: le sezioni precedenti (fuzzing dell'import) lasciano
     // sali custom ostili (es. "big" con Ca/N/K al 100%) che falserebbero il solver
     catalogo = SALI_DEFAULT.map(s => ({ ...s }));
@@ -1139,6 +1140,158 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   check('caso sovrasaturo: l\'auto-bilanciamento interviene', rip.bilanciato);
   check(`ripristina → dosi inserite (${rip.dosi.join(', ')}) e nessun nuovo auto-bilanciamento`,
     JSON.stringify(rip.dosi) === '[3000,3000,2000]' && !rip.rebilanciato && rip.salta);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S28. 3 soluzioni madri, pH di default 5.8, acido automatico ═══');
+  // Stato iniziale di una installazione nuova (localStorage vuoto): pH 5.8 e acido "Automatico"
+  {
+    const ctx = await browser.newContext();
+    const fresh = await ctx.newPage();
+    await fresh.goto(APP);
+    await fresh.waitForTimeout(400);
+    const def = await fresh.evaluate(() => {
+      const aq = { ec: 0.7, ph: 7.8, temp: 20, ca: 180, mg: 45, k: 8, na: 60, so4: 90, cl: 80, hco3: 320, no3: 15, fe: 0.2, acido: 'HNO3' };
+      return {
+        ph: document.getElementById('ph-finale').value, PH_DEFAULT,
+        acido: document.getElementById('acido-tipo').value, aqAcido: (presetAcqua('media'), getAcqua().acido),
+        // senza pH esplicito il motore usa 5.8, non più 6.0
+        motore: acidoPrescritto(aq).meq, motore58: acidoPrescritto(aq, 5.8).meq, motore60: acidoPrescritto(aq, 6.0).meq,
+      };
+    });
+    await ctx.close();
+    check(`pH soluzione finale di default = 5.8 (campo ${def.ph}, PH_DEFAULT ${def.PH_DEFAULT})`, def.ph === '5.8' && def.PH_DEFAULT === 5.8);
+    check(`il motore senza pH esplicito usa 5.8 (${def.motore.toFixed(3)} meq/L = pH 5.8, ≠ pH 6.0 ${def.motore60.toFixed(3)})`,
+      close(def.motore, def.motore58, 1e-12) && def.motore > def.motore60);
+    check(`selettore acido di default su "Automatico" (${def.acido}, getAcqua → ${def.aqAcido})`, def.acido === 'auto' && def.aqAcido === 'auto');
+  }
+
+  // Quando servono 3 soluzioni madri le dosi vanno davvero su 3 serbatoi.
+  // Il silicato è incompatibile sia col Ca (B) sia coi fosfati (A): con 2
+  // serbatoi non c'è posto sicuro, quindi il calcolo deve attivare il C da solo.
+  await resetMotore();
+  const tre = await page.evaluate(() => {
+    // acqua "vuota" (getAcqua → null): nessuna correzione, le dosi nette sono quelle inserite
+    ['ec', 'ph', 'ca', 'mg', 'k', 'na', 'so4', 'cl', 'hco3', 'no3', 'fe'].forEach(k => { document.getElementById('aq-' + k).value = 0; });
+    document.getElementById('volA').value = 100;
+    document.getElementById('volB').value = 80;
+    const DOSI = { CaN: 900, KNO3: 500, KH2PO4: 200, MgSO4: 400, K2SiO3: 100, FeEDTA: 30 };
+    calcRighe = Object.entries(DOSI).map(([id, dose]) => ({ id, nome: getSale(id).nome, dose, prezzo: 0 }));
+    renderCalcTabella();
+    const leggi = () => [...document.querySelectorAll('#calc-out .serb-card')].map(c => ({
+      titolo: c.querySelector('.serb-title').textContent.replace(/\s+/g, ' ').trim(),
+      sali: [...c.querySelectorAll('.sale-row:not(.tot-row)')].map(r => ({
+        nome: r.querySelector('.sale-nome').textContent.trim(),
+        dose: r.querySelector('.sale-nome + div > span').textContent.trim(),
+      })),
+    }));
+    const testo = () => document.getElementById('calc-out').innerText;
+    const idDaNome = nome => Object.keys(DOSI).find(id => getSale(id).nome === nome);
+    calcola();
+    const primo = { serb: leggi(), usaSerbC, manuale: serbCManuale, auto: /attivato automaticamente/i.test(testo()), volC: !!document.getElementById('volC') };
+    // il volume del serbatoio C si imposta dal riquadro e viene usato nelle dosi
+    const inVolC = document.getElementById('volC'); if (inVolC) inVolC.value = 50;
+    calcola();
+    const serb = leggi();
+    const vol = { A: 100, B: 80, C: 50 }, dil = 100;
+    // ogni sale: in UN solo serbatoio, con grammi = dose × volume × diluizione / 1000
+    const dosiOk = Object.entries(DOSI).map(([id, dose]) => {
+      const dove = serb.filter(s => s.sali.some(x => idDaNome(x.nome) === id));
+      const tank = dove.length === 1 ? dove[0].titolo.match(/Serb\. ([ABC])/)[1] : null;
+      const letto = tank ? dove[0].sali.find(x => idDaNome(x.nome) === id).dose : null;
+      const atteso = tank ? fmtDose(getSale(id), dose * vol[tank] * dil / 1000) : null;
+      return { id, tank, letto, atteso, ok: dove.length === 1 && letto === atteso };
+    });
+    const inTank = t => (serb.find(s => s.titolo.includes('Serb. ' + t)) || { sali: [] }).sali.map(x => idDaNome(x.nome));
+    const out = { primo, titoli: serb.map(s => s.titolo), dosiOk, A: inTank('A'), B: inTank('B'), C: inTank('C'),
+      sicura: !/SOLUZIONE NON SICURA/i.test(testo()) };
+    // L'utente può tornare a 2 serbatoi: il conflitto resta ed è segnalato
+    const spunta = v => { const c = document.getElementById('chk-serbC'); if (c) { c.checked = v; c.dispatchEvent(new Event('change')); } else toggleSerbC(v); };
+    spunta(false);
+    out.due = { n: leggi().length, manuale: serbCManuale, nonSicura: /SOLUZIONE NON SICURA/i.test(testo()) && /Silicato/i.test(testo()),
+      casella: !!document.getElementById('chk-serbC') && !document.getElementById('chk-serbC').checked };
+    // …e riattivarlo a mano
+    spunta(true);
+    out.riattivato = { n: leggi().length, C: (leggi().find(s => s.titolo.includes('Serb. C')) || { sali: [] }).sali.map(x => idDaNome(x.nome)) };
+    // Ricetta che sta in 2 serbatoi, in automatico: niente Serbatoio C
+    serbCManuale = false;
+    calcRighe = [{ id: 'CaN', dose: 900 }, { id: 'KNO3', dose: 500 }, { id: 'KH2PO4', dose: 200 }, { id: 'MgSO4', dose: 400 }]
+      .map(r => ({ ...r, nome: getSale(r.id).nome, prezzo: 0 }));
+    renderCalcTabella(); calcola();
+    out.dueBastano = { n: leggi().length, usaSerbC, box: !!document.getElementById('serbC-box') };
+    return out;
+  });
+  check(`servono 3 soluzioni madri → Serbatoio C attivato da solo (${tre.primo.serb.length} serbatoi, riquadro "attivato automaticamente", volume C impostabile)`,
+    tre.primo.serb.length === 3 && tre.primo.usaSerbC && !tre.primo.manuale && tre.primo.auto && tre.primo.volC);
+  check(`3 schede serbatoio: ${tre.titoli.join(' · ')}`, tre.titoli.length === 3 && /Serb\. A — 100 L/.test(tre.titoli[0]) && /Serb\. B — 80 L/.test(tre.titoli[1]) && /Serb\. C — 50 L/.test(tre.titoli[2]));
+  check(`silicato da solo nel C (C: ${tre.C.join(', ')}), calcio nel B (${tre.B.join(', ')}), fosfati nel A (${tre.A.join(', ')})`,
+    JSON.stringify(tre.C) === '["K2SiO3"]' && tre.B.includes('CaN') && !tre.B.includes('KH2PO4') && tre.A.includes('KH2PO4') && !tre.A.includes('CaN'));
+  tre.dosiOk.forEach(d => check(`${d.id}: un solo serbatoio (${d.tank}), dose ${d.letto} = dose × volume × diluizione (${d.atteso})`, d.ok));
+  check('con 3 serbatoi la soluzione è sicura', tre.sicura);
+  check(`l'utente può togliere il C: 2 serbatoi (${tre.due.n}), scelta manuale, conflitto silicato+Ca segnalato, casella per riattivarlo`,
+    tre.due.n === 2 && tre.due.manuale && tre.due.nonSicura && tre.due.casella);
+  check(`…e riattivarlo: ${tre.riattivato.n} serbatoi, C = ${tre.riattivato.C.join(', ')}`, tre.riattivato.n === 3 && JSON.stringify(tre.riattivato.C) === '["K2SiO3"]');
+  check(`ricetta che sta in 2 serbatoi: niente C in automatico (${tre.dueBastano.n} serbatoi)`, tre.dueBastano.n === 2 && !tre.dueBastano.usaSerbC && !tre.dueBastano.box);
+
+  // Acido automatico: sceglie quello che riproduce meglio la ricetta, l'utente può forzarlo
+  await resetMotore();
+  const acAuto = await page.evaluate(() => {
+    const sel = document.getElementById('acido-tipo');
+    const setAcido = v => { sel.value = v; sel.dispatchEvent(new Event('change')); };
+    const testo = () => document.getElementById('calc-out').innerText;
+    const info = () => document.getElementById('acido-auto-info').innerText;
+    const prescritto = () => (testo().match(/mL\/L di (HNO₃|H₃PO₄)/) || [])[1] || null;
+    presetAcqua('media');
+    document.getElementById('ph-finale').value = 5.8;
+    const aq = getAcqua();
+    // ricetta povera di N e ricca di P: l'N dell'HNO₃ supererebbe il fabbisogno → H₃PO₄
+    const BASSO_N = [{ id: 'CaN', dose: 200 }, { id: 'KH2PO4', dose: 300 }, { id: 'MgSO4', dose: 300 }, { id: 'K2SO4', dose: 200 }];
+    const pom = PIANTE_BUILTIN.find(p => p.id === 'pomodoro').fasi[1].sali.map(s => ({ id: s.id, dose: s.g }));
+    // riferimento indipendente: scostamento dalla ricetta calcolato con ciascun acido forzato
+    const scost = (righe, tipo) => {
+      const aqT = { ...aq, acido: tipo }, ac = acidoPrescritto(aqT, 5.8);
+      const fin = profiloDaRighe(correggiDosi(righe, aqT, { phFinale: 5.8 }).righe, aqT, ac);
+      const ric = profiloDaRighe(righe, null);
+      return ['N', 'P', 'K', 'Mg'].reduce((s, el) => s + Math.abs(fin[el] - ric[el]) / ric[el], 0);
+    };
+    const out = {
+      motoreBasso: scegliAcido({ ...aq, acido: 'auto' }, 5.8, { righe: BASSO_N }),
+      motorePom: scegliAcido({ ...aq, acido: 'auto' }, 5.8, { righe: pom }),
+      motoreTarget: scegliAcido({ ...aq, acido: 'auto' }, 5.8, { targets: profiloDaRighe(BASSO_N, null) }),
+      motoreOsmosi: scegliAcido({ ...aq, hco3: 5, acido: 'auto' }, 5.8, { righe: BASSO_N }),
+      rifBasso: { HNO3: scost(BASSO_N, 'HNO3'), H3PO4: scost(BASSO_N, 'H3PO4') },
+      rifPom: { HNO3: scost(pom, 'HNO3'), H3PO4: scost(pom, 'H3PO4') },
+    };
+    // end-to-end in Calcola
+    setAcido('auto');
+    calcRighe = BASSO_N.map(r => ({ ...r, nome: getSale(r.id).nome, prezzo: 0 })); renderCalcTabella(); calcola();
+    out.uiBasso = { prescritto: prescritto(), msg: /Acido scelto automaticamente:\s*H₃PO₄/.test(testo()), info: info() };
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente(); calcola();
+    out.uiPom = { prescritto: prescritto(), msg: /Acido scelto automaticamente:\s*HNO₃/.test(testo()), info: info() };
+    // l'utente forza l'altro acido: il motore lo rispetta, niente scelta automatica
+    setAcido('H3PO4');
+    out.forzato = { prescritto: prescritto(), msg: /Acido scelto automaticamente/.test(testo()), info: info(), salvato: localStorage.getItem('fc_acido') };
+    setAcido('auto');
+    out.tornaAuto = { prescritto: prescritto(), salvato: localStorage.getItem('fc_acido') };
+    // acqua senza bicarbonati: nessun acido, anche in automatico
+    presetAcqua('osmosi'); calcola();
+    out.osmosi = { prescritto: prescritto(), info: info() };
+    setAcido('HNO3');
+    return out;
+  });
+  check(`ricetta povera di N: sceglie H₃PO₄ (punteggi HNO₃ ${acAuto.motoreBasso.punteggi.HNO3.toFixed(2)} / H₃PO₄ ${acAuto.motoreBasso.punteggi.H3PO4.toFixed(2)})`,
+    acAuto.motoreBasso.tipo === 'H3PO4' && acAuto.rifBasso.H3PO4 < acAuto.rifBasso.HNO3);
+  check(`pomodoro: sceglie HNO₃ (punteggi HNO₃ ${acAuto.motorePom.punteggi.HNO3.toFixed(2)} / H₃PO₄ ${acAuto.motorePom.punteggi.H3PO4.toFixed(2)})`,
+    acAuto.motorePom.tipo === 'HNO3' && acAuto.rifPom.HNO3 < acAuto.rifPom.H3PO4);
+  check('fase a target: stessa scelta della ricetta equivalente (H₃PO₄)', acAuto.motoreTarget && acAuto.motoreTarget.tipo === 'H3PO4');
+  check('acqua senza bicarbonati: nessun acido da scegliere', acAuto.motoreOsmosi === null);
+  check(`Calcola in automatico, ricetta povera di N → prescrive ${acAuto.uiBasso.prescritto} e lo spiega ("${acAuto.uiBasso.info}")`,
+    acAuto.uiBasso.prescritto === 'H₃PO₄' && acAuto.uiBasso.msg && /H₃PO₄/.test(acAuto.uiBasso.info));
+  check(`Calcola in automatico, pomodoro → prescrive ${acAuto.uiPom.prescritto} ("${acAuto.uiPom.info}")`,
+    acAuto.uiPom.prescritto === 'HNO₃' && acAuto.uiPom.msg && /HNO₃/.test(acAuto.uiPom.info));
+  check(`l'utente può forzare l'acido: H₃PO₄ scelto a mano → prescritto ${acAuto.forzato.prescritto}, nessuna scelta automatica, salvato (${acAuto.forzato.salvato})`,
+    acAuto.forzato.prescritto === 'H₃PO₄' && !acAuto.forzato.msg && acAuto.forzato.info === '' && acAuto.forzato.salvato === 'H3PO4');
+  check(`tornando su "Automatico" → ${acAuto.tornaAuto.prescritto}, salvato (${acAuto.tornaAuto.salvato})`, acAuto.tornaAuto.prescritto === 'HNO₃' && acAuto.tornaAuto.salvato === 'auto');
+  check(`acqua osmotica in automatico: nessun acido prescritto ("${acAuto.osmosi.info}")`, acAuto.osmosi.prescritto === null && /Nessun acido/.test(acAuto.osmosi.info));
 
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);

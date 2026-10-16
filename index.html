@@ -582,13 +582,15 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},500);
 <span>⚠️</span><span id="diluizione-warning-txt"></span>
 </div>
 <div class="field" style="margin-top:14px"><label><span data-i18n="calcola.phFinale">pH soluzione finale</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.ph.tip">pH a cui la soluzione finale viene mantenuta in coltura (correzione con acido/base). Determina il rischio di precipitazione del fosfato di calcio: a pH ≤ 6 il fosfato resta in soluzione, sopra 6.3 tende a precipitare. Il motore usa questo valore per la verifica anti-precipitazione e può suggerirti il pH ottimale.</span></span></label>
-<div class="urow"><span class="utag">pH</span><input type="number" id="ph-finale" value="6.0" min="4.5" max="7.5" step="0.1" onchange="if(document.getElementById('calc-out').innerHTML.trim())calcola()"></div>
+<div class="urow"><span class="utag">pH</span><input type="number" id="ph-finale" value="5.8" min="4.5" max="7.5" step="0.1" onchange="if(document.getElementById('calc-out').innerHTML.trim())calcola()"></div>
 </div>
-<div class="field" style="margin-top:10px"><label><span data-i18n="calcola.acido">Acido per i bicarbonati</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.acido.tip">Acido usato per neutralizzare i bicarbonati dell'acqua (HCO₃⁻ &gt; 50 mg/L). Il motore conta l'azoto (HNO₃) o il fosforo (H₃PO₄) che l'acido apporta e riduce di conseguenza i sali.</span></span></label>
+<div class="field" style="margin-top:10px"><label><span data-i18n="calcola.acido">Acido per i bicarbonati</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.acido.tip">Acido usato per neutralizzare i bicarbonati dell'acqua (HCO₃⁻ &gt; 50 mg/L). Il motore conta l'azoto (HNO₃) o il fosforo (H₃PO₄) che l'acido apporta e riduce di conseguenza i sali. Con «Automatico» sceglie da solo l'acido che riproduce meglio la ricetta; puoi sempre forzarne uno.</span></span></label>
 <select id="acido-tipo" onchange="salvaAcidoTipo();if(document.getElementById('calc-out').innerHTML.trim())calcola()">
-<option value="HNO3">HNO₃ 38% — apporta N</option>
-<option value="H3PO4">H₃PO₄ 75% — apporta P</option>
+<option value="auto" data-i18n="calcola.acido.auto">Automatico — il più adatto alla ricetta</option>
+<option value="HNO3" data-i18n="calcola.acido.hno3">HNO₃ 38% — apporta N</option>
+<option value="H3PO4" data-i18n="calcola.acido.h3po4">H₃PO₄ 75% — apporta P</option>
 </select>
+<div id="acido-auto-info" style="font-size:.7rem;color:var(--ts);margin-top:4px"></div>
 </div>
 <div style="background:var(--cs);border-radius:4px;padding:9px 11px;font-size:.75rem;color:var(--ts)">
 <strong data-i18n="calcola.ricettaCaricata">Ricetta caricata:</strong> <span id="lbl-ricetta-caricata" style="color:var(--vm)" data-i18n="calcola.nessuna">Nessuna — inserisci manualmente o carica da Ricette</span>
@@ -835,7 +837,10 @@ it: {
 'calcola.phFinale': 'pH soluzione finale',
 'calcola.ph.tip': 'pH a cui la soluzione finale viene mantenuta in coltura. Determina il rischio di precipitazione del fosfato di calcio.',
 'calcola.acido': 'Acido per i bicarbonati',
-'calcola.acido.tip': "Acido usato per neutralizzare i bicarbonati dell'acqua (HCO₃⁻ > 50 mg/L). Il motore conta l'azoto (HNO₃) o il fosforo (H₃PO₄) che l'acido apporta e riduce di conseguenza i sali.",
+'calcola.acido.tip': "Acido usato per neutralizzare i bicarbonati dell'acqua (HCO₃⁻ > 50 mg/L). Il motore conta l'azoto (HNO₃) o il fosforo (H₃PO₄) che l'acido apporta e riduce di conseguenza i sali. Con «Automatico» sceglie da solo l'acido che riproduce meglio la ricetta; puoi sempre forzarne uno.",
+'calcola.acido.auto': 'Automatico — il più adatto alla ricetta',
+'calcola.acido.hno3': 'HNO₃ 38% — apporta N',
+'calcola.acido.h3po4': 'H₃PO₄ 75% — apporta P',
 'calcola.ricettaCaricata': 'Ricetta caricata:',
 'calcola.nessuna': 'Nessuna — inserisci manualmente o carica da Ricette',
 'calcola.sali': '🧂 Sali da Preparare',
@@ -921,6 +926,10 @@ it: {
 'js.serbCtitle': 'Serbatoio C consigliato',
 'js.serbCdesc': 'Con questa ricetta e diluizione non è possibile risolvere completamente tutte le incompatibilità con solo 2 serbatoi.',
 'js.abilitaSerbC': 'Abilita Serbatoio C — il sistema ridistribuirà automaticamente i sali',
+'js.serbCautoTitle': 'Serbatoio C attivato automaticamente — servono 3 soluzioni madri',
+'js.serbCautoDesc': 'Con solo 2 serbatoi restavano incompatibilità non separabili, quindi le dosi sono state distribuite su Serb. A, Serb. B e Serb. C:',
+'js.serbCattivo': 'Serbatoio C attivo',
+'js.usaSerbC': 'Usa il Serbatoio C (togli la spunta per tornare a 2 serbatoi)',
 'js.solFin': '💧 Soluzione Finale — Apporti Totali',
 'js.procedura': '📋 Procedura',
 'js.audit': '🔍 Audit — Controlli di Sicurezza Eseguiti',
@@ -1026,7 +1035,10 @@ en: {
 'calcola.phFinale': 'Final solution pH',
 'calcola.ph.tip': 'pH at which the final solution is maintained in the system. Determines calcium phosphate precipitation risk.',
 'calcola.acido': 'Acid for bicarbonates',
-'calcola.acido.tip': 'Acid used to neutralize the water bicarbonates (HCO₃⁻ > 50 mg/L). The engine counts the nitrogen (HNO₃) or phosphorus (H₃PO₄) the acid supplies and reduces the salts accordingly.',
+'calcola.acido.tip': 'Acid used to neutralize the water bicarbonates (HCO₃⁻ > 50 mg/L). The engine counts the nitrogen (HNO₃) or phosphorus (H₃PO₄) the acid supplies and reduces the salts accordingly. With "Automatic" it picks the acid that best reproduces the recipe; you can always force one.',
+'calcola.acido.auto': 'Automatic — best fit for the recipe',
+'calcola.acido.hno3': 'HNO₃ 38% — adds N',
+'calcola.acido.h3po4': 'H₃PO₄ 75% — adds P',
 'calcola.ricettaCaricata': 'Loaded recipe:',
 'calcola.nessuna': 'None — enter manually or load from Recipes',
 'calcola.sali': '🧂 Salts to Prepare',
@@ -1112,6 +1124,10 @@ en: {
 'js.serbCtitle': 'Tank C recommended',
 'js.serbCdesc': 'With this recipe and dilution, it is not possible to fully resolve all incompatibilities with only 2 tanks.',
 'js.abilitaSerbC': 'Enable Tank C — the system will automatically redistribute the salts',
+'js.serbCautoTitle': 'Tank C enabled automatically — 3 stock solutions are needed',
+'js.serbCautoDesc': 'With only 2 tanks some incompatibilities could not be separated, so the doses were split across Tank A, Tank B and Tank C:',
+'js.serbCattivo': 'Tank C active',
+'js.usaSerbC': 'Use Tank C (untick to go back to 2 tanks)',
 'js.solFin': '💧 Final Solution — Total Inputs',
 'js.procedura': '📋 Procedure',
 'js.audit': '🔍 Audit — Safety Checks Performed',
@@ -1358,13 +1374,16 @@ volH3PO4:acidMeq/1000.0*prodL/molPerL.phosphoric*1000.0,
 pMgL_H3PO4:acidMeq * MM.P
 };
 }
+// pH di default della soluzione finale (campo "pH soluzione finale" in Calcola).
+const PH_DEFAULT = 5.8;
 // Acido effettivamente prescritto per i bicarbonati (HCO₃⁻ > 50 mg/L), col tipo
-// scelto in Calcola (aq.acido: 'HNO3' default, oppure 'H3PO4'). È l'unica fonte
-// di verità usata da solver, correzione acqua, profilo finale e verifica.
+// scelto in Calcola (aq.acido: 'HNO3' o 'H3PO4'; con "Automatico" il tipo è
+// già stato risolto da scegliAcido prima del calcolo). È l'unica fonte di
+// verità usata da solver, correzione acqua, profilo finale e verifica.
 const ACIDO_SOGLIA_HCO3 = 50;
 function acidoPrescritto(aq, phTarget){
 if(!aq || !(aq.hco3 > ACIDO_SOGLIA_HCO3)) return null;
-const av = calcAcidVolume(aq, 1, phTarget || 6.0);
+const av = calcAcidVolume(aq, 1, phTarget || PH_DEFAULT);
 if(!(av.meq > 0.01)) return null;
 const tipo = aq.acido === 'H3PO4' ? 'H3PO4' : 'HNO3';
 return { tipo, meq:av.meq, residuoMeq:av.residuo,
@@ -1380,6 +1399,55 @@ c.P = acido ? acido.P : 0;
 c.K = aq.k||0; c.Ca = aq.ca||0; c.Mg = aq.mg||0;
 c.S = (aq.so4||0)*(MM.S/MW_SO4); c.Fe = aq.fe||0;
 return c;
+}
+// Scelta automatica dell'acido (selettore su "Automatico"): la ricetta viene
+// calcolata con HNO₃ e con H₃PO₄ e si tiene l'acido che la riproduce meglio,
+// cioè col minore scostamento relativo totale su N, P, K, Ca, Mg (e S a peso
+// dimezzato: è spesso l'anione di bilanciamento). Gli elementi che l'acqua da
+// sola già supera non contano: nessun acido li può correggere. A parità (entro
+// un punto percentuale) vince l'HNO₃, lo standard. ctx = {righe} (dosi lorde
+// della ricetta) oppure {targets} (fase a target, risolta dal solver).
+const ACIDO_PESI = {N:1, P:1, K:1, Ca:1, Mg:1, S:0.5};
+function scegliAcido(aq, phFinale, ctx){
+if(!aq || !ctx) return null;
+const phT = phFinale || PH_DEFAULT;
+if(!acidoPrescritto({...aq, acido:'HNO3'}, phT)) return null;
+const soloAcqua = contributoAcqua(aq, null);
+const punteggi = {};
+['HNO3','H3PO4'].forEach(tipo=>{
+const aqT = {...aq, acido:tipo};
+const acido = acidoPrescritto(aqT, phT);
+const rif = ctx.targets ? ctx.targets : profiloDaRighe(ctx.righe || [], null);
+const righeT = ctx.targets ? solverTarget(ctx.targets, 0, 0, 0, aqT, phT) : correggiDosi(ctx.righe || [], aqT, {phFinale:phT}).righe;
+const fin = profiloDaRighe(righeT, aqT, acido);
+let s = 0;
+for(const el in ACIDO_PESI){
+const tg = +rif[el] || 0;
+if(tg <= 0 || (soloAcqua[el] || 0) >= tg) continue;
+s += ACIDO_PESI[el] * Math.abs((fin[el] || 0) - tg) / tg;
+}
+punteggi[tipo] = s;
+});
+return { tipo: punteggi.H3PO4 < punteggi.HNO3 - 0.01 ? 'H3PO4' : 'HNO3', punteggi };
+}
+// Con il selettore su "Automatico" fissa aq.acido sull'acido scelto. Senza ctx
+// (dosi già nette, es. dopo "Bilancia") riusa l'ultima scelta: quelle dosi
+// sono state calcolate con quell'acido.
+let ultimoAcidoAuto = null;
+function risolviAcidoAuto(aq, phFinale, ctx){
+if(!aq || aq.acido !== 'auto') return null;
+const scelta = ctx ? scegliAcido(aq, phFinale, ctx) : ultimoAcidoAuto;
+if(ctx) ultimoAcidoAuto = scelta;
+aq.acido = scelta ? scelta.tipo : 'HNO3';
+return scelta;
+}
+// Nota sotto il selettore: con "Automatico" mostra l'acido effettivamente usato.
+function aggiornaInfoAcido(auto, acido){
+const el = document.getElementById('acido-auto-info'); if(!el) return;
+if(!auto){ el.textContent = ''; return; }
+el.textContent = acido
+? TT(`Scelto automaticamente: ${acido.tipo==='HNO3'?'HNO₃ 38%':'H₃PO₄ 75%'}`,`Automatically chosen: ${acido.tipo==='HNO3'?'HNO₃ 38%':'H₃PO₄ 75%'}`)
+: TT('Nessun acido necessario con questa acqua a questo pH.','No acid needed with this water at this pH.');
 }
 const SERB_SI_PH = 6.0, SERB_SI_TC = 20;
 function tcAcqua(aq){ return (aq && isFinite(aq.temp) && aq.temp>=1 && aq.temp<=45) ? aq.temp : SERB_SI_TC; }
@@ -1872,7 +1940,7 @@ try{ localStorage.setItem('fc_acido', document.getElementById('acido-tipo').valu
 function caricaAcidoTipo(){
 const sel = document.getElementById('acido-tipo'); if(!sel) return;
 let v = null; try{ v = localStorage.getItem('fc_acido'); }catch(e){}
-sel.value = v === 'H3PO4' ? 'H3PO4' : 'HNO3';
+sel.value = (v === 'H3PO4' || v === 'HNO3') ? v : 'auto';
 }
 function initAcquaPersist(){
 caricaAcidoTipo();
@@ -2698,7 +2766,7 @@ _nota:TT(`Target ${sc.el}: mancano ${sc.deficit.toFixed(3)} mg/L, nessun sale in
 // della soluzione finale, del tipo scelto) vengono sottratti. Usa solo sali in
 // scorta; CaCl₂ escluso (cloruro fitotossico). S senza target = libero.
 function solverTarget(targets, volA, volB, dil, aq, phFinale){
-const acido = acidoPrescritto(aq, phFinale || 6.0);
+const acido = acidoPrescritto(aq, phFinale || PH_DEFAULT);
 const base = contributoAcqua(aq, acido);
 const pool = catalogo.filter(s => isMacroRegolabile(s) && s.id !== 'CaCl2' && isDisponibile(s.id));
 const tMacro = {};
@@ -2800,7 +2868,8 @@ const fe   = parseFloat(document.getElementById('aq-fe')?.value)  ||0;
 let temp = parseFloat(document.getElementById('aq-temp')?.value);
 if(!isFinite(temp) || temp<1 || temp>45) temp = 20;
 if(!ec && !ca && !mg && !k && !na && !so4 && !cl && !hco3 && !no3 && !fe) return null;
-const acido = document.getElementById('acido-tipo')?.value === 'H3PO4' ? 'H3PO4' : 'HNO3';
+const selAcido = document.getElementById('acido-tipo')?.value;
+const acido = (selAcido === 'H3PO4' || selAcido === 'HNO3') ? selAcido : 'auto';
 return {ec, ph, temp, ca, mg, k, na, so4, cl, hco3, no3, fe, acido};
 }
 function presetAcqua(tipo){
@@ -2845,9 +2914,13 @@ function fmtEuro(v, decimali=2){
 if(!v||v<=0) return '';
 return '€\u202f' + v.toLocaleString('it-IT', {minimumFractionDigits:decimali, maximumFractionDigits:decimali});
 }
+// Serbatoio C: deciso dal calcolo (attivo solo quando servono 3 soluzioni
+// madri) finché l'utente non lo attiva/disattiva a mano dalla sua casella.
 let usaSerbC = false;
+let serbCManuale = false;
 function toggleSerbC(checked){
 usaSerbC = checked;
+serbCManuale = true;
 calcola();
 }
 function calcolaIoniDaSali(righe){
@@ -3031,7 +3104,7 @@ return {...r, serb};
 // Frazione ammoniacale sull'N TOTALE della soluzione finale (sali + nitrato
 // dell'acqua + N dell'acido): è quella che conta per la radice.
 function rapportoNH4(righe, aq, ph){
-const p = profiloDaRighe(righe, aq, acidoPrescritto(aq, ph||6.0));
+const p = profiloDaRighe(righe, aq, acidoPrescritto(aq, ph||PH_DEFAULT));
 return { nh4:p.NH4, nTot:p.N, ratio: p.N>0 ? p.NH4/p.N : 0 };
 }
 // Riduce l'NH₄NO₃ quanto basta per NH₄ ≤ 10% dell'N totale. Il nitrato di
@@ -3058,9 +3131,9 @@ return { righe:out, vecchia:righe[idx].dose, nuova, ratio:r0.ratio };
 function autoRisolvi(righeInput, dil, aq, phFinale){
 let righe = assegnaSerbatoi(righeInput.map(r=>({...r})));
 const interventi = [];
-const acidoPr = acidoPrescritto(aq, phFinale || 6.0);
+const acidoPr = acidoPrescritto(aq, phFinale || PH_DEFAULT);
 if(acidoPr){
-const phT = phFinale || 6.0;
+const phT = phFinale || PH_DEFAULT;
 const isN = acidoPr.tipo==='HNO3';
 const vol = isN ? acidoPr.volHNO3 : acidoPr.volH3PO4;
 const nomeAc = isN ? 'HNO₃ 38%' : 'H₃PO₄ 75%';
@@ -3213,7 +3286,7 @@ return null;
 }
 function autoBilanciaSali(righeOriginali, aq, dil, opts){
 opts = opts || {};
-const phFinale = opts.phFinale || 6.0;
+const phFinale = opts.phFinale || PH_DEFAULT;
 const forza = !!opts.forzaRiduzione;
 const maxIter = 80, stepPct = 0.06;
 // In automatico si punta a togliere i soli conflitti critici (SI > 0) con un
@@ -3335,7 +3408,7 @@ motivi.push(TT(`SI CaSO₄ = ${si.CaSO4.toFixed(2)} nel Serb. ${s} concentrato (
 return motivi;
 }
 function verificaSicurezza(righe, dil, aq, phFinale){
-phFinale = phFinale || 6.0;
+phFinale = phFinale || PH_DEFAULT;
 const tcOper = tcAcqua(aq);
 const audit = [];
 const conflitti = [];
@@ -3509,7 +3582,7 @@ function correggiDosi(righe, aq, opts){
 opts = opts || {};
 const out = righe.map(r=>({...r}));
 if(!aq) return {righe:out, correzioni:[], fedelta:null, acido:null};
-const acido = acidoPrescritto(aq, opts.phFinale || 6.0);
+const acido = acidoPrescritto(aq, opts.phFinale || PH_DEFAULT);
 const acqua = contributoAcqua(aq, acido);
 const ricetta = profiloDaRighe(righe, null);
 const valida = r => r.id && r.id!=='__custom' && getSale(r.id);
@@ -3593,28 +3666,38 @@ if(info?.el){ const somma=Object.values(info.el).reduce((a,b)=>a+b,0); if(somma>
 return errori;
 }
 function calcola(){
+// Serbatoio C in automatico finché l'utente non lo sceglie a mano: si parte
+// da 2 serbatoi e il C si attiva solo se la ricetta ne ha bisogno (sotto).
+if(!serbCManuale) usaSerbC = false;
 const volA=numInput('volA',100);
 const volB=numInput('volB',100);
-const volC=usaSerbC?numInput('volC',100):0;
+let volC=usaSerbC?numInput('volC',100):0;
 const dil =numInput('diluizione',100);
-const phFinale = numInput('ph-finale',6.0);
+const phFinale = numInput('ph-finale',PH_DEFAULT);
 const aq  = getAcqua();
+const acidoAuto = !!aq && aq.acido === 'auto';
 if(window._targetAttivo){ resetStatoCalc(window._targetAttivo); window._targetAttivo=null; }
 let righe =calcRighe;
 let _fromSolver = false;
 let targetRicetta = null;
 let righeNette = statoCalc.nette;
+let sceltaAcido = null;
 if(statoCalc.target){
 // Fase a target: il solver gira a OGNI calcolo (cambio pH, acqua, acido,
 // scorta…). Prima girava una sola volta e i calcoli successivi
 // sottraevano l'acqua una seconda volta alle dosi già nette.
 targetRicetta = statoCalc.target.targets;
+sceltaAcido = risolviAcidoAuto(aq, phFinale, {targets:targetRicetta});
 const solved=solverTarget(targetRicetta, volA, volB, dil, aq, phFinale);
 calcRighe=solved; righe=solved; renderCalcTabella();
 _fromSolver = true;
 righeNette = true;
 } else {
 syncDomCalc();
+// dosi lorde → si confrontano i due acidi sulla ricetta; dosi già nette
+// (bilanciamento, modifica dopo un target) → resta l'acido con cui sono nate
+const nette = righeNette || !!window._bilanciaRighe;
+sceltaAcido = risolviAcidoAuto(aq, phFinale, nette ? null : {righe:calcRighe});
 }
 if(window._bilanciaRighe){
 righe = window._bilanciaRighe;
@@ -3641,9 +3724,28 @@ correzioniAcqua=res.correzioni;
 fedeltaAcqua=res.fedelta;
 }
 const acidoCalc = acidoPrescritto(aq, phFinale);
-const autoRes = autoRisolvi(wRighe, dil, aq, phFinale);
+aggiornaInfoAcido(acidoAuto, acidoCalc);
+let autoRes = autoRisolvi(wRighe, dil, aq, phFinale);
+// Servono 3 soluzioni madri (incompatibilità non separabili in A e B, es.
+// silicato con Ca e fosfati): si attiva il Serbatoio C e si ridistribuisce.
+let motiviSerbCAuto = null;
+if(!usaSerbC && !serbCManuale && autoRes.needsSerbC.length){
+motiviSerbCAuto = autoRes.needsSerbC;
+usaSerbC = true;
+volC = numInput('volC',100);
+if(!(volC>=1 && volC<=100000)) volC = 100;
+autoRes = autoRisolvi(wRighe, dil, aq, phFinale);
+}
 const {righe: righeSolved, interventi, ecFin, ecPerSerb, dilSuggerito} = autoRes;
 let needsSerbC = autoRes.needsSerbC;
+if(acidoAuto && acidoCalc && sceltaAcido){
+const altro = acidoCalc.tipo==='HNO3' ? 'H3PO4' : 'HNO3';
+const nomeA = tp => tp==='HNO3' ? TT('HNO₃ (acido nitrico)','HNO₃ (nitric acid)') : TT('H₃PO₄ (acido fosforico)','H₃PO₄ (phosphoric acid)');
+const sc = tp => (sceltaAcido.punteggi[tp]*100).toFixed(0);
+const iAc = interventi.findIndex(iv=>iv.tipo==='acido');
+interventi.splice(iAc<0 ? interventi.length : iAc, 0, {tipo:'acido_auto', icona:'🤖',
+msg:TT(`Acido scelto automaticamente: <strong>${nomeA(acidoCalc.tipo)}</strong>, il più fedele alla ricetta (scostamento complessivo ${sc(acidoCalc.tipo)}% contro ${sc(altro)}% con ${nomeA(altro)}). Puoi cambiarlo dal selettore «Acido per i bicarbonati».`,`Acid chosen automatically: <strong>${nomeA(acidoCalc.tipo)}</strong>, the most faithful to the recipe (overall deviation ${sc(acidoCalc.tipo)}% vs ${sc(altro)}% with ${nomeA(altro)}). You can change it in the "Acid for bicarbonates" selector.`)});
+}
 wRighe = righeSolved;
 let sicurezza = verificaSicurezza(wRighe, dil, aq, phFinale);
 autoBalanceApplied = false;
@@ -3729,7 +3831,7 @@ html+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var
             <button class="btn btn-pr btn-sm" onclick="applicaDiluizione(${ivDil.dilSuggerito})" style="width:auto">
               ${TT(`✅ Applica diluizione 1:${ivDil.dilSuggerito} e ricalcola`,`✅ Apply dilution 1:${ivDil.dilSuggerito} and recalculate`)}
             </button>
-            <span style="font-size:.72rem;color:#888">${TT(`Entrambi i serbatoi useranno 1:${ivDil.dilSuggerito}`,`Both tanks will use 1:${ivDil.dilSuggerito}`)}</span>
+            <span style="font-size:.72rem;color:#888">${usaSerbC?TT(`Tutti e 3 i serbatoi useranno 1:${ivDil.dilSuggerito}`,`All 3 tanks will use 1:${ivDil.dilSuggerito}`):TT(`Entrambi i serbatoi useranno 1:${ivDil.dilSuggerito}`,`Both tanks will use 1:${ivDil.dilSuggerito}`)}</span>
           </div>
         </div>
       </div>
@@ -3779,21 +3881,23 @@ html+=`<div class="alert al-inf" style="margin-bottom:10px"><span>⚠️</span><
 sicurezza.avvisi.forEach(a=>html+=`<li><strong>${a.titolo}:</strong> ${a.dettaglio}</li>`);
 html+=`</ul></div></div>`;
 }
-if(needsSerbC.length>0){
-html+=`<div style="background:#f3e8ff;border:2px solid #7b3f9e;border-radius:var(--r);padding:12px 14px;margin-bottom:12px">
+if(needsSerbC.length>0 || usaSerbC){
+const titoloC = motiviSerbCAuto ? t('js.serbCautoTitle') : needsSerbC.length ? t('js.serbCtitle') : t('js.serbCattivo');
+const motiviC = motiviSerbCAuto || needsSerbC;
+html+=`<div id="serbC-box" style="background:#f3e8ff;border:2px solid #7b3f9e;border-radius:var(--r);padding:12px 14px;margin-bottom:12px">
       <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
         <span style="font-size:1.2rem">🪣</span>
         <div style="flex:1;min-width:200px">
-          <div style="font-weight:700;color:#7b3f9e;font-size:.82rem;margin-bottom:5px">${t('js.serbCtitle')}</div>
-          <div style="font-size:.76rem;color:#4a2070;line-height:1.6;margin-bottom:10px">
-            ${t('js.serbCdesc')}<br>
+          <div style="font-weight:700;color:#7b3f9e;font-size:.82rem;margin-bottom:5px">${titoloC}</div>
+          ${motiviC.length?`<div style="font-size:.76rem;color:#4a2070;line-height:1.6;margin-bottom:10px">
+            ${motiviSerbCAuto ? t('js.serbCautoDesc') : t('js.serbCdesc')}<br>
             <ul style="margin:5px 0 0 14px">
-              ${needsSerbC.map(m=>`<li>${m}</li>`).join('')}
+              ${motiviC.map(m=>`<li>${m}</li>`).join('')}
             </ul>
-          </div>
+          </div>`:''}
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;font-size:.82rem;font-weight:600;color:#7b3f9e;letter-spacing:0">
-            <input type="checkbox" ${usaSerbC?'checked':''} onchange="toggleSerbC(this.checked)" style="width:18px;height:18px;accent-color:#7b3f9e;flex-shrink:0">
-            ${t('js.abilitaSerbC')}
+            <input type="checkbox" id="chk-serbC" ${usaSerbC?'checked':''} onchange="toggleSerbC(this.checked)" style="width:18px;height:18px;accent-color:#7b3f9e;flex-shrink:0">
+            ${usaSerbC ? t('js.usaSerbC') : t('js.abilitaSerbC')}
           </label>
           ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">${TT('Volume Serb. C (L)','Tank C volume (L)')}</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
         </div>
@@ -4315,7 +4419,7 @@ const badgeOk = badgeEl && badgeEl.classList.contains('al-ok');
 const pVolA = numInput('volA',100), pVolB = numInput('volB',100);
 const pVolC = usaSerbC ? numInput('volC',100) : null;
 const pDil  = numInput('diluizione',100);
-const pPh   = numInput('ph-finale',6.0);
+const pPh   = numInput('ph-finale',PH_DEFAULT);
 const nomeRicetta = (ricettaCaricata && ricettaCaricata.nome)
 ? ricettaCaricata.nome
 : (txt(document.getElementById('lbl-ricetta-caricata')).trim() || '\u2014');
@@ -4663,7 +4767,8 @@ syncDomCalc();
 if(!calcRighe.length) return;
 const aq = getAcqua();
 const dil = numInput('diluizione',100);
-const phFinale = numInput('ph-finale',6.0);
+const phFinale = numInput('ph-finale',PH_DEFAULT);
+risolviAcidoAuto(aq, phFinale, statoCalc.nette ? null : {righe:calcRighe});
 const origSnapshot = calcRighe.map(r=>({...r}));
 // Il bilanciamento lavora sulle dosi NETTE (già corrette per l'acqua), le
 // stesse che il calcolo verifica: prima riduceva le dosi lorde e il calcolo
