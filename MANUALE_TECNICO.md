@@ -478,7 +478,7 @@ Attenzione: `localStorage` è **per browser e per origine** — aprendo il file 
 - **`safeParse`**: ogni lettura da localStorage è protetta — un dato corrotto degrada ai default invece di bloccare lo script a livello top-level (che lascerebbe l'app vuota).
 - **Sanificazione**: `stripTags` rimuove `<`, `>`, `"` da tutti i testi salvati/importati; `esc` fa l'escape in rendering; `sanitizeName` e `isSafeId` validano nomi e ID importati. Obiettivo: nessuna injection HTML da un JSON malevolo o da vecchi dati.
 - **Immutabilità degli input**: la pipeline di calcolo lavora su copie (`wRighe`); i dati di fabbrica (`SALI_DEFAULT`, `PIANTE_BUILTIN`) non vengono mai mutati.
-- **Test a ogni modifica del motore**: la suite (`tests/run-tests.js`, S1–S27) gira in ~10 s con l'hook pre-commit (`git config core.hooksPath tests/hooks`) e su GitHub Actions a ogni push/PR.
+- **Test a ogni modifica del motore**: la suite (`tests/run-tests.js`, S1–S28) gira in ~10 s con l'hook pre-commit (`git config core.hooksPath tests/hooks`) e su GitHub Actions a ogni push/PR.
 - **Nessun tracking**: nessuno script di analytics (rimosso esplicitamente nella storia del progetto).
 
 ---
