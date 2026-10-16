@@ -3803,7 +3803,7 @@ html+=`<div style="background:#f3e8ff;border:2px solid #7b3f9e;border-radius:var
 if(aq){
 const pSol=profiloDaRighe(wRighe, aq, acidoCalc);
 const hco3Res = acidoCalc ? acidoCalc.residuoMeq*61.0 : (aq.hco3||0);
-html+=`<div class="card" style="margin-bottom:12px">
+html+=`<div class="card tech-info" style="margin-bottom:12px">
       <div class="ch" style="background:var(--az)">${t('js.solFin')}</div>
       <div class="cb" style="padding-bottom:6px">
         <div class="ri-grid" style="grid-template-columns:repeat(4,1fr)">
@@ -3825,7 +3825,7 @@ const rows = [['N','N'],['P','P'],['K','K'],['Ca','Ca'],['Mg','Mg'],['S','S']]
 .filter(r=>r.tg>0 || r.ot>0.5);
 if(rows.length){
 const colDelta = d => Math.abs(d)<=5 ? 'var(--vc)' : Math.abs(d)<=15 ? 'var(--ar)' : 'var(--ro)';
-html+=`<div class="card" style="margin-bottom:12px">
+html+=`<div class="card tech-info" style="margin-bottom:12px">
         <div class="ch" style="background:#0c7b8e">${TT('🎯 Fedeltà alla ricetta (target → ottenuto)','🎯 Recipe fidelity (target → obtained)')}</div>
         <div class="cb" style="padding:0">
           <div class="tbl-wrap"><table class="tbl" style="min-width:340px">
@@ -4263,16 +4263,20 @@ html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 14px
     </div>`;
 });
 html+=`</div></div>`;
-html+=`</div>`;
-html+=`<div class="no-print" style="display:flex;gap:8px;margin:16px 0 24px;flex-wrap:wrap">
+// contenitore neutro: i figli diretti di #risultato-stampa sono forzati a display:block (CSS)
+html+=`<div><div class="no-print" style="display:flex;gap:8px;margin:16px 0 12px;flex-wrap:wrap">
     <button class="btn btn-pr" onclick="stampaMiscela()" style="flex:1">${t('js.stampa')}</button>
     <button class="btn btn-se" id="btn-info-tecniche" onclick="toggleInfoTecniche()" aria-expanded="false" aria-controls="info-tecniche" style="flex:1">${TT('🔬 Info tecniche','🔬 Technical info')}</button>
   </div>
-  <div id="info-tecniche" style="display:none"></div>`;
+  <div id="info-tecniche" style="display:none;margin-bottom:24px"></div></div>`;
+html+=`</div>`;
 document.getElementById('calc-out').innerHTML=html;
-// Le schede tecniche (verifiche chimiche, bilancio ionico, rapporti agronomici,
+// Le schede tecniche (apporti totali, fedeltà alla ricetta, verifiche chimiche,
+// report del bilanciamento automatico, bilancio ionico, rapporti agronomici,
 // contributo per sostanza, audit) vanno nel pannello "Info tecniche", chiuso
-// dopo ogni calcolo: il risultato resta leggero. La stampa non le usa.
+// dopo ogni calcolo: all'agricoltore restano ricetta, costi, suggerimenti e
+// procedura. Il pannello è dentro #risultato-stampa: la stampa lo legge
+// aprendolo per un istante (stampaMiscela), quindi resta identica.
 {
 const pannello = document.getElementById('info-tecniche');
 document.querySelectorAll('#risultato-stampa .tech-info').forEach(c=>pannello.appendChild(c));
@@ -4292,6 +4296,15 @@ document.getElementById('calc-out').scrollIntoView({behavior:'smooth', block:'st
 }
 }
 function stampaMiscela(){
+// innerText di un elemento nascosto ignora gli stili (maiuscole, a capo):
+// per una stampa identica, il pannello tecnico viene aperto durante la lettura.
+const pannello = document.getElementById('info-tecniche');
+const chiuso = pannello && pannello.style.display === 'none';
+if(chiuso) pannello.style.display = 'block';
+try { stampaMiscelaDaRisultato(); }
+finally { if(chiuso) pannello.style.display = 'none'; }
+}
+function stampaMiscelaDaRisultato(){
 const contenuto = document.getElementById('risultato-stampa');
 if(!contenuto){ window.print(); return; }
 const txt = el => el ? ((el.innerText!==undefined && el.innerText!==null) ? el.innerText : (el.textContent||'')) : '';
@@ -4680,7 +4693,7 @@ const statusText  = converged ? TT('Bilanciamento riuscito','Balancing succeeded
 const statusNote  = converged
 ? TT('La soluzione finale non è più sovrasatura (SI < 0) e i concentrati restano in zona sicura.','The final solution is no longer supersaturated (SI < 0) and the concentrates remain in the safe zone.')
 : TT('Le dosi minime non permettono ulteriori riduzioni: valuta di abbassare il pH o sostituire un sale.','The minimum doses do not allow further reductions: consider lowering the pH or replacing a salt.');
-let html = `<div class="card" style="margin-top:12px">
+let html = `<div class="card${autoApplied?' tech-info':''}" style="margin-top:12px">
     <div class="ch" style="background:linear-gradient(135deg,#1a5a8a,#0c7b8e)">
       <span>${TT('⚖️ Bilanciamento Sali — Report Deviazioni','⚖️ Salt Balancing — Deviation Report')}</span>
     </div>

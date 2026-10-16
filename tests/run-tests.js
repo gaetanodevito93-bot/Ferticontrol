@@ -870,7 +870,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     let chiamate = 0;
     const orig = window.correggiDosi;
     window.correggiDosi = function () { chiamate++; return orig.apply(this, arguments); };
-    const fed = () => /Fedeltà alla ricetta/i.test(document.getElementById('calc-out').innerText);
+    const fed = () => { toggleInfoTecniche(true); return /Fedeltà alla ricetta/i.test(document.getElementById('calc-out').innerText); };
     calcola(); const d1 = JSON.stringify(calcRighe), f1 = fed();
     calcola(); const d2 = JSON.stringify(calcRighe), f2 = fed();
     document.getElementById('ph-finale').value = 5.8;
@@ -1076,7 +1076,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   console.log('\n═══ S27. Risultati leggeri: pannello "Info tecniche" ═══');
   await resetMotore();
   const info = await page.evaluate(() => {
-    const titoli = ['Verifica Chimica Precisa', 'Verifica Anti-Precipitazione', 'Bilancio Ionico', 'Rapporti Agronomici', 'Contributo', 'Audit'];
+    const titoli = ['Soluzione Finale', 'Fedeltà alla ricetta', 'Verifica Chimica Precisa', 'Verifica Anti-Precipitazione', 'Bilancio Ionico', 'Rapporti Agronomici', 'Contributo', 'Audit'];
     const visibile = (re) => re.test(document.getElementById('calc-out').innerText);
     // titoli delle schede (.ch) effettivamente visibili: le semplici citazioni nel testo non contano
     const titoliSchede = () => [...document.querySelectorAll('#calc-out .card > .ch')].filter(h => h.offsetParent !== null).map(h => h.innerText).join(' | ');
@@ -1090,7 +1090,8 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
       titoliVisibili: titoli.filter(t => new RegExp(t, 'i').test(titoliSchede())),
       rapportiVisibili: /Rapporti agronomici/i.test(titoliSchede()) || visibile(/NH₄ \/ N totale/i),
       dosiVisibili: !!document.querySelector('#risultato-stampa .serb-card'),
-      riepilogoVisibile: visibile(/Riepilogo/i),
+      riepilogoVisibile: visibile(/Riepilogo/i) && visibile(/Costo per 1000 L/i),
+      proceduraVisibile: /Procedura/i.test(titoliSchede()),
       pulsante: !!document.getElementById('btn-info-tecniche'),
     };
     const stampaChiuso = catturaStampa();
@@ -1113,10 +1114,10 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     return { chiuso, aperto, richiuso, dopoRicalcolo, azione, stampaUguale: stampaChiuso.length > 500 && stampaChiuso === stampaAperto };
   });
   check('dopo il calcolo il pannello "Info tecniche" è chiuso e il pulsante è presente', info.chiuso.nascosto && info.chiuso.pulsante);
-  check(`le 6 schede tecniche sono nel pannello (${info.chiuso.nSchede})`, info.chiuso.nSchede === 6);
+  check(`le schede tecniche sono nel pannello (${info.chiuso.nSchede}, almeno 8)`, info.chiuso.nSchede >= 8);
   check(`a pannello chiuso nessuna scheda tecnica visibile (${info.chiuso.titoliVisibili.join(', ') || 'nessuna'})`, info.chiuso.titoliVisibili.length === 0 && !info.chiuso.rapportiVisibili);
-  check('dosi per serbatoio e riepilogo restano visibili', info.chiuso.dosiVisibili && info.chiuso.riepilogoVisibile);
-  check(`il pulsante apre tutte le schede (${info.aperto.titoliVisibili.length}/6 titoli, aria-expanded=${info.aperto.aria})`, info.aperto.visibile && info.aperto.titoliVisibili.length === 6 && info.aperto.aria === 'true');
+  check('ricetta (dosi per serbatoio), costo e procedura restano visibili', info.chiuso.dosiVisibili && info.chiuso.riepilogoVisibile && info.chiuso.proceduraVisibile);
+  check(`il pulsante apre tutte le schede (${info.aperto.titoliVisibili.length}/8 titoli, aria-expanded=${info.aperto.aria})`, info.aperto.visibile && info.aperto.titoliVisibili.length === 8 && info.aperto.aria === 'true');
   check('secondo click richiude; un nuovo calcolo riparte chiuso', info.richiuso && info.dopoRicalcolo);
   check('i riquadri d\'azione (pH suggerito / bilancia) restano visibili a pannello chiuso', info.azione);
   check('la stampa è identica con pannello aperto o chiuso', info.stampaUguale);

@@ -228,7 +228,7 @@ Lo stato della tabella sali è esplicito (`statoCalc`): `target` (fase a target 
 
 ### 6.4 Il risultato
 
-Per alleggerire la lettura, dopo il calcolo sono visibili solo verdetto, interventi, dosi per serbatoio, riepilogo, soluzione finale, fedeltà alla ricetta, correzione pH, gestione pH in coltura, note operative e procedura. Le schede tecniche — **Verifica Chimica Precisa, Verifica Anti-Precipitazione, Bilancio Ionico, Rapporti Agronomici, Contributo per Sostanza e Audit** — stanno nel pannello **"🔬 Info tecniche"** in fondo alla pagina, chiuso dopo ogni calcolo e aperto dall'apposito pulsante. I riquadri d'azione della verifica anti-precipitazione ("Imposta pH X e ricalcola", "Bilancia sali", "Correzione applicata") restano sempre visibili. La stampa non cambia.
+Il risultato è pensato per l'agricoltore: dopo il calcolo sono visibili solo **verdetto, interventi e suggerimenti, dosi per serbatoio (la ricetta), riepilogo con i costi, correzione pH/acido, gestione pH in coltura, note operative e procedura**, più i riquadri d'azione (pH suggerito, bilancia sali, serbatoio C, diluizione). Tutte le schede tecniche — **Soluzione finale (apporti totali), Fedeltà alla ricetta, Verifica Chimica Precisa, Verifica Anti-Precipitazione, report del bilanciamento automatico, Bilancio Ionico, Rapporti Agronomici, Contributo per Sostanza e Audit** — sono raggruppate nel pannello **"🔬 Info tecniche"** in fondo alla pagina, chiuso dopo ogni calcolo e aperto dall'apposito pulsante. La stampa non cambia: `stampaMiscela` apre il pannello solo per l'istante della lettura.
 
 La scheda risultato comprende:
 
