@@ -1261,7 +1261,7 @@ var rPO4=Math.pow(10,ph-PKA3_PHOS)*g2/g3;
 var rCO3=Math.pow(10,ph-PKA2_CARB)*g1/g2;
 ions=Object.assign({},base);
 ions.H2PO4=Pt/(1+rHPO4*(1+rPO4)); ions.HPO4=ions.H2PO4*rHPO4; ions.PO4=ions.HPO4*rPO4;
-ions.HCO3=Ct; ions.CO3=Ct*rCO3;
+ions.HCO3=Ct/(1+rCO3); ions.CO3=ions.HCO3*rCO3;
 var I=Math.max(ionicStrength(ions),1e-12);
 g1=davies(I,1); g2=davies(I,2); g3=davies(I,3);
 }
@@ -1433,11 +1433,11 @@ return { tipo: punteggi.H3PO4 < punteggi.HNO3 - 0.01 ? 'H3PO4' : 'HNO3', puntegg
 // Con il selettore su "Automatico" fissa aq.acido sull'acido scelto. Senza ctx
 // (dosi già nette, es. dopo "Bilancia") riusa l'ultima scelta: quelle dosi
 // sono state calcolate con quell'acido.
-let ultimoAcidoAuto = null;
+let ultimoAcidoAuto = null, ultimoCtxAcido = null;
 function risolviAcidoAuto(aq, phFinale, ctx){
 if(!aq || aq.acido !== 'auto') return null;
-const scelta = ctx ? scegliAcido(aq, phFinale, ctx) : ultimoAcidoAuto;
-if(ctx) ultimoAcidoAuto = scelta;
+if(ctx) ultimoCtxAcido = ctx; const effCtx = ctx || (!ultimoAcidoAuto ? ultimoCtxAcido : null); const scelta = effCtx ? scegliAcido(aq, phFinale, effCtx) : ultimoAcidoAuto;
+if(effCtx) ultimoAcidoAuto = scelta;
 aq.acido = scelta ? scelta.tipo : 'HNO3';
 return scelta;
 }
@@ -2058,7 +2058,7 @@ grid.innerHTML=`<div class="ph" style="grid-column:1/-1"><p>${t('js.nessunaRicet
 }
 }
 function eliminaRicettaCustom(ri){
-if(!confirm(`Eliminare la ricetta "${ricetteCustom[ri].nome}"?`)) return;
+if(!confirm(TT(`Eliminare la ricetta "${ricetteCustom[ri].nome}"?`,`Delete the recipe "${ricetteCustom[ri].nome}"?`))) return;
 ricetteCustom.splice(ri, 1);
 saveRicette();
 renderRicetteCustom();
@@ -2828,7 +2828,7 @@ const pNuove = profiloDaRighe(nuove, null);
 const deficit = {};
 MICRO_EL.forEach(e => { deficit[e] = Math.max(0, (ricetta[e] || 0) - (pNuove[e] || 0)); });
 const mic = risolviMicro(deficit, { usaMix:false });
-mic.righe.forEach(r => { nuove.push({ ...r, _sostituto:true }); aggiunti.push({ nome:r.nome, dose:r.dose }); });
+mic.righe.forEach(r => { const gia = nuove.find(x => x.id === r.id); if (gia) { const prima = +gia.dose || 0; gia.dose = arrotondaDose(prima + r.dose); if (Math.abs(gia.dose - prima) > 0.01) modifiche.push({ nome:gia.nome || gia.id, prima, dopo:gia.dose }); } else { nuove.push({ ...r, _sostituto:true }); aggiunti.push({ nome:r.nome, dose:r.dose }); } });
 const finale = profiloDaRighe(nuove, null);
 const confronto = [...SOLVER_EL, ...MICRO_EL]
 .filter(el => (ricetta[el] || 0) > 0.001 || (finale[el] || 0) > 0.5)
@@ -3093,10 +3093,11 @@ const INCOMPAT_MATRIX = [
 {a:"FeDTPA",b:"FeSO4",  g:"A", p:"Degr. chelato",  m:"Stesso."},
 {a:"MixCh", b:"FeSO4",  g:"A", p:"Degr. chelati",  m:"Fe²⁺ libero degrada tutti i chelati del Mix."},
 ];
+function haCalcio(idOrSale){ const s = typeof idOrSale === 'string' ? getSale(idOrSale) : (getSale(idOrSale?.id) || idOrSale); const id = typeof idOrSale === 'string' ? idOrSale : (idOrSale?.id || ''); return CALCIO_IDS.includes(id) || !!(s && s.el && s.el.Ca > 0); }
 function assegnaSerbatoi(righe){
 return righe.map(r=>{
 let serb = 'A';
-if(CALCIO_IDS.includes(r.id)) serb='B';
+if(haCalcio(r) && !((getSale(r.id)||r)?.el?.P > 0 || (getSale(r.id)||r)?.el?.S > 0)) serb='B';
 if(r.id==='K2SiO3')           serb=usaSerbC?'C':'B';
 return {...r, serb};
 });
@@ -3178,7 +3179,7 @@ if(dest===r.serb) return;
 const guadagno = attuale - punteggio(i, dest);
 if(guadagno <= 0) return;
 // a parità di guadagno si spostano gli altri sali, non Ca/silicato
-const pref = (CALCIO_IDS.includes(r.id) || r.id==='K2SiO3') ? -0.5 : 0;
+const pref = (haCalcio(r) || r.id==='K2SiO3') ? -0.5 : 0;
 if(!mossa || guadagno + pref > mossa.valore) mossa = {i, dest, valore: guadagno + pref};
 });
 });
@@ -3209,7 +3210,7 @@ const si = serbSIs(righeS, aq, dil);
 if (si.CaSO4 <= -0.5) return;
 righeS.filter(r => ['MgSO4','K2SO4'].includes(r.id)).forEach(r => {
 const candidati = serbDisp.filter(x => x !== s);
-const dest = candidati.find(x => !righe.some(rr => rr.serb===x && CALCIO_IDS.includes(rr.id)));
+const dest = candidati.find(x => !righe.some(rr => rr.serb===x && attiva(rr) && haCalcio(rr)));
 if (dest) {
 r.serb = dest;
 interventi.push({tipo:'sposta', icona:'🔀',
@@ -3296,8 +3297,8 @@ const SOGLIA_CONC = forza ? -0.5 : -0.05;
 const SOGLIA_FIN  = 0.0;
 const MIN_DOSE = {CaN:150, KNO3:100, MgNO3:50, MgSO4:50, KH2PO4:30, MAP:20, K2SO4:50, NH4NO3:10, CaCl2:50};
 const REDUCE_ORDER = {
-CaSO4:   ['MgSO4','K2SO4','FeSO4','MnSO4','ZnSO4','CaN'],
-CaHPO4:  ['KH2PO4','MAP','CaN'],
+CaSO4:   ['MgSO4','K2SO4','FeSO4','MnSO4','ZnSO4','CaN','CaCl2'],
+CaHPO4:  ['KH2PO4','MAP','CaN','CaCl2'],
 struvite: ['NH4NO3','MAP','MgNO3','MgSO4','KH2PO4']
 };
 let righe = righeOriginali.map(r=>({...r}));
@@ -3330,7 +3331,7 @@ iterations = iter;
 break;
 }
 const worst = problematici.reduce((a,b) => a.si > b.si ? a : b);
-const order = REDUCE_ORDER[worst.key];
+const extraIds = righe.map(r=>r.id).filter(id => !REDUCE_ORDER[worst.key]?.includes(id) && ((worst.key==='CaSO4' && (getSale(id)?.el?.S>0 || getSale(id)?.el?.Ca>0)) || (worst.key==='CaHPO4' && (getSale(id)?.el?.P>0 || getSale(id)?.el?.Ca>0)) || (worst.key==='struvite' && (getSale(id)?.el?.P>0 || getSale(id)?.el?.Mg>0 || fracNH4(id,getSale(id))>0)))); const order = REDUCE_ORDER[worst.key] ? [...REDUCE_ORDER[worst.key], ...extraIds] : null;
 if(!order){ iterations = iter; break; }
 let ridotto = false;
 for(const saltId of order){
@@ -3388,7 +3389,7 @@ phSuggerito, phFinale, maxDev
 }
 function checkNeedSerbC(righe, dil, aq){
 const motivi = [];
-INCOMPAT_MATRIX.filter(r => r.g === 'C').forEach(regola => {
+const attive = righe.filter(r => r.id && r.id!=='__custom' && (+r.dose||0) > 0); for(let i=0;i<attive.length;i++) for(let j=i+1;j<attive.length;j++){ const ra=attive[i], rb=attive[j]; if(ra.serb===rb.serb){ const res=coppiaIncompatibile(getSale(ra.id)||ra, getSale(rb.id)||rb); if(res.incompat && res.gravita==='C') motivi.push(TT(`${ra.nome||ra.id} e ${rb.nome||rb.id} ancora nello stesso Serb. ${ra.serb} — necessario serbatoio C (${M(res.p)})`,`${ra.nome||ra.id} and ${rb.nome||rb.id} still in the same Tank ${ra.serb} — Tank C required (${M(res.p)})`)); } } if(false) INCOMPAT_MATRIX.filter(r => r.g === 'C').forEach(regola => {
 const ra = righe.find(r => r.id === regola.a);
 const rb = righe.find(r => r.id === regola.b);
 if (!ra || !rb) return;
@@ -3995,7 +3996,7 @@ return `<div class="eco-row"><span>${TT(`EC Serb. ${s.key} nel concentrato (×${
     </div>
   </div>`;
 try {
-const profilo = profiloDaRighe(wRighe, aq);
+const profilo = profiloDaRighe(wRighe, aq, acidoCalc);
 const tempC = tcAcqua(aq);
 const pH = phFinale;
 const si = siForIons(profilo, pH, tempC);
@@ -4775,7 +4776,7 @@ const origSnapshot = calcRighe.map(r=>({...r}));
 // successivo le correggeva di nuovo.
 const nette = (aq && !statoCalc.nette) ? correggiDosi(calcRighe, aq, {phFinale}).righe : calcRighe.map(r=>({...r}));
 const report = autoBilanciaSali(nette, aq, dil, {phFinale, forzaRiduzione:true});
-window._bilanciaRighe = report.righe;
+window._bilanciaRighe = report.righe; window._bilanciaPendingRighe = report.righe.map(r=>({...r}));
 window._bilanciaReport = report;
 window._bilanciaOrigSnapshot = origSnapshot;
 statoCalc.saltaBilanciamento = false;
@@ -4864,7 +4865,7 @@ html += `<div style="display:flex;gap:8px;flex-wrap:wrap">
 html += `</div></div>`;
 return html;
 }
-function applicaBilanciamento(){
+function applicaBilanciamento(){ const righeBil = window._bilanciaRighe || window._bilanciaPendingRighe; window._bilanciaRighe = righeBil; window._bilanciaPendingRighe = null;
 if(window._bilanciaRighe){
 calcRighe = window._bilanciaRighe.map(r=>({...r}));
 statoCalc.target = null;
@@ -4877,7 +4878,7 @@ window._bilanciaOrigSnapshot = null;
 calcola();
 showToast(t('js.toastBilanciate'));
 }
-function ripristinaEricalcola(){
+function ripristinaEricalcola(){ window._bilanciaPendingRighe = null;
 if(window._bilanciaOrigSnapshot){
 calcRighe = window._bilanciaOrigSnapshot.map(r=>({...r}));
 renderCalcTabella();

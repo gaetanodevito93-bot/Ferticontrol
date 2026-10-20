@@ -640,7 +640,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
       const m = out.match(/NH₄ \/ N[\s\S]*?(\d+)\s*%/i);
       return { nh4: m ? +m[1] : null, scende: /tenderà a scendere/.test(out), sale: /tenderà a salire/.test(out) };
     };
-    const alto = run([{ id: 'CaN', dose: 500 }, { id: 'NH4NO3', dose: 400 }, { id: 'KNO3', dose: 150 }, { id: 'KH2PO4', dose: 120 }, { id: 'MgSO4', dose: 150 }]);
+    const alto = run([{ id: 'CaN', dose: 500 }, { id: 'MAP', dose: 250 }, { id: 'KNO3', dose: 150 }, { id: 'MgSO4', dose: 150 }]);
     const nitrico = run([{ id: 'CaN', dose: 600 }, { id: 'KNO3', dose: 300 }, { id: 'KH2PO4', dose: 120 }, { id: 'MgSO4', dose: 150 }]);
     return { alto, nitrico };
   });
@@ -1292,6 +1292,91 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     acAuto.forzato.prescritto === 'H₃PO₄' && !acAuto.forzato.msg && acAuto.forzato.info === '' && acAuto.forzato.salvato === 'H3PO4');
   check(`tornando su "Automatico" → ${acAuto.tornaAuto.prescritto}, salvato (${acAuto.tornaAuto.salvato})`, acAuto.tornaAuto.prescritto === 'HNO₃' && acAuto.tornaAuto.salvato === 'auto');
   check(`acqua osmotica in automatico: nessun acido prescritto ("${acAuto.osmosi.info}")`, acAuto.osmosi.prescritto === null && /Nessun acido/.test(acAuto.osmosi.info));
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S29. Regressioni: acido nei gauge SI, applicaBilanciamento, checkNeedSerbC, sali Ca custom, micro duplicati ═══');
+  await resetMotore();
+  const reg29 = await page.evaluate(() => {
+    // 1. acidoCalc passato a profiloDaRighe nella scheda Verifica Chimica / Anti-Precipitazione:
+    //    con H₃PO₄ il SI CaHPO₄ mostrato nel gauge deve coincidere con siFinaleSoluzione (che include il P dell'acido)
+    presetAcqua('media');
+    document.getElementById('acido-tipo').value = 'H3PO4';
+    document.getElementById('ph-finale').value = 6.0;
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    calcola();
+    toggleInfoTecniche(true);
+    const outP = document.getElementById('calc-out').innerText;
+    const mGauge = outP.match(/Fosfato di calcio[\s\S]{0,80}?SI ([+\-][\d.]+)/i);
+    const siGauge = mGauge ? parseFloat(mGauge[1]) : null;
+    const aqP = getAcqua();
+    const wNet = correggiDosi(calcRighe, aqP, { phFinale: 6.0 }).righe;
+    const siAtteso = +siFinaleSoluzione(wNet, aqP, 6.0).CaHPO4.toFixed(2);
+    const siSenzaAcido = +siForIons(profiloDaRighe(wNet, aqP), 6.0, tcAcqua(aqP)).CaHPO4.toFixed(2);
+
+    // 2. calcolaBilanciato() + applicaBilanciamento(): le dosi bilanciate vengono applicate a calcRighe
+    document.getElementById('acido-tipo').value = 'HNO3';
+    presetAcqua('osmosi');
+    calcRighe = [{ id: 'CaN', nome: 'CaN', dose: 1200, prezzo: 0 }, { id: 'KH2PO4', nome: 'KH2PO4', dose: 350, prezzo: 0 }, { id: 'MgSO4', nome: 'MgSO4', dose: 500, prezzo: 0 }];
+    resetStatoCalc(null);
+    renderCalcTabella();
+    calcolaBilanciato();
+    const dosePrimaApplica = calcRighe[0].dose;
+    applicaBilanciamento();
+    const doseDopoApplica = calcRighe[0].dose;
+    const netteDopoApplica = statoCalc.nette;
+
+    // 3. checkNeedSerbC: sale con dose 0 non attiva il Serbatoio C; sale di Ca custom + P + silicato attiva C
+    usaSerbC = false; serbCManuale = false;
+    const needConZero = checkNeedSerbC([
+      { id: 'CaN', dose: 800, serb: 'B' },
+      { id: 'K2SiO3', dose: 0, serb: 'B' },
+      { id: 'KH2PO4', dose: 200, serb: 'A' },
+    ], 100, null);
+    catalogo.push({ id: 'customCaTest', nome: 'Ca Custom', cat: 'macro', serb: 'B', el: { Ca: 16, N: 11 } });
+    const needCustomCa = checkNeedSerbC([
+      { id: 'customCaTest', dose: 800, serb: 'B' },
+      { id: 'K2SiO3', dose: 80, serb: 'B' },
+      { id: 'KH2PO4', dose: 200, serb: 'A' },
+    ], 100, null);
+    const serbCustomCaSolo = assegnaSerbatoi([{ id: 'customCaTest', dose: 600 }, { id: 'KNO3', dose: 400 }]);
+    catalogo.pop();
+
+    // 4. sostituisciNonDisponibili: se FeEDTA è già presente e manca MixCh, non duplica la riga FeEDTA
+    scorta.delete('MixCh');
+    const sostFe = sostituisciNonDisponibili([
+      { id: 'CaN', dose: 800, nome: 'CaN' },
+      { id: 'FeEDTA', dose: 10, nome: 'FeEDTA' },
+      { id: 'MixCh', dose: 25, nome: 'MixCh' },
+    ]);
+    scorta.add('MixCh');
+    const nFeEDTA = sostFe.righe.filter(r => r.id === 'FeEDTA').length;
+    const doseFeEDTA = (sostFe.righe.find(r => r.id === 'FeEDTA') || {}).dose || 0;
+
+    // 5. speciate: conservazione di massa del carbonio (HCO3 + CO3 = Ct) anche a pH alcalino
+    const sp95 = speciate({ HCO3meq: 4.0, Ca: 50 }, 9.5);
+    const sommaC = (sp95.HCO3 + sp95.CO3) * 1000;
+
+    return {
+      siGauge, siAtteso, siSenzaAcido,
+      dosePrimaApplica, doseDopoApplica, netteDopoApplica,
+      needConZero: needConZero.length, needCustomCa: needCustomCa.length,
+      serbCaCustom: (serbCustomCaSolo.find(r => r.id === 'customCaTest') || {}).serb,
+      nFeEDTA, doseFeEDTA,
+      sommaC,
+    };
+  });
+  check(`gauge SI CaHPO₄ con H₃PO₄ include il P dell'acido (${reg29.siGauge} = ${reg29.siAtteso}, ≠ senza acido ${reg29.siSenzaAcido})`,
+    reg29.siGauge === reg29.siAtteso && reg29.siGauge > reg29.siSenzaAcido + 0.1);
+  check(`applicaBilanciamento aggiorna calcRighe (${reg29.dosePrimaApplica} → ${reg29.doseDopoApplica} g/1000L) e marca dosi nette`,
+    reg29.doseDopoApplica < reg29.dosePrimaApplica && reg29.netteDopoApplica === true);
+  check(`checkNeedSerbC ignora i sali con dose 0 (${reg29.needConZero} motivi) e rileva i sali di Ca custom (${reg29.needCustomCa} motivi)`,
+    reg29.needConZero === 0 && reg29.needCustomCa > 0);
+  check(`assegnaSerbatoi mette i sali di Ca custom nel Serbatoio B (${reg29.serbCaCustom})`,
+    reg29.serbCaCustom === 'B');
+  check(`sostituisciNonDisponibili fonde FeEDTA senza duplicare la riga (${reg29.nFeEDTA} riga, dose ${reg29.doseFeEDTA} g > 10 g)`,
+    reg29.nFeEDTA === 1 && reg29.doseFeEDTA > 10);
+  check(`speciate: conservazione di massa HCO₃⁻ + CO₃²⁻ a pH 9.5 (${reg29.sommaC.toFixed(4)} = 4.0000 meq/L)`,
+    close(reg29.sommaC, 4.0, 1e-9));
 
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
