@@ -1422,16 +1422,26 @@ return c;
 // un punto percentuale) vince l'HNO₃, lo standard. ctx = {righe} (dosi lorde
 // della ricetta) oppure {targets} (fase a target, risolta dal solver).
 const ACIDO_PESI = {N:1, P:1, K:1, Ca:1, Mg:1, S:0.5};
+// Prima della fedeltà contano due vincoli, in quest'ordine:
+// 1. sicurezza: un acido che rende la soluzione finale sovrasatura di CaHPO₄
+//    (SI > 0, precipita nell'impianto) perde contro uno che non lo fa;
+// 2. nutriente escluso: se la ricetta non prevede l'elemento portato dall'acido
+//    (P per l'H₃PO₄, N per l'HNO₃: target 0), l'acido non deve introdurlo. Il
+//    punteggio di fedeltà salta gli elementi a target 0 (lo scostamento relativo
+//    non è definito): senza questo vincolo una ricetta senza P riceveva l'H₃PO₄
+//    e fino a 125 mg/L di P.
+// motivo: 'fedelta' | 'precipitazione' | 'escluso' (perché ha vinto quell'acido).
+const ACIDO_NUTRIENTE = {HNO3:'N', H3PO4:'P'};
 function scegliAcido(aq, phFinale, ctx){
 if(!aq || !ctx) return null;
 const phT = phFinale || PH_DEFAULT;
 if(!acidoPrescritto({...aq, acido:'HNO3'}, phT)) return null;
 const soloAcqua = contributoAcqua(aq, null);
-const punteggi = {};
+const rif = ctx.targets ? ctx.targets : profiloDaRighe(ctx.righe || [], null);
+const punteggi = {}, esito = {};
 ['HNO3','H3PO4'].forEach(tipo=>{
 const aqT = {...aq, acido:tipo};
 const acido = acidoPrescritto(aqT, phT);
-const rif = ctx.targets ? ctx.targets : profiloDaRighe(ctx.righe || [], null);
 const righeT = ctx.targets ? solverTarget(ctx.targets, 0, 0, 0, aqT, phT) : correggiDosi(ctx.righe || [], aqT, {phFinale:phT}).righe;
 const fin = profiloDaRighe(righeT, aqT, acido);
 let s = 0;
@@ -1441,8 +1451,24 @@ if(tg <= 0 || (soloAcqua[el] || 0) >= tg) continue;
 s += ACIDO_PESI[el] * Math.abs((fin[el] || 0) - tg) / tg;
 }
 punteggi[tipo] = s;
+const nut = ACIDO_NUTRIENTE[tipo];
+const aggiunto = Math.max(0, (fin[nut] || 0) - (soloAcqua[nut] || 0));
+const siCaHPO4 = siForIons(fin, phT, tcAcqua(aqT)).CaHPO4;
+esito[tipo] = { nutriente:nut, aggiunto, escluso: !((+rif[nut] || 0) > 0) && aggiunto > 0,
+siCaHPO4, sovrasatura: siCaHPO4 > 0 };
 });
-return { tipo: punteggi.H3PO4 < punteggi.HNO3 - 0.01 ? 'H3PO4' : 'HNO3', punteggi };
+let tipo = punteggi.H3PO4 < punteggi.HNO3 - 0.01 ? 'H3PO4' : 'HNO3';
+let motivo = 'fedelta';
+const eN = esito.HNO3, eP = esito.H3PO4;
+if(eN.escluso !== eP.escluso){
+const t = eN.escluso ? 'H3PO4' : 'HNO3';
+if(t !== tipo){ tipo = t; motivo = 'escluso'; }
+}
+if(eN.sovrasatura !== eP.sovrasatura){
+const t = eN.sovrasatura ? 'H3PO4' : 'HNO3';
+if(t !== tipo){ tipo = t; motivo = 'precipitazione'; }
+}
+return { tipo, punteggi, motivo, esito };
 }
 // Con il selettore su "Automatico" fissa aq.acido sull'acido scelto. Senza ctx
 // (dosi già nette, es. dopo "Bilancia") riusa l'ultima scelta: quelle dosi
@@ -3792,8 +3818,18 @@ const altro = acidoCalc.tipo==='HNO3' ? 'H3PO4' : 'HNO3';
 const nomeA = tp => tp==='HNO3' ? TT('HNO₃ (acido nitrico)','HNO₃ (nitric acid)') : TT('H₃PO₄ (acido fosforico)','H₃PO₄ (phosphoric acid)');
 const sc = tp => (sceltaAcido.punteggi[tp]*100).toFixed(0);
 const iAc = interventi.findIndex(iv=>iv.tipo==='acido');
+const eAltro = (sceltaAcido.esito || {})[altro] || {};
+const nomeEl = el => el==='P' ? TT('fosforo','phosphorus') : TT('azoto','nitrogen');
+const perche = sceltaAcido.motivo === 'precipitazione'
+? [`con ${nomeA(altro)} la soluzione finale sarebbe sovrasatura di fosfato di calcio (SI CaHPO₄ +${(eAltro.siCaHPO4||0).toFixed(2)}) e precipiterebbe nell'impianto`,
+   `with ${nomeA(altro)} the final solution would be supersaturated with calcium phosphate (SI CaHPO₄ +${(eAltro.siCaHPO4||0).toFixed(2)}) and would precipitate in the system`]
+: sceltaAcido.motivo === 'escluso'
+? [`la ricetta non prevede ${nomeEl(eAltro.nutriente)} e ${nomeA(altro)} ne aggiungerebbe ${(eAltro.aggiunto||0).toFixed(0)} mg/L`,
+   `the recipe contains no ${eAltro.nutriente==='P'?'phosphorus':'nitrogen'} and ${nomeA(altro)} would add ${(eAltro.aggiunto||0).toFixed(0)} mg/L of it`]
+: [`il più fedele alla ricetta (scostamento complessivo ${sc(acidoCalc.tipo)}% contro ${sc(altro)}% con ${nomeA(altro)})`,
+   `the most faithful to the recipe (overall deviation ${sc(acidoCalc.tipo)}% vs ${sc(altro)}% with ${nomeA(altro)})`];
 interventi.splice(iAc<0 ? interventi.length : iAc, 0, {tipo:'acido_auto', icona:'🤖',
-msg:TT(`Acido scelto automaticamente: <strong>${nomeA(acidoCalc.tipo)}</strong>, il più fedele alla ricetta (scostamento complessivo ${sc(acidoCalc.tipo)}% contro ${sc(altro)}% con ${nomeA(altro)}). Puoi cambiarlo dal selettore «Acido per i bicarbonati».`,`Acid chosen automatically: <strong>${nomeA(acidoCalc.tipo)}</strong>, the most faithful to the recipe (overall deviation ${sc(acidoCalc.tipo)}% vs ${sc(altro)}% with ${nomeA(altro)}). You can change it in the "Acid for bicarbonates" selector.`)});
+msg:TT(`Acido scelto automaticamente: <strong>${nomeA(acidoCalc.tipo)}</strong>: ${perche[0]}. Puoi cambiarlo dal selettore «Acido per i bicarbonati».`,`Acid chosen automatically: <strong>${nomeA(acidoCalc.tipo)}</strong>: ${perche[1]}. You can change it in the "Acid for bicarbonates" selector.`)});
 }
 wRighe = righeSolved;
 let sicurezza = verificaSicurezza(wRighe, dil, aq, phFinale);

@@ -32,6 +32,7 @@
 //   S26. Correzioni minori (costo, EC concentrato, calcite, NH₄, acido, UI)
 //   S27. Pannello "Info tecniche": schede tecniche nascoste dopo il calcolo
 //   S28. 3 soluzioni madri su 3 serbatoi, pH di default 5.8, acido automatico
+//   S31. Acido automatico: è davvero il più efficace (matrice completa, end-to-end)
 //
 // Uso:  node tests/run-tests.js   (in automatico: hook tests/hooks/pre-commit e GitHub Actions)
 // Requisiti: Playwright + Chromium (vedi tests/README.md)
@@ -1434,6 +1435,210 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     /250 L/.test(ux30.titoloA250));
   check('se un sale non è disponibile in scorta, la tabella "Sali da Preparare" resta aperta',
     ux30.saliApertiSeManca);
+
+  // ────────────────────────────────────────────────
+  console.log('\n═══ S31. Acido automatico: è davvero il più efficace? ═══');
+  // "Più efficace" = a parità di correzione del pH (stessi meq neutralizzati),
+  // l'acido che lascia la soluzione FINALE più vicina alla ricetta, senza
+  // introdurre un nutriente escluso dalla ricetta né rischi di precipitazione
+  // che l'altro acido eviterebbe.
+  // Il riferimento è calcolato in modo indipendente da scegliAcido: per ogni
+  // caso si esegue la pipeline completa con ciascun acido forzato (correzione
+  // acqua o solver a target + autoRisolvi) e si misura lo scostamento con una
+  // implementazione separata del criterio dichiarato (N,P,K,Ca,Mg peso 1, S 0.5,
+  // esclusi gli elementi che l'acqua da sola già supera; pari entro 1 punto → HNO₃).
+  await resetMotore();
+  const ac31 = await page.evaluate(() => {
+    const ACQUE = {
+      lieve: { ec: 0.15, ph: 7.0, temp: 20, ca: 25, mg: 6, k: 2, na: 10, so4: 10, cl: 15, hco3: 80, no3: 3, fe: 0.02 },
+      media: { ec: 0.3, ph: 7.2, temp: 20, ca: 80, mg: 20, k: 5, na: 30, so4: 40, cl: 50, hco3: 150, no3: 10, fe: 0.1 },
+      dura: { ec: 0.7, ph: 7.8, temp: 20, ca: 180, mg: 45, k: 8, na: 60, so4: 90, cl: 80, hco3: 320, no3: 15, fe: 0.2 },
+      bicarbonatica: { ec: 0.6, ph: 8.0, temp: 20, ca: 40, mg: 10, k: 3, na: 90, so4: 20, cl: 40, hco3: 450, no3: 5, fe: 0.05 },
+    };
+    const PH = [5.5, 5.8, 6.2];
+    const PESI = { N: 1, P: 1, K: 1, Ca: 1, Mg: 1, S: 0.5 };
+    const DIL = 100;
+    const out = {};
+
+    // A. Correzione del pH: i due acidi neutralizzano gli stessi meq
+    out.neutr = [];
+    Object.entries(ACQUE).forEach(([nome, a]) => [5.2, 5.5, 5.8, 6.2, 6.8].forEach(ph => {
+      const n = acidoPrescritto({ ...a, acido: 'HNO3' }, ph), p = acidoPrescritto({ ...a, acido: 'H3PO4' }, ph);
+      out.neutr.push({ nome, ph, meq: n && n.meq, ok: !!n && !!p && n.meq === p.meq && n.residuoMeq === p.residuoMeq
+        && Math.abs(n.volHNO3 / n.volH3PO4 - 12.1 / 7.47) < 1e-9
+        && Math.abs(n.N - n.meq * 14.007) < 0.01 && Math.abs(p.P - p.meq * 30.974) < 0.01 && n.P === 0 && p.N === 0 });
+    }));
+
+    // B/C. Matrice esaustiva: 35 fasi × {dosi, target} × 4 acque × 3 pH
+    const scost = (prof, rif, acqua) => {
+      let s = 0;
+      for (const el in PESI) {
+        const tg = +rif[el] || 0;
+        if (tg <= 0 || (acqua[el] || 0) >= tg) continue;
+        s += PESI[el] * Math.abs((prof[el] || 0) - tg) / tg;
+      }
+      return s;
+    };
+    const pipeline = (caso, tipo) => {
+      const aq = { ...caso.aq, acido: tipo };
+      const acido = acidoPrescritto(aq, caso.ph);
+      const righe = caso.targets
+        ? solverTarget(caso.targets, 100, 100, DIL, aq, caso.ph)
+        : correggiDosi(caso.righe, aq, { phFinale: caso.ph }).righe;
+      const finali = autoRisolvi(righe.map(r => ({ ...r })), DIL, aq, caso.ph).righe;
+      const pPrima = profiloDaRighe(righe, aq, acido), pFin = profiloDaRighe(finali, aq, acido);
+      return { pPrima, pFin, si: siForIons(pFin, caso.ph, tcAcqua(aq)) };
+    };
+    const casi = [];
+    PIANTE_BUILTIN.forEach(p => p.fasi.forEach((f, fi) => {
+      const righe = f.sali.map(s => ({ id: s.id, nome: getSale(s.id).nome, dose: s.g }));
+      Object.entries(ACQUE).forEach(([an, a]) => PH.forEach(ph => {
+        casi.push({ nome: `${p.id}/${fi}/dosi/${an}/pH${ph}`, aq: a, ph, righe });
+        casi.push({ nome: `${p.id}/${fi}/target/${an}/pH${ph}`, aq: a, ph, targets: profiloDaRighe(righe, null) });
+      }));
+    }));
+    const valuta = caso => {
+      const ctx = caso.targets ? { targets: caso.targets } : { righe: caso.righe };
+      const scelta = scegliAcido({ ...caso.aq, acido: 'auto' }, caso.ph, ctx);
+      const rif = caso.targets || profiloDaRighe(caso.righe, null);
+      const acqua = contributoAcqua(caso.aq, null);
+      const r = { nome: caso.nome, scelta: scelta && scelta.tipo, punteggi: scelta && scelta.punteggi };
+      ['HNO3', 'H3PO4'].forEach(t => {
+        const pl = pipeline(caso, t);
+        r[t] = { prima: scost(pl.pPrima, rif, acqua), fin: scost(pl.pFin, rif, acqua), siCaHPO4: pl.si.CaHPO4, P: pl.pFin.P, N: pl.pFin.N };
+      });
+      r.migliore = r.H3PO4.fin < r.HNO3.fin - 0.01 ? 'H3PO4' : 'HNO3';
+      r.altro = r.scelta === 'HNO3' ? 'H3PO4' : 'HNO3';
+      return r;
+    };
+    const ris = casi.map(valuta);
+    out.nCasi = ris.length;
+    out.nulli = ris.filter(r => !r.scelta).map(r => r.nome);
+    out.nH3PO4 = ris.filter(r => r.scelta === 'H3PO4').map(r => r.nome);
+    out.nonOttimi = ris.filter(r => r.scelta && r.scelta !== r.migliore)
+      .map(r => `${r.nome}: scelto ${r.scelta}, HNO₃ ${r.HNO3.fin.toFixed(3)} / H₃PO₄ ${r.H3PO4.fin.toFixed(3)}`);
+    out.rimpiantoMax = Math.max(0, ...ris.filter(r => r.scelta).map(r => r[r.scelta].fin - r[r.altro].fin));
+    out.punteggiDiversi = ris.filter(r => r.scelta && !['HNO3', 'H3PO4'].every(t => Math.abs(r.punteggi[t] - r[t].prima) < 1e-9))
+      .map(r => r.nome);
+    out.pareggiNonHNO3 = ris.filter(r => r.scelta && Math.abs(r.HNO3.fin - r.H3PO4.fin) <= 0.01 && r.scelta !== 'HNO3').map(r => r.nome);
+    out.siPeggiore = ris.filter(r => r.scelta && r[r.scelta].siCaHPO4 > 0 && r[r.altro].siCaHPO4 <= 0)
+      .map(r => `${r.nome}: SI CaHPO₄ ${r[r.scelta].siCaHPO4.toFixed(2)} con ${r.scelta} vs ${r[r.altro].siCaHPO4.toFixed(2)}`);
+    out.dettH3PO4 = ris.filter(r => r.scelta === 'H3PO4').map(r => `${r.nome} (N ${r.H3PO4.N.toFixed(0)} vs ${r.HNO3.N.toFixed(0)}, P ${r.H3PO4.P.toFixed(0)} vs ${r.HNO3.P.toFixed(0)} mg/L, scostamento ${r.H3PO4.fin.toFixed(3)} vs ${r.HNO3.fin.toFixed(3)})`);
+
+    // D. Casi chimicamente ovvi + vincoli su nutriente escluso e precipitazione
+    const R = arr => arr.map(([id, dose]) => ({ id, nome: getSale(id).nome, dose }));
+    const scegli = (righe, aq, ph) => scegliAcido({ ...aq, acido: 'auto' }, ph, { righe });
+    // ricetta povera di N e ricca di P: l'N dell'HNO₃ sfora, il P dell'H₃PO₄ si recupera togliendo KH₂PO₄
+    out.poveraN = scegli(R([['CaN', 200], ['KH2PO4', 300], ['MgSO4', 300], ['K2SO4', 200]]), ACQUE.media, 5.8);
+    // ricetta ricca di N e povera di P con acqua dura: l'H₃PO₄ porterebbe P ben oltre la ricetta
+    out.riccaN = scegli(R([['CaN', 900], ['KNO3', 600], ['KH2PO4', 60], ['MgSO4', 300]]), ACQUE.dura, 5.8);
+    // ricette SENZA fosforo (a dosi e a target): l'H₃PO₄ aggiungerebbe un nutriente che la ricetta esclude
+    const SENZA_P = {
+      'N basso, acqua media (dosi)': [R([['CaN', 100], ['K2SO4', 500], ['MgSO4', 400]]), ACQUE.media, false],
+      'N basso, acqua media (target)': [R([['CaN', 100], ['K2SO4', 500], ['MgSO4', 400]]), ACQUE.media, true],
+      'N basso, acqua dura': [R([['CaN', 250], ['K2SO4', 500], ['MgSO4', 400]]), ACQUE.dura, false],
+      'N normale, acqua dura': [R([['CaN', 700], ['KNO3', 400], ['MgSO4', 300], ['K2SO4', 200]]), ACQUE.dura, false],
+    };
+    out.senzaP = Object.entries(SENZA_P).map(([nome, [righe, aq, isTarget]]) => {
+      const ctx = isTarget ? { targets: profiloDaRighe(righe, null) } : { righe };
+      const sc = scegliAcido({ ...aq, acido: 'auto' }, 5.8, ctx);
+      const ac = acidoPrescritto({ ...aq, acido: 'H3PO4' }, 5.8);
+      const caso = isTarget ? { aq, ph: 5.8, targets: ctx.targets } : { aq, ph: 5.8, righe };
+      return { nome, tipo: sc && sc.tipo, motivo: sc && sc.motivo, punteggi: sc && sc.punteggi, pAggiunto: ac.P,
+        siH3PO4: pipeline(caso, 'H3PO4').si.CaHPO4, siHNO3: pipeline(caso, 'HNO3').si.CaHPO4 };
+    });
+    // ricetta SENZA azoto (PK + Mg): con acqua media sceglie H₃PO₄ perché l'HNO₃ introdurrebbe N escluso;
+    // con acqua dura l'H₃PO₄ manderebbe CaHPO₄ in sovrasaturazione (SI > 0), quindi prevale la sicurezza → HNO₃
+    const rSenzaN = R([['KH2PO4', 200], ['MgSO4', 400], ['K2SO4', 300]]);
+    out.senzaNMedia = scegli(rSenzaN, ACQUE.media, 5.8);
+    out.senzaNDura = scegli(rSenzaN, ACQUE.dura, 5.8);
+
+    // E. La scelta è fatta sulle stesse dosi che Calcola userà: il solver a target non dipende da volumi e diluizione
+    const tgt = profiloDaRighe(PIANTE_BUILTIN[0].fasi[1].sali.map(s => ({ id: s.id, dose: s.g })), null);
+    out.solverIndip = ['HNO3', 'H3PO4'].every(t => {
+      const aq = { ...ACQUE.dura, acido: t };
+      return JSON.stringify(solverTarget(tgt, 0, 0, 0, aq, 5.8)) === JSON.stringify(solverTarget(tgt, 250, 80, 200, aq, 5.8));
+    });
+    return out;
+  });
+  check(`stessa correzione del pH: HNO₃ e H₃PO₄ neutralizzano gli stessi meq con lo stesso HCO₃⁻ residuo, volumi ∝ molarità, N/P apportati = meq × massa atomica (${ac31.neutr.length} casi acqua × pH)`,
+    ac31.neutr.every(n => n.ok), ac31.neutr.filter(n => !n.ok).map(n => `${n.nome}/pH${n.ph}`).join(', '));
+  check(`la dose di acido cresce al diminuire del pH target (acqua dura: ${ac31.neutr.filter(n => n.nome === 'dura').map(n => n.meq.toFixed(2)).join(' > ')} meq/L)`,
+    ac31.neutr.filter(n => n.nome === 'dura').every((n, i, a) => i === 0 || n.meq < a[i - 1].meq));
+  check(`matrice completa: ${ac31.nCasi} casi (35 fasi × dosi/target × 4 acque × 3 pH), acido necessario in tutti`,
+    ac31.nCasi === 840 && ac31.nulli.length === 0, ac31.nulli.slice(0, 5).join(', '));
+  check(`l'acido scelto è sempre il più fedele alla ricetta sulla soluzione FINALE (dopo autoRisolvi), rimpianto max ${ac31.rimpiantoMax.toFixed(4)}`,
+    ac31.nonOttimi.length === 0 && ac31.rimpiantoMax <= 0.01, ac31.nonOttimi.slice(0, 5).join(' | '));
+  check('i punteggi mostrati all\'utente coincidono con lo scostamento ricalcolato in modo indipendente (±1e-9)',
+    ac31.punteggiDiversi.length === 0, ac31.punteggiDiversi.slice(0, 5).join(', '));
+  check('a parità (entro 1 punto percentuale) vince sempre l\'HNO₃', ac31.pareggiNonHNO3.length === 0, ac31.pareggiNonHNO3.slice(0, 5).join(', '));
+  check('l\'acido scelto non crea mai sovrasaturazione di CaHPO₄ nella soluzione finale se l\'altro la eviterebbe',
+    ac31.siPeggiore.length === 0, ac31.siPeggiore.slice(0, 5).join(' | '));
+  console.log(`  ℹ️  H₃PO₄ scelto in ${ac31.nH3PO4.length}/${ac31.nCasi} casi:`);
+  ac31.dettH3PO4.forEach(m => console.log('       · ' + m));
+  check(`ricetta povera di N e ricca di P → H₃PO₄ (HNO₃ ${ac31.poveraN.punteggi.HNO3.toFixed(2)} / H₃PO₄ ${ac31.poveraN.punteggi.H3PO4.toFixed(2)})`, ac31.poveraN.tipo === 'H3PO4');
+  check(`ricetta ricca di N e povera di P, acqua dura → HNO₃ (HNO₃ ${ac31.riccaN.punteggi.HNO3.toFixed(2)} / H₃PO₄ ${ac31.riccaN.punteggi.H3PO4.toFixed(2)})`, ac31.riccaN.tipo === 'HNO3');
+  ac31.senzaP.forEach(s => check(`ricetta senza fosforo (${s.nome}) → mai H₃PO₄, che aggiungerebbe ${s.pAggiunto.toFixed(0)} mg/L di P (SI CaHPO₄ ${s.siH3PO4.toFixed(2)} vs ${s.siHNO3.toFixed(2)} con HNO₃) — scelto ${s.tipo} (${s.motivo})`,
+    s.tipo === 'HNO3'));
+  check(`ricetta senza azoto (PK + Mg), acqua media → H₃PO₄ per non introdurre N escluso (${ac31.senzaNMedia.tipo}, motivo: ${ac31.senzaNMedia.motivo})`,
+    ac31.senzaNMedia.tipo === 'H3PO4' && ac31.senzaNMedia.motivo === 'escluso');
+  check(`ricetta senza azoto, acqua dura → la sicurezza prevale sul nutriente escluso: H₃PO₄ sovrasatura CaHPO₄ (SI +${ac31.senzaNDura.esito.H3PO4.siCaHPO4.toFixed(2)}), quindi sceglie ${ac31.senzaNDura.tipo} (motivo: ${ac31.senzaNDura.motivo})`,
+    ac31.senzaNDura.tipo === 'HNO3' && ac31.senzaNDura.motivo === 'precipitazione');
+  check('la scelta usa le stesse dosi di Calcola: solverTarget indipendente da volumi e diluizione', ac31.solverIndip);
+
+  // F. End-to-end in Calcola: "Automatico" produce esattamente le dosi dell'acido forzato e spiega il motivo reale
+  await resetMotore();
+  const e2e31 = await page.evaluate(() => {
+    const sel = document.getElementById('acido-tipo');
+    const setAq = a => { Object.entries(a).forEach(([k, v]) => { const el = document.getElementById('aq-' + k); if (el) el.value = v; }); saveAcqua(); };
+    const serbatoi = () => [...document.querySelectorAll('#calc-out .serb-card')].map(c => c.innerText.replace(/\s+/g, ' ').trim()).join(' || ');
+    const testo = () => document.getElementById('calc-out').innerText;
+    const msg = () => (testo().match(/Acido scelto automaticamente:[^\n]*/) || [''])[0];
+    const prescritto = () => (testo().match(/mL\/L di (HNO₃|H₃PO₄)/) || [])[1] || null;
+    const calc = (righe, acido) => {
+      sel.value = acido; resetStatoCalc(null); window._bilanciaRighe = null;
+      calcRighe = righe.map(r => ({ ...r })); renderCalcTabella(); calcola({ noScroll: true });
+      return { serb: serbatoi(), msg: msg(), prescritto: prescritto() };
+    };
+    const fase = (pid, i) => PIANTE_BUILTIN.find(p => p.id === pid).fasi[i].sali.map(s => ({ id: s.id, nome: getSale(s.id).nome, dose: s.g, prezzo: 0 }));
+    const R = arr => arr.map(([id, dose]) => ({ id, nome: getSale(id).nome, dose, prezzo: 0 }));
+    const AQ_MEDIA = { ec: 0.3, ph: 7.2, temp: 20, ca: 80, mg: 20, k: 5, na: 30, so4: 40, cl: 50, hco3: 150, no3: 10, fe: 0.1 };
+    const AQ_DURA = { ec: 0.7, ph: 7.8, temp: 20, ca: 180, mg: 45, k: 8, na: 60, so4: 90, cl: 80, hco3: 320, no3: 15, fe: 0.2 };
+    const CASI = [
+      { nome: 'lattuga trapianto, acqua lieve', righe: fase('lattuga', 0), aq: { ec: 0.15, ph: 7.0, temp: 20, ca: 25, mg: 6, k: 2, na: 10, so4: 10, cl: 15, hco3: 80, no3: 3, fe: 0.02 } },
+      { nome: 'pomodoro vegetativo, acqua dura', righe: fase('pomodoro', 1), aq: AQ_DURA },
+      { nome: 'ricetta senza P, N basso, acqua media', righe: R([['CaN', 100], ['K2SO4', 500], ['MgSO4', 400]]), aq: AQ_MEDIA },
+      { nome: 'ricetta senza N (PK+Mg), acqua dura', righe: R([['KH2PO4', 200], ['MgSO4', 400], ['K2SO4', 300]]), aq: AQ_DURA },
+    ];
+    document.getElementById('ph-finale').value = 5.8;
+    const res = CASI.map(c => {
+      setAq(c.aq);
+      const sc = scegliAcido({ ...getAcqua(), acido: 'auto' }, 5.8, { righe: c.righe });
+      const auto = calc(c.righe, 'auto');
+      const forzato = calc(c.righe, sc.tipo);
+      const perc = (auto.msg.match(/scostamento complessivo (\d+)% contro (\d+)%/) || []).slice(1).map(Number);
+      const altro = sc.tipo === 'HNO3' ? 'H3PO4' : 'HNO3';
+      return { nome: c.nome, tipo: sc.tipo, motivo: sc.motivo, msg: auto.msg, uguali: auto.serb.length > 0 && auto.serb === forzato.serb,
+        prescritto: auto.prescritto, perc, attese: [sc.punteggi[sc.tipo], sc.punteggi[altro]].map(x => +(x * 100).toFixed(0)) };
+    });
+    sel.value = 'HNO3';
+    return res;
+  });
+  e2e31.forEach(e => {
+    const nomeAc = e.tipo === 'HNO3' ? 'HNO₃' : 'H₃PO₄';
+    check(`Calcola "Automatico" (${e.nome}) = Calcola con ${nomeAc} forzato: stesse dosi in tutti i serbatoi, prescrive ${e.prescritto}`,
+      e.uguali && e.prescritto === nomeAc);
+    if (e.motivo === 'fedelta') {
+      check(`…e il messaggio riporta gli scostamenti esatti (${e.perc.join('% vs ')}% = ${e.attese.join('% vs ')}%)`,
+        e.perc.length === 2 && e.perc[0] === e.attese[0] && e.perc[1] === e.attese[1] && e.perc[0] <= e.perc[1]);
+    } else if (e.motivo === 'escluso') {
+      check(`…e il messaggio spiega che la ricetta non prevede fosforo ("${e.msg}")`,
+        /non prevede fosforo/.test(e.msg));
+    } else if (e.motivo === 'precipitazione') {
+      check(`…e il messaggio spiega che l'altro acido causerebbe precipitazione di CaHPO₄ ("${e.msg}")`,
+        /sovrasatura di fosfato di calcio/.test(e.msg));
+    }
+  });
 
   // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
