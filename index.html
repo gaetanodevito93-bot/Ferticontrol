@@ -558,7 +558,7 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},250);
 <div class="ch" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
 <span id="ricetta-out-title" data-i18n="ricette.composizione">🔬 Composizione</span>
 <div style="display:flex;gap:6px">
-<button class="btn btn-pr btn-sm" style="width:auto" onclick="caricaRicettaCorrente()" data-i18n="ricette.calcola">→ Calcola</button>
+
 </div>
 </div>
 <div id="ricetta-out" class="cb"></div>
@@ -570,41 +570,43 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},250);
 </div>
 </div>
 <div class="panel" id="tab-calcola" role="tabpanel" aria-labelledby="tabbtn-calcola">
-<div class="card">
+<div class="card" style="margin-bottom:8px">
 <div class="ch" data-i18n="calcola.params">⚙️ Parametri Impianto</div>
-<div class="cb">
-<div class="row2">
-<div class="field"><label data-i18n="calcola.serbA">Serbatoio A (L)</label>
-<div class="urow"><input type="number" id="volA" value="100" min="1" onchange="if(document.getElementById('risultato-stampa'))calcola()"><span class="utag">L</span></div>
+<div class="cb" style="padding:10px 12px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-bottom:8px">
+<div class="field" style="margin-bottom:0"><label data-i18n="calcola.serbA">Serbatoio A (L)</label>
+<div class="urow"><input type="number" id="volA" value="100" min="1" oninput="if(document.getElementById('risultato-stampa')&&+this.value>=1)calcola({noScroll:true})" onchange="if(document.getElementById('risultato-stampa'))calcola({noScroll:true})"><span class="utag">L</span></div>
 </div>
-<div class="field"><label data-i18n="calcola.serbB">Serbatoio B (L)</label>
-<div class="urow"><input type="number" id="volB" value="100" min="1" onchange="if(document.getElementById('risultato-stampa'))calcola()"><span class="utag">L</span></div>
+<div class="field" style="margin-bottom:0"><label data-i18n="calcola.serbB">Serbatoio B (L)</label>
+<div class="urow"><input type="number" id="volB" value="100" min="1" oninput="if(document.getElementById('risultato-stampa')&&+this.value>=1)calcola({noScroll:true})" onchange="if(document.getElementById('risultato-stampa'))calcola({noScroll:true})"><span class="utag">L</span></div>
+</div>
+<div class="field" style="margin-bottom:0"><label><span data-i18n="calcola.diluzione">Fattore diluizione 1 : X</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.dil.tip">1 L concentrato produce X L soluzione finale. ⚠️ Più X è grande, più la soluzione madre è concentrata e maggiore il rischio precipitazioni. Es: 1:200 = madre 200× concentrata (rischio alto). 1:50 = madre 50× concentrata (più sicuro). Il motore suggerirà il fattore ottimale in base alle dosi inserite.</span></span></label>
+<div class="urow"><span class="utag">1 :</span><input type="number" id="diluizione" value="100" min="1" oninput="aggiornaDiluizioneWarning();if(document.getElementById('risultato-stampa')&&+this.value>=1)calcola({noScroll:true})" onchange="aggiornaDiluizioneWarning();if(document.getElementById('risultato-stampa'))calcola({noScroll:true})"></div>
+</div>
+<div class="field" style="margin-bottom:0"><label><span data-i18n="calcola.phFinale">pH soluzione finale</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.ph.tip">pH a cui la soluzione finale viene mantenuta in coltura (correzione con acido/base). Determina il rischio di precipitazione del fosfato di calcio: a pH ≤ 6 il fosfato resta in soluzione, sopra 6.3 tende a precipitare. Il motore usa questo valore per la verifica anti-precipitazione e può suggerirti il pH ottimale.</span></span></label>
+<div class="urow"><span class="utag">pH</span><input type="number" id="ph-finale" value="5.8" min="4.5" max="7.5" step="0.1" oninput="if(document.getElementById('risultato-stampa')&&+this.value>=3&&+this.value<=9)calcola({noScroll:true})" onchange="if(document.getElementById('calc-out').innerHTML.trim())calcola({noScroll:true})"></div>
 </div>
 </div>
-<div class="field"><label><span data-i18n="calcola.diluzione">Fattore diluizione 1 : X</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.dil.tip">1 L concentrato produce X L soluzione finale. ⚠️ Più X è grande, più la soluzione madre è concentrata e maggiore il rischio precipitazioni. Es: 1:200 = madre 200× concentrata (rischio alto). 1:50 = madre 50× concentrata (più sicuro). Il motore suggerirà il fattore ottimale in base alle dosi inserite.</span></span></label>
-<div class="urow"><span class="utag">1 :</span><input type="number" id="diluizione" value="100" min="1" onchange="aggiornaDiluizioneWarning();if(document.getElementById('risultato-stampa'))calcola()"></div>
-</div>
-<div id="diluizione-warning" class="alert al-err" style="display:none;margin-top:6px">
+<div id="diluizione-warning" class="alert al-err" style="display:none;margin-bottom:8px">
 <span>⚠️</span><span id="diluizione-warning-txt"></span>
 </div>
-<div class="field" style="margin-top:14px"><label><span data-i18n="calcola.phFinale">pH soluzione finale</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.ph.tip">pH a cui la soluzione finale viene mantenuta in coltura (correzione con acido/base). Determina il rischio di precipitazione del fosfato di calcio: a pH ≤ 6 il fosfato resta in soluzione, sopra 6.3 tende a precipitare. Il motore usa questo valore per la verifica anti-precipitazione e può suggerirti il pH ottimale.</span></span></label>
-<div class="urow"><span class="utag">pH</span><input type="number" id="ph-finale" value="5.8" min="4.5" max="7.5" step="0.1" onchange="if(document.getElementById('calc-out').innerHTML.trim())calcola()"></div>
-</div>
-<div class="field" style="margin-top:10px"><label><span data-i18n="calcola.acido">Acido per i bicarbonati</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.acido.tip">Acido usato per neutralizzare i bicarbonati dell'acqua (HCO₃⁻ &gt; 50 mg/L). Il motore conta l'azoto (HNO₃) o il fosforo (H₃PO₄) che l'acido apporta e riduce di conseguenza i sali. Con «Automatico» sceglie da solo l'acido che riproduce meglio la ricetta; puoi sempre forzarne uno.</span></span></label>
-<select id="acido-tipo" onchange="salvaAcidoTipo();if(document.getElementById('calc-out').innerHTML.trim())calcola()">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;align-items:center">
+<div class="field" style="margin-bottom:0"><label><span data-i18n="calcola.acido">Acido per i bicarbonati</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.acido.tip">Acido usato per neutralizzare i bicarbonati dell'acqua (HCO₃⁻ &gt; 50 mg/L). Il motore conta l'azoto (HNO₃) o il fosforo (H₃PO₄) che l'acido apporta e riduce di conseguenza i sali. Con «Automatico» sceglie da solo l'acido che riproduce meglio la ricetta; puoi sempre forzarne uno.</span></span></label>
+<select id="acido-tipo" onchange="salvaAcidoTipo();if(document.getElementById('calc-out').innerHTML.trim())calcola({noScroll:true})" style="padding:6px 8px;font-size:.78rem">
 <option value="auto" data-i18n="calcola.acido.auto">Automatico — il più adatto alla ricetta</option>
 <option value="HNO3" data-i18n="calcola.acido.hno3">HNO₃ 38% — apporta N</option>
 <option value="H3PO4" data-i18n="calcola.acido.h3po4">H₃PO₄ 75% — apporta P</option>
 </select>
-<div id="acido-auto-info" style="font-size:.7rem;color:var(--ts);margin-top:4px"></div>
+<div id="acido-auto-info" style="font-size:.68rem;color:var(--ts);margin-top:2px"></div>
 </div>
-<div style="background:var(--cs);border-radius:4px;padding:9px 11px;font-size:.75rem;color:var(--ts)">
+<div style="background:var(--cs);border-radius:4px;padding:7px 10px;font-size:.73rem;color:var(--ts)">
 <strong data-i18n="calcola.ricettaCaricata">Ricetta caricata:</strong> <span id="lbl-ricetta-caricata" style="color:var(--vm)" data-i18n="calcola.nessuna">Nessuna — inserisci manualmente o carica da Ricette</span>
 <span id="lbl-modo-caricato" style="display:none;margin-left:6px"></span>
 </div>
 </div>
 </div>
-<div class="card">
+</div>
+<div class="card" style="margin-bottom:10px">
 <div class="ch" id="ch-sali-calc" style="cursor:pointer;justify-content:space-between;user-select:none" onclick="toggleSaliPrep()">
 <span data-i18n="calcola.sali">🧂 Sali da Preparare</span>
 <span id="sali-prep-badge" style="font-size:.68rem;font-weight:500;opacity:.92;text-transform:none">▲</span>
@@ -621,8 +623,9 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},250);
 <tbody id="calc-tbody"></tbody>
 </table>
 </div>
-<div style="padding:10px 14px">
-<button class="btn btn-se btn-sm" onclick="aggiungiRigaCalc()" style="width:100%" data-i18n="calcola.aggiungiSale">+ Aggiungi sale</button>
+<div style="padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-se btn-sm" onclick="aggiungiRigaCalc()" style="flex:1" data-i18n="calcola.aggiungiSale">+ Aggiungi sale</button>
+<button class="btn btn-pr btn-sm" onclick="calcola()" style="flex:1" aria-label="Calcola i dosaggi dei sali" data-i18n="calcola.calcola">⚗️ Calcola Dosaggi</button>
 </div>
 </div>
 </div>
@@ -649,7 +652,6 @@ Gli ingredienti evidenziati in rosso non sono presenti nel tuo magazzino. Puoi r
 </div>
 </div>
 </div>
-<button class="btn btn-pr" onclick="calcola()" style="margin-bottom:14px" aria-label="Calcola i dosaggi dei sali" data-i18n="calcola.calcola">⚗️ Calcola Dosaggi</button>
 <div id="calc-out">
 <div class="ph"><p data-i18n-html="calcola.placeholder">Inserisci i parametri e premi <strong>Calcola Dosaggi</strong> oppure carica una ricetta dalla scheda Ricette.</p></div>
 </div>
@@ -1908,7 +1910,12 @@ if(id==='dati'||id==='catalogo') setTimeout(aggiornaStat,0);
 // Riporta la vista in cima al calcolatore dopo aver caricato una ricetta,
 // cosi' il pulsante "Calcola Dosaggi" resta piu' in basso nella schermata.
 function scrollCalcolaInCima(){
-setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),60);
+setTimeout(()=>{
+const tc=document.getElementById('tab-calcola');
+const tabs=document.querySelector('.tabs');
+const y=tc ? Math.max(0, tc.offsetTop - (tabs?tabs.offsetHeight:48) - 4) : 0;
+window.scrollTo({top:y,behavior:'smooth'});
+},60);
 }
 function saveCatalogo(){ try{ localStorage.setItem('fc_catalogo', JSON.stringify(catalogo)); }catch(e){ console.warn('Salvataggio catalogo fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
 function saveRicette(){ try{ localStorage.setItem('fc_ricette', JSON.stringify(ricetteCustom)); }catch(e){ console.warn('Salvataggio ricette fallito:', e.message); showToast(TT('Errore salvataggio: spazio esaurito','Save error: storage full'), false); } }
@@ -2150,7 +2157,7 @@ const unitMol=isMicroEl?'µmol/L':'mmol/L';
 html+=`<tr><td><strong>${elLabel(el)}</strong></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} <span style="font-weight:700;color:${isMicroEl?'var(--vi)':'var(--vc)'}">${unitMol}</span></td></tr>`;
 });
 html+=`</tbody></table></div>`;
-html+=`<button class="btn btn-pr" onclick="caricaRicettaCorrente()" style="margin-top:10px">${TT('⚗️ Calcola dosi per i tuoi serbatoi e la tua acqua →','⚗️ Calculate doses for your tanks and water →')}</button>`;
+html+=`<button class="btn btn-pr" onclick="caricaRicettaCorrente()" style="margin-top:10px">${TT('⚗️ Usa questa ricetta → Imposta serbatoi e calcola','⚗️ Use this recipe → Set tanks and calculate')}</button>`;
 document.getElementById('ricetta-out').innerHTML=html;
 return;
 }
@@ -2163,7 +2170,7 @@ let html=`<div class="ri-grid" style="margin-bottom:8px">
     <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${t('js.unitaPh')}</div></div>
     <div class="ri-box"><div class="ri-lbl">${totCosto>0?TT('Costo / 1000L','Cost / 1000L'):t('js.componenti')}</div><div class="ri-val">${totCosto>0?fmtEuro(totCosto):saliFase.length}</div><div class="ri-sub">${totCosto>0?TT('sol. finale','final sol.'):t('js.sali')}</div></div>
   </div>`;
-html+=`<button class="btn btn-pr" onclick="caricaRicettaCorrente()" style="margin-bottom:8px">${TT('⚗️ Calcola dosi per i tuoi serbatoi e la tua acqua →','⚗️ Calculate doses for your tanks and water →')}</button>`;
+html+=`<button class="btn btn-pr" onclick="caricaRicettaCorrente()" style="margin-bottom:8px">${TT('⚗️ Usa questa ricetta → Imposta serbatoi e calcola','⚗️ Use this recipe → Set tanks and calculate')}</button>`;
 html+=`<div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--cs);border-radius:var(--r);padding:7px 10px;margin-bottom:8px;font-size:.73rem;align-items:center">
     <span style="font-weight:700;color:var(--ts);text-transform:uppercase;font-size:.64rem;letter-spacing:.04em">${TT('Target mg/L:','Target mg/L:')}</span>
     ${['N','P','K','Ca','Mg'].map(el=>`<span style="background:#fff;border:1px solid var(--bd);border-radius:4px;padding:2px 7px;font-family:'JetBrains Mono',monospace"><strong>${el}</strong> ${(profBase[el]||0).toFixed(0)}</span>`).join('')}
@@ -2217,7 +2224,8 @@ document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style
 renderCalcTabella();
 setSaliPrepCollapsed(getMancanti().length===0);
 showTab('calcola');
-calcola();
+calcola({noScroll:true});
+scrollCalcolaInCima();
 }
 function renderRicetteCustom(){
 piantaSel = null; faseSel = null; tipoRicettaSel = null;
@@ -2271,7 +2279,8 @@ window._targetAttivo=null;
 resetStatoCalc(f.modo==='target' ? {targets:{...(f.targets||{})}, pianta:ric.nome, fase:f.nome} : null);
 setSaliPrepCollapsed(f.modo==='target' || getMancanti().length===0);
 showTab('calcola');
-calcola();
+calcola({noScroll:true});
+scrollCalcolaInCima();
 }
 function eliminaRicetta(ri){
 window._pendingDelete={tipo:'ricetta',ri};
@@ -3704,7 +3713,8 @@ if(info?.el){ const somma=Object.values(info.el).reduce((a,b)=>a+b,0); if(somma>
 });
 return errori;
 }
-function calcola(){
+function calcola(opts){
+const _noScroll = !!(opts && opts.noScroll);
 // Serbatoio C in automatico finché l'utente non lo sceglie a mano: si parte
 // da 2 serbatoi e il C si attiva solo se la ricetta ne ha bisogno (sotto).
 if(!serbCManuale) usaSerbC = false;
@@ -3846,51 +3856,6 @@ html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span
 } else {
 html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.ok')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.`,`All ${sicurezza.audit.length} compatibility checks passed. No precipitation expected.`)}</span></div>`;
 }
-if(ivDil){
-html+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var(--r);padding:13px 15px;margin-bottom:12px">
-      <div style="display:flex;gap:10px;align-items:flex-start">
-        <span style="font-size:1.2rem;flex-shrink:0">📐</span>
-        <div style="flex:1">
-          <div style="font-weight:700;color:#e65100;font-size:.84rem;margin-bottom:5px">
-            ${TT('Concentrazione estremamente elevata nel serbatoio','Extremely high concentration in the tank')}
-          </div>
-          <div style="font-size:.77rem;color:#4a2800;line-height:1.65;margin-bottom:10px">
-            ${TT(`Con 1:${ivDil.dilAttuale} la soluzione madre critica raggiunge <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
-            Le dosi <strong>non sono state modificate</strong>: l'EC finale è preservata a <strong>${ivDil.ecFin} mS/cm</strong>.<br>
-            Una diluizione <strong>1:${ivDil.dilSuggerito}</strong> porterebbe la madre a <strong>${ivDil.ecConcSugg} mS/cm</strong>.`,`At 1:${ivDil.dilAttuale} the critical mother solution reaches <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
-            The doses <strong>were not modified</strong>: the final EC is preserved at <strong>${ivDil.ecFin} mS/cm</strong>.<br>
-            A dilution of <strong>1:${ivDil.dilSuggerito}</strong> would bring the mother solution to <strong>${ivDil.ecConcSugg} mS/cm</strong>.`)}<br>
-            <span style="color:#888;font-size:.72rem">${TT('La sicurezza è verificata dagli indici di saturazione (SI). Se il SI>0 per qualche composto, il precipitato si formerà indipendentemente dall\'EC.','Safety is verified by saturation indices (SI). If SI>0 for any compound, the precipitate will form regardless of EC.')}</span>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <button class="btn btn-pr btn-sm" onclick="applicaDiluizione(${ivDil.dilSuggerito})" style="width:auto">
-              ${TT(`✅ Applica diluizione 1:${ivDil.dilSuggerito} e ricalcola`,`✅ Apply dilution 1:${ivDil.dilSuggerito} and recalculate`)}
-            </button>
-            <span style="font-size:.72rem;color:#888">${usaSerbC?TT(`Tutti e 3 i serbatoi useranno 1:${ivDil.dilSuggerito}`,`All 3 tanks will use 1:${ivDil.dilSuggerito}`):TT(`Entrambi i serbatoi useranno 1:${ivDil.dilSuggerito}`,`Both tanks will use 1:${ivDil.dilSuggerito}`)}</span>
-          </div>
-        </div>
-      </div>
-    </div>`;
-}
-const repDisp = window._ricalcoloReport; window._ricalcoloReport = null;
-if(repDisp){
-const fmtV = v => v >= 10 ? v.toFixed(0) : v >= 1 ? v.toFixed(1) : v.toFixed(2);
-html+=`<div class="card" style="margin-bottom:12px;border-color:var(--ro)">
-      <div class="ch" style="background:var(--ro)">${TT('🔄 Ricalcolo con gli ingredienti disponibili','🔄 Recalculation with available ingredients')}</div>
-      <div class="cb" style="font-size:.76rem;line-height:1.7">
-        <div><strong>${TT('Non in scorta:','Not in stock:')}</strong> ${repDisp.mancanti.map(esc).join(', ')}</div>
-        ${repDisp.aggiunti.length?`<div><strong>${TT('Aggiunti:','Added:')}</strong> ${repDisp.aggiunti.map(a=>`${esc(a.nome)} ${a.dose} g/1000L`).join(', ')}</div>`:''}
-        ${repDisp.modifiche.length?`<div><strong>${TT('Dosi adattate:','Adjusted doses:')}</strong> ${repDisp.modifiche.map(m=>`${esc(m.nome)} ${m.prima}→${m.dopo}`).join(', ')}</div>`:''}
-        <div style="margin-top:6px;color:var(--ts)">${TT('Profilo della ricetta (mg/L, solo sali) prima → dopo:','Recipe profile (mg/L, salts only) before → after:')} ${repDisp.confronto.map(c=>`${c.el} ${fmtV(c.prima)}→${fmtV(c.dopo)}`).join(' · ')}</div>
-        ${repDisp.nonCoperti.length?`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span>${TT('Non coperti con gli ingredienti in scorta (>10% sotto la ricetta):','Not covered with the ingredients in stock (>10% below the recipe):')} <strong>${repDisp.nonCoperti.map(c=>elLabel(c.el)).join(', ')}</strong>. ${TT('Aggiungi in catalogo/scorta un sale che li fornisca.','Add a salt providing them to the catalog/stock.')}</span></div>`:`<div class="alert al-ok" style="margin-top:8px"><span>✅</span><span>${TT('Tutti gli elementi della ricetta sono coperti entro il 10%.','All recipe elements are covered within 10%.')}</span></div>`}
-      </div>
-    </div>`;
-}
-if(sicurezza.avvisi.length>0){
-html+=`<div class="alert al-inf" style="margin-bottom:10px"><span>⚠️</span><div><strong>${t('js.avvisiManuali')}</strong><ul style="margin:5px 0 0 14px;line-height:1.8;font-size:.76rem">`;
-sicurezza.avvisi.forEach(a=>html+=`<li><strong>${a.titolo}:</strong> ${a.dettaglio}</li>`);
-html+=`</ul></div></div>`;
-}
 if(needsSerbC.length>0 || usaSerbC){
 const titoloC = motiviSerbCAuto ? t('js.serbCautoTitle') : needsSerbC.length ? t('js.serbCtitle') : t('js.serbCattivo');
 const motiviC = motiviSerbCAuto || needsSerbC;
@@ -3909,7 +3874,7 @@ html+=`<div id="serbC-box" style="background:#f3e8ff;border:2px solid #7b3f9e;bo
             <input type="checkbox" id="chk-serbC" ${usaSerbC?'checked':''} onchange="toggleSerbC(this.checked)" style="width:18px;height:18px;accent-color:#7b3f9e;flex-shrink:0">
             ${usaSerbC ? t('js.usaSerbC') : t('js.abilitaSerbC')}
           </label>
-          ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">${TT('Volume Serb. C (L)','Tank C volume (L)')}</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" onchange="if(document.getElementById('risultato-stampa'))calcola()" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
+          ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">${TT('Volume Serb. C (L)','Tank C volume (L)')}</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" oninput="if(document.getElementById('risultato-stampa')&&+this.value>=1)calcola({noScroll:true})" onchange="if(document.getElementById('risultato-stampa'))calcola({noScroll:true})" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
         </div>
       </div>
     </div>`;
@@ -3942,6 +3907,51 @@ html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span style="
 html+=`</div>`;
 });
 html+=`</div>`;
+if(ivDil){
+html+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var(--r);padding:13px 15px;margin-top:12px;margin-bottom:12px">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:1.2rem;flex-shrink:0">📐</span>
+        <div style="flex:1">
+          <div style="font-weight:700;color:#e65100;font-size:.84rem;margin-bottom:5px">
+            ${TT('Concentrazione estremamente elevata nel serbatoio','Extremely high concentration in the tank')}
+          </div>
+          <div style="font-size:.77rem;color:#4a2800;line-height:1.65;margin-bottom:10px">
+            ${TT(`Con 1:${ivDil.dilAttuale} la soluzione madre critica raggiunge <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
+            Le dosi <strong>non sono state modificate</strong>: l'EC finale è preservata a <strong>${ivDil.ecFin} mS/cm</strong>.<br>
+            Una diluizione <strong>1:${ivDil.dilSuggerito}</strong> porterebbe la madre a <strong>${ivDil.ecConcSugg} mS/cm</strong>.`,`At 1:${ivDil.dilAttuale} the critical mother solution reaches <strong>${ivDil.ecConcAttuale} mS/cm</strong>.
+            The doses <strong>were not modified</strong>: the final EC is preserved at <strong>${ivDil.ecFin} mS/cm</strong>.<br>
+            A dilution of <strong>1:${ivDil.dilSuggerito}</strong> would bring the mother solution to <strong>${ivDil.ecConcSugg} mS/cm</strong>.`)}<br>
+            <span style="color:#888;font-size:.72rem">${TT('La sicurezza è verificata dagli indici di saturazione (SI). Se il SI>0 per qualche composto, il precipitato si formerà indipendentemente dall\'EC.','Safety is verified by saturation indices (SI). If SI>0 for any compound, the precipitate will form regardless of EC.')}</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <button class="btn btn-pr btn-sm" onclick="applicaDiluizione(${ivDil.dilSuggerito})" style="width:auto">
+              ${TT(`✅ Applica diluizione 1:${ivDil.dilSuggerito} e ricalcola`,`✅ Apply dilution 1:${ivDil.dilSuggerito} and recalculate`)}
+            </button>
+            <span style="font-size:.72rem;color:#888">${usaSerbC?TT(`Tutti e 3 i serbatoi useranno 1:${ivDil.dilSuggerito}`,`All 3 tanks will use 1:${ivDil.dilSuggerito}`):TT(`Entrambi i serbatoi useranno 1:${ivDil.dilSuggerito}`,`Both tanks will use 1:${ivDil.dilSuggerito}`)}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+const repDisp = window._ricalcoloReport; window._ricalcoloReport = null;
+if(repDisp){
+const fmtV = v => v >= 10 ? v.toFixed(0) : v >= 1 ? v.toFixed(1) : v.toFixed(2);
+html+=`<div class="card" style="margin-top:12px;margin-bottom:12px;border-color:var(--ro)">
+      <div class="ch" style="background:var(--ro)">${TT('🔄 Ricalcolo con gli ingredienti disponibili','🔄 Recalculation with available ingredients')}</div>
+      <div class="cb" style="font-size:.76rem;line-height:1.7">
+        <div><strong>${TT('Non in scorta:','Not in stock:')}</strong> ${repDisp.mancanti.map(esc).join(', ')}</div>
+        ${repDisp.aggiunti.length?`<div><strong>${TT('Aggiunti:','Added:')}</strong> ${repDisp.aggiunti.map(a=>`${esc(a.nome)} ${a.dose} g/1000L`).join(', ')}</div>`:''}
+        ${repDisp.modifiche.length?`<div><strong>${TT('Dosi adattate:','Adjusted doses:')}</strong> ${repDisp.modifiche.map(m=>`${esc(m.nome)} ${m.prima}→${m.dopo}`).join(', ')}</div>`:''}
+        <div style="margin-top:6px;color:var(--ts)">${TT('Profilo della ricetta (mg/L, solo sali) prima → dopo:','Recipe profile (mg/L, salts only) before → after:')} ${repDisp.confronto.map(c=>`${c.el} ${fmtV(c.prima)}→${fmtV(c.dopo)}`).join(' · ')}</div>
+        ${repDisp.nonCoperti.length?`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span>${TT('Non coperti con gli ingredienti in scorta (>10% sotto la ricetta):','Not covered with the ingredients in stock (>10% below the recipe):')} <strong>${repDisp.nonCoperti.map(c=>elLabel(c.el)).join(', ')}</strong>. ${TT('Aggiungi in catalogo/scorta un sale che li fornisca.','Add a salt providing them to the catalog/stock.')}</span></div>`:`<div class="alert al-ok" style="margin-top:8px"><span>✅</span><span>${TT('Tutti gli elementi della ricetta sono coperti entro il 10%.','All recipe elements are covered within 10%.')}</span></div>`}
+      </div>
+    </div>`;
+}
+if(sicurezza.avvisi.length>0){
+html+=`<div class="alert al-inf" style="margin-top:12px;margin-bottom:10px"><span>⚠️</span><div><strong>${t('js.avvisiManuali')}</strong><ul style="margin:5px 0 0 14px;line-height:1.8;font-size:.76rem">`;
+sicurezza.avvisi.forEach(a=>html+=`<li><strong>${a.titolo}:</strong> ${a.dettaglio}</li>`);
+html+=`</ul></div></div>`;
+}
 const volMin = Math.min(...serbatoi.map(s=>s.vol));
 const volFinale1000L = volMin * dil;
 // Costo per 1000 L finali dalle dosi (g/1000L × €/kg): indipendente dai
@@ -4424,7 +4434,7 @@ document.getElementById('calc-out').innerHTML=html;
 const pannello = document.getElementById('info-tecniche');
 document.querySelectorAll('#risultato-stampa .tech-info').forEach(c=>pannello.appendChild(c));
 }
-document.getElementById('calc-out').scrollIntoView({behavior:'smooth', block:'start'});
+if(!_noScroll) document.getElementById('calc-out').scrollIntoView({behavior:'smooth', block:'start'});
 } catch(err) {
 console.error('Errore in calcola():', err);
 document.getElementById('calc-out').innerHTML=`
