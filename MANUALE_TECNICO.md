@@ -234,7 +234,7 @@ La scheda risultato comprende:
 
 - **Dosi per serbatoio** — per A, B e C: grammi reali di ogni sale nel volume del serbatoio (`dose × vol × diluizione / 1000`), con EC parziale del serbatoio.
 - **Interventi automatici** — l'elenco di ciò che il motore ha fatto o prescritto (spostamenti, acido, suggerimenti diluizione), ciascuno con spiegazione chimica.
-- **Riepilogo** — EC finale attesa (dai coefficienti `EC_COEFF_GLOBAL` derivati da Kohlrausch/Onsager + EC acqua), EC nel concentrato, costo del batch e costo per 1000 L finali (calcolato dalle dosi, quindi indipendente dai volumi dei serbatoi).
+- **Riepilogo** — EC finale attesa (dai coefficienti `EC_COEFF_GLOBAL` derivati da Kohlrausch/Onsager + EC acqua), EC nel concentrato, costo per singola soluzione madre (Serb. A/B/C), costo totale del batch (con indicazione del costo sali del singolo ciclo sul serbatoio più piccolo quando i volumi sono asimmetrici), costo dell'acido prescritto per i bicarbonati e costo per 1000 L finali (comprensivo di sali e acido, con dettaglio separato, indipendente dai volumi dei serbatoi).
 - **Fedeltà alla ricetta** — target → ottenuto per N, P, K, Ca, Mg, S (sali + acqua + acido), sia in modalità target sia quando la correzione acqua ha ribilanciato le dosi.
 - **Indici di saturazione** con **gauge grafici** (CaSO₄, CaHPO₄, CaCO₃, struvite) per concentrato e soluzione finale.
 - **Bilancio ionico** — cationi vs anioni in meq/L (dalla speciazione completa), profilo elementare finale in mg/L e **contributo per sostanza**: quale sale porta quanto di ogni elemento.

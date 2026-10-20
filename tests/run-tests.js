@@ -1641,6 +1641,122 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
   });
 
   // ────────────────────────────────────────────────
+  console.log('\n═══ S32. Audit costi soluzioni madre, acido, volumi asimmetrici e sincronizzazione prezzi ═══');
+  await resetMotore();
+  const s32 = await page.evaluate(() => {
+    const out = {};
+    const parseEuro = str => { if (!str) return null; const m = str.match(/€\s*([\d.,]+)/); return m ? parseFloat(m[1].replace(/\./g, '').replace(',', '.')) : null; };
+    // 1. Sub-cent fmtEuro
+    out.fmt0014 = fmtEuro(0.0014, 2);
+    out.fmt0003 = fmtEuro(0.0003, 2);
+    out.fmtZero = fmtEuro(0, 2);
+    // 2. Osmosi (nessun acido): costoSerb A + B = costoTot, tot-row contiene il costo del serbatoio
+    presetAcqua('osmosi');
+    document.getElementById('volA').value = 100;
+    document.getElementById('volB').value = 100;
+    document.getElementById('diluizione').value = 100;
+    document.getElementById('ph-finale').value = 5.8;
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    calcola();
+    const cardsOsm = [...document.querySelectorAll('#calc-out .serb-card')];
+    out.totRowCostiOsm = cardsOsm.map(c => parseEuro(c.querySelector('.tot-row .costo-txt')?.innerText));
+    const txtOsm = document.getElementById('calc-out').innerText;
+    out.serbAOsm = parseEuro((txtOsm.match(/Costo soluzione madre Serb\. A \(\d+ L\)\s*€\s*[\d.,]+/) || [])[0]);
+    out.serbBOsm = parseEuro((txtOsm.match(/Costo soluzione madre Serb\. B \(\d+ L\)\s*€\s*[\d.,]+/) || [])[0]);
+    out.batchOsm = parseEuro((txtOsm.match(/Costo totale batch\s*€\s*[\d.,]+/) || [])[0]);
+    out.milleOsm = parseEuro((txtOsm.match(/Costo per 1000 L finali\s*€\s*[\d.,]+/) || [])[0]);
+    out.haRigaAcidoOsm = /Costo acido/.test(txtOsm);
+    // 3. Acqua media (HCO3 150 mg/L, Ca 80 mg/L → entrambi i serbatoi attivi): include costo acido in Costo per 1000 L finali, nel Riepilogo e nella card pH
+    presetAcqua('media');
+    document.getElementById('acido-tipo').value = 'HNO3';
+    selPianta('pomodoro', 'builtin'); selFase(1); caricaRicettaCorrente();
+    calcola();
+    const txtDura = document.getElementById('calc-out').innerText;
+    out.milleDura = parseEuro((txtDura.match(/Costo per 1000 L finali\s*€\s*[\d.,]+/) || [])[0]);
+    out.acidoBatchDura = parseEuro((txtDura.match(/Costo acido \([^)]+\) per 10000 L\s*€\s*[\d.,]+/) || [])[0]);
+    const splitMatch = txtDura.match(/di cui sali \/ acido\s*€\s*([\d.,]+)\s*\+\s*€\s*([\d.,]+)/);
+    out.splitSali = splitMatch ? parseFloat(splitMatch[1].replace(',', '.')) : null;
+    out.splitAcido = splitMatch ? parseFloat(splitMatch[2].replace(',', '.')) : null;
+    const hno3BoxTxt = [...document.querySelectorAll('#calc-out .ri-box')].find(b => /HNO₃ 38%/.test(b.innerText))?.innerText || '';
+    out.phCardHaCostoAcido = /€\s*[\d.,]+/.test(hno3BoxTxt);
+    // 4. Volumi asimmetrici (volA=300, volB=100): Costo per 1000 L invariato, riga ciclo mostrata
+    document.getElementById('volA').value = 300;
+    document.getElementById('volB').value = 100;
+    calcola();
+    const txtAsim = document.getElementById('calc-out').innerText;
+    out.milleAsim = parseEuro((txtAsim.match(/Costo per 1000 L finali\s*€\s*[\d.,]+/) || [])[0]);
+    out.batchAsim = parseEuro((txtAsim.match(/Costo totale batch\s*€\s*[\d.,]+/) || [])[0]);
+    out.cicloAsim = parseEuro((txtAsim.match(/sali usati per ciclo da 10000 L \(tank min\)\s*€\s*[\d.,]+/) || [])[0]);
+    // 5. Serbatoio vuoto ignorato da volMin e righe a dose 0 filtrate dai serbatoi
+    presetAcqua('osmosi');
+    document.getElementById('volA').value = 200;
+    document.getElementById('volB').value = 50;
+    resetStatoCalc(null);
+    calcRighe = [
+      { id: 'KNO3', nome: 'KNO3', dose: 500, prezzo: 1.0, fixed: true },
+      { id: 'CaN', nome: 'CaN', dose: 0, prezzo: 1.0, fixed: true }
+    ];
+    renderCalcTabella();
+    calcola();
+    const txtVuoto = document.getElementById('calc-out').innerText;
+    out.resaConSerbBVuoto = (txtVuoto.match(/Soluzione finale da batch \(tank min\)\s*([\d]+)\s*L/) || [])[1];
+    out.serbBnessunSale = /Nessun sale assegnato/.test(document.querySelectorAll('#calc-out .serb-card')[1]?.innerText || '');
+    // 6. Totale serbatoio con prodotto liquido (mL + g)
+    usaSerbC = true; serbCManuale = true;
+    document.getElementById('volA').value = 100;
+    document.getElementById('volB').value = 100;
+    calcRighe = [
+      { id: 'KNO3', nome: 'KNO3', dose: 400, prezzo: 1.1, fixed: true },
+      { id: 'CaN', nome: 'CaN', dose: 400, prezzo: 0.9, fixed: true },
+      { id: 'K2SiO3', nome: 'K2SiO3', dose: 70, prezzo: 2.0, fixed: true }
+    ];
+    renderCalcTabella();
+    calcola();
+    const totC = document.querySelector('#calc-out .serb-card.c .tot-row')?.innerText || '';
+    out.totCLiquido = totC;
+    usaSerbC = false; serbCManuale = false;
+    // 7. Sincronizzazione prezzo da Catalogo → calcRighe e preservazione prezzo manuale in modalità target
+    editIngrediente('KNO3');
+    const oldPz = document.getElementById('ing-prezzo').value;
+    document.getElementById('ing-prezzo').value = '2.5';
+    salvaIngrediente();
+    out.pzSyncCat = calcRighe.find(r => r.id === 'KNO3')?.prezzo;
+    editIngrediente('KNO3');
+    document.getElementById('ing-prezzo').value = oldPz;
+    salvaIngrediente();
+    // Target mode: anteprima mostra Costo / 1000L e modifica prezzo manuale sopravvive a calcola()
+    ricetteCustom.push({
+      id: 'rc_test_costi', nome: 'Test Costi Target', emoji: '🧪', note: '',
+      fasi: [{ nome: 'F1', icon: '🌱', ec: [1.5, 2.0], ph: [5.8, 6.2], modo: 'target', targets: { N: 150, P: 40, K: 200, Ca: 120, Mg: 35, S: 0, Fe: 2, Mn: 0.5, Zn: 0.1, B: 0.3, Cu: 0.03, Mo: 0.02 } }]
+    });
+    selPianta(ricetteCustom.length - 1, 'custom');
+    out.ricettaTargetHaCosto = /Costo \/ 1000L[\s\S]*€\s*[\d.,]+/.test(document.getElementById('ricetta-out').innerText);
+    caricaRicettaCorrente();
+    const idxK = calcRighe.findIndex(r => r.id === 'KNO3');
+    const inpPz = document.querySelector(`#calc-tbody input[data-riga="${idxK}"][data-campo="prezzo"]`);
+    inpPz.value = '9.9';
+    calcola();
+    out.pzTargetPreservato = calcRighe.find(r => r.id === 'KNO3')?.prezzo;
+    ricetteCustom.pop(); saveRicette();
+    return out;
+  });
+  check(`fmtEuro non tronca a € 0,00 i sub-centesimi (${s32.fmt0014}, ${s32.fmt0003})`,
+    s32.fmt0014 === '€\u202f0,001' && s32.fmt0003 === '€\u202f0,0003' && s32.fmtZero === '');
+  check(`costo per singolo serbatoio mostrato in .tot-row e nel Riepilogo, e Serb. A + Serb. B = Costo totale batch (${s32.serbAOsm} + ${s32.serbBOsm} = ${s32.batchOsm})`,
+    s32.totRowCostiOsm[0] === s32.serbAOsm && s32.totRowCostiOsm[1] === s32.serbBOsm && close(s32.serbAOsm + s32.serbBOsm, s32.batchOsm, 0.02));
+  check(`con acqua osmosi nessun costo acido aggiunto (${s32.milleOsm} €/1000L, riga acido=${s32.haRigaAcidoOsm})`,
+    !s32.haRigaAcidoOsm && close(s32.batchOsm / 10, s32.milleOsm, 0.01));
+  check(`con acqua media (HCO₃⁻ 150) il costo dell'acido è incluso in Costo per 1000 L finali, nel Riepilogo e nella card pH (${s32.splitSali} + ${s32.splitAcido} ≈ ${s32.milleDura})`,
+    s32.acidoBatchDura > 0 && s32.splitSali > 0 && s32.splitAcido > 0 && close(s32.splitSali + s32.splitAcido, s32.milleDura, 0.02) && s32.phCardHaCostoAcido);
+  check(`volumi asimmetrici (300 L / 100 L): Costo per 1000 L invariato (${s32.milleAsim} = ${s32.milleDura}) e costo ciclo da 10000 L mostrato (${s32.cicloAsim} < ${s32.batchAsim})`,
+    s32.milleAsim === s32.milleDura && s32.cicloAsim > 0 && s32.cicloAsim < s32.batchAsim && close(s32.cicloAsim, s32.splitSali * 10, 0.05));
+  check(`serbatoio vuoto (e righe a dose 0) escluso da volMin: resa calcolata sul serbatoio attivo da 200 L (${s32.resaConSerbBVuoto} L)`,
+    s32.resaConSerbBVuoto === '20000' && s32.serbBnessunSale);
+  check(`totale serbatoio con prodotto liquido mostra volume e peso ("${s32.totCLiquido.replace(/\s+/g, ' ')}")`,
+    /(mL|L)\s*\([\d.,]+\s*(g|kg)\)/.test(s32.totCLiquido));
+  check(`sincronizzazione prezzo Catalogo → calcRighe (${s32.pzSyncCat}), costo anteprima target (${s32.ricettaTargetHaCosto}) e prezzo manuale preservato in modalità target (${s32.pzTargetPreservato})`,
+    s32.pzSyncCat === 2.5 && s32.ricettaTargetHaCosto && s32.pzTargetPreservato === 9.9);
+
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
   if (failures.length) { console.log('\nFallimenti:'); failures.forEach(f => console.log('  • ' + f)); }

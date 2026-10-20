@@ -1394,7 +1394,7 @@ const PH_DEFAULT = 5.8;
 // scelto in Calcola (aq.acido: 'HNO3' o 'H3PO4'; con "Automatico" il tipo è
 // già stato risolto da scegliAcido prima del calcolo). È l'unica fonte di
 // verità usata da solver, correzione acqua, profilo finale e verifica.
-const ACIDO_SOGLIA_HCO3 = 50;
+const ACIDO_SOGLIA_HCO3 = 50; function calcolaGrammiAcido(aqOrHco3, phTarget, tipoAcido){ const aqObj = (aqOrHco3 && typeof aqOrHco3 === 'object') ? aqOrHco3 : {hco3: +aqOrHco3 || 0}; if(!(aqObj.hco3 > ACIDO_SOGLIA_HCO3)) return 0; const av = calcAcidVolume(aqObj, 1000, phTarget || PH_DEFAULT); if(!(av.meq > 0.01)) return 0; const isP = (tipoAcido || aqObj.acido) === 'H3PO4'; const volMl = isP ? av.volH3PO4 : av.volHNO3; const dens = getSale(isP ? 'H3PO4' : 'HNO3')?.density || (isP ? 1.58 : 1.24); return volMl * dens; }
 function acidoPrescritto(aq, phTarget){
 if(!aq || !(aq.hco3 > ACIDO_SOGLIA_HCO3)) return null;
 const av = calcAcidVolume(aq, 1, phTarget || PH_DEFAULT);
@@ -2169,12 +2169,12 @@ document.getElementById('ricetta-out-title').textContent=`🔬 ${pNome} — ${fN
 document.getElementById('note-agronomiche').innerHTML=
 `<strong>${pNome}:</strong> ${pNote}<br><br><strong>${fNome}:</strong> ${fNote}`;
 if(fase.modo==='target'){
-const tg=fase.targets||{};
+const tg=fase.targets||{}; const _rStima=solverTarget(tg,100,100,100,null,PH_DEFAULT); const totCostoTarget=_rStima.reduce((s,r)=>s+(+r.dose||0)*(r.prezzo||0)/1000,0);
 let html=`<div class="alert al-inf" style="margin-bottom:10px"><strong>${t('js.targetMode')}</strong> ${t('js.targetDesc')}</div>`;
 html+=`<div class="ri-grid">
       <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
       <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${currentLang==='en'?'pH units':'unità pH'}</div></div>
-      <div class="ri-box"><div class="ri-lbl">${currentLang==='en'?'Mode':'Modalità'}</div><div class="ri-val" style="font-size:.7rem">Target</div><div class="ri-sub">mg/L</div></div>
+      <div class="ri-box"><div class="ri-lbl">${totCostoTarget>0?TT('Costo / 1000L','Cost / 1000L'):(currentLang==='en'?'Mode':'Modalità')}</div><div class="ri-val"${totCostoTarget>0?'':' style="font-size:.7rem"'}>${totCostoTarget>0?fmtEuro(totCostoTarget):'Target'}</div><div class="ri-sub">${totCostoTarget>0?TT('sol. finale','final sol.'):'mg/L'}</div></div>
     </div>`;
 html+=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('js.elemento')}</th><th style="text-align:right">${t('js.targetMgL')}</th><th style="text-align:right">${TT('Equivalente molare','Molar equivalent')}</th></tr></thead><tbody>`;
 Object.entries(tg).filter(([,v])=>v>0).forEach(([el,v])=>{
@@ -2520,7 +2520,7 @@ tr.innerHTML=`<td style="min-width:180px">
         <input type="number" value="${r.dose}" min="0" step="0.1" data-riga="${i}" data-campo="dose" onchange="calcRighe[${i}].dose=+this.value;segnaModificaManuale()" style="text-align:right;width:80px;padding:5px;background:#fff">
       </td>
       <td style="vertical-align:top;padding-top:20px">
-        <input type="number" value="${r.prezzo||0}" min="0" step="0.01" data-riga="${i}" data-campo="prezzo" onchange="calcRighe[${i}].prezzo=+this.value" style="width:68px;padding:5px;background:#fff" placeholder="0.00">
+        <input type="number" value="${r.prezzo||0}" min="0" step="0.01" data-riga="${i}" data-campo="prezzo" onchange="calcRighe[${i}].prezzo=+this.value;if(document.getElementById('risultato-stampa'))calcola({noScroll:true})" style="width:68px;padding:5px;background:#fff" placeholder="0.00">
       </td>
       <td style="vertical-align:top;padding-top:20px">
         <button class="btn btn-del btn-sm" onclick="rimuoviRigaCalc(${i})">✕</button>
@@ -2983,7 +2983,7 @@ wt.innerHTML=TT(`Diluizione 1:${dil}: molto bassa — le pompe peristaltiche dov
 w.style.display='none';
 }
 }
-function fmtEuro(v, decimali=2){
+function fmtEuro(v, decimali=2){ if(v>0) decimali = v < Math.pow(10, -decimali) / 2 ? (v < 0.0005 ? 4 : 3) : decimali;
 if(!v||v<=0) return '';
 return '€\u202f' + v.toLocaleString('it-IT', {minimumFractionDigits:decimali, maximumFractionDigits:decimali});
 }
@@ -3763,7 +3763,7 @@ if(statoCalc.target){
 // sottraevano l'acqua una seconda volta alle dosi già nette.
 targetRicetta = statoCalc.target.targets;
 sceltaAcido = risolviAcidoAuto(aq, phFinale, {targets:targetRicetta});
-const solved=solverTarget(targetRicetta, volA, volB, dil, aq, phFinale);
+syncDomCalc(); const _pzMan = new Map(calcRighe.filter(r=>r&&r.id&&r.id!=='__custom'&&r.prezzo!==undefined&&+r.prezzo!==(getSale(r.id)?.prezzo||0)).map(r=>[r.id,+r.prezzo||0])); const solved=solverTarget(targetRicetta, volA, volB, dil, aq, phFinale); solved.forEach(r=>{ if(_pzMan.has(r.id)) r.prezzo=_pzMan.get(r.id); });
 calcRighe=solved; righe=solved; renderCalcTabella();
 _fromSolver = true;
 righeNette = true;
@@ -3851,10 +3851,10 @@ bilanciaReportData = bilReport;
 let ecFin2=0; wRighe.forEach(r=>{ const coeff = ecCoeffSale(r.id); ecFin2+=(r.dose/1000)*coeff; });
 if(aq) ecFin2+=aq.ec;
 const ivDil = interventi.find(iv=>iv.tipo==='dil_suggerito');
-const perA=wRighe.filter(r=>r.serb==='A');
-const perB=wRighe.filter(r=>r.serb==='B');
-const perC=wRighe.filter(r=>r.serb==='C');
-function grConc(dose,vol){ return (dose*vol*dil)/1000; }
+const perA=wRighe.filter(r=>r.serb==='A' && (+r.dose||0)>0);
+const perB=wRighe.filter(r=>r.serb==='B' && (+r.dose||0)>0);
+const perC=wRighe.filter(r=>r.serb==='C' && (+r.dose||0)>0);
+function grConc(dose,vol){ return (dose*vol*dil)/1000; } function fmtTotaleSerb(righeS, vol){ let totGSol=0, totMlLiq=0, totGTot=0; righeS.forEach(r=>{ const g=grConc(r.dose,vol); totGTot+=g; const inf=getSale(r.id); if(inf&&inf.isLiquid&&inf.density>0) totMlLiq+=g/inf.density; else totGSol+=g; }); if(totMlLiq>0 && totGSol===0) return `${fmtDose({isLiquid:true,density:1}, totMlLiq)} (${fmtGram(totGTot)})`; if(totMlLiq>0 && totGSol>0) return `${fmtGram(totGSol)} + ${fmtDose({isLiquid:true,density:1}, totMlLiq)}`; return fmtGram(totGTot); }
 let html=`<div id="risultato-stampa" style="display:block;width:100%">`;
 if(autoBalanceApplied && sicurezza.sicuro){
 const dev = bilanciaReportData ? bilanciaReportData.deviations.filter(d=>Math.abs(d.pctChange)>0.5) : [];
@@ -3923,7 +3923,7 @@ const serbatoi = [
 const serbGridClass = usaSerbC ? 'serb-grid serb-grid-3' : 'serb-grid';
 html+=`<div class="${serbGridClass}">`;
 let costoTot=0;
-serbatoi.forEach(({key,vol,righeSerb,cls,badge,colore})=>{
+serbatoi.forEach(sObj=>{ const {key,vol,righeSerb,cls,badge,colore}=sObj; sObj.costoSerb=0;
 html+=`<div class="serb-card ${cls}" style="border-color:${colore}">
       <div class="serb-title" style="background:${colore}">
         <span style="background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;font-size:.65rem;font-weight:700">${key}</span>
@@ -3934,11 +3934,11 @@ if(!righeSerb.length){
 html+=`<div style="padding:12px;color:var(--ts);font-size:.78rem">${t('js.nessunSaleAssegnato')}</div>`;
 } else {
 righeSerb.forEach(r=>{
-const g=grConc(r.dose,vol); const pz=(r.prezzo||0)*(g/1000); costoSerb+=pz; costoTot+=pz;
+const g=grConc(r.dose,vol); const pzUnit=r.prezzo!==undefined?(+r.prezzo||0):(getSale(r.id)?.prezzo||0); const pz=pzUnit*(g/1000); costoSerb+=pz; costoTot+=pz;
 const infoR=getSale(r.id);
 html+=`<div class="sale-row"><span class="sale-nome">${esc(r.nome||r.nomeCustom||r.id)}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtDose(infoR,g)}</span>${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</div></div>`;
 });
-html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtGram(righeSerb.reduce((s,r)=>s+grConc(r.dose,vol),0))}</span></div>`;
+sObj.costoSerb=costoSerb; html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtTotaleSerb(righeSerb,vol)}</span>${costoSerb>0?`<br><span class="costo-txt" style="font-weight:700;color:var(--ar)">${fmtEuro(costoSerb,2)}</span>`:''}</div></div>`;
 }
 html+=`</div>`;
 });
@@ -3988,12 +3988,12 @@ html+=`<div class="alert al-inf" style="margin-top:12px;margin-bottom:10px"><spa
 sicurezza.avvisi.forEach(a=>html+=`<li><strong>${a.titolo}:</strong> ${a.dettaglio}</li>`);
 html+=`</ul></div></div>`;
 }
-const volMin = Math.min(...serbatoi.map(s=>s.vol));
+const serbPerVol = serbatoi.filter(s=>s.righeSerb&&s.righeSerb.length>0); const volMin = Math.min(...(serbPerVol.length?serbPerVol:serbatoi).map(s=>s.vol)); const volDiversi = (serbPerVol.length?serbPerVol:serbatoi).some(s=>s.vol!==volMin);
 const volFinale1000L = volMin * dil;
 // Costo per 1000 L finali dalle dosi (g/1000L × €/kg): indipendente dai
 // volumi dei serbatoi. Prima si divideva il costo di TUTTI i serbatoi per la
 // resa del più piccolo, gonfiando il valore se i volumi erano diversi.
-const costoPerMille = wRighe.reduce((s,r)=>s + (+r.dose||0)*(r.prezzo||0)/1000, 0);
+const costoSaliPerMille = wRighe.reduce((s,r)=>{ const pzU=r.prezzo!==undefined?(+r.prezzo||0):(getSale(r.id)?.prezzo||0); return s + (+r.dose||0)*pzU/1000; }, 0); const acidoPrezzoRef = (aq && aq.hco3 > 0) ? (getSale(aq.acido==='H3PO4'?'H3PO4':'HNO3')?.prezzo || 0) : 0; const acidoGrammiPerMille = (aq && aq.hco3 > 0) ? calcolaGrammiAcido(aq, phFinale, aq.acido) : 0; const costoAcidoPerMille = acidoGrammiPerMille * acidoPrezzoRef / 1000; const costoAcidoBatch = costoAcidoPerMille * (volFinale1000L / 1000); const costoPerMille = costoSaliPerMille + (costoSaliPerMille > 0 ? costoAcidoPerMille : 0); const costoSaliCicloMin = costoSaliPerMille * (volFinale1000L / 1000);
 html+=`<div class="card" style="margin-top:12px;margin-bottom:12px">
     <div class="ch" style="background:var(--ar)">${TT('📊 Riepilogo — Diluizione','📊 Summary — Dilution')} 1:${dil}</div>
     <div class="cb">
@@ -4002,8 +4002,8 @@ html+=`<div class="card" style="margin-top:12px;margin-bottom:12px">
 const ecS = (ecPerSerb[s.key]||0)*dil;
 return `<div class="eco-row"><span>${TT(`EC Serb. ${s.key} nel concentrato (×${dil})`,`Tank ${s.key} EC in concentrate (×${dil})`)}</span><span class="eco-val">${ecS.toFixed(0)} mS/cm</span></div>`;
 }).join('')}
-      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo totale batch','Total batch cost')}</span><span class="eco-val">${fmtEuro(costoTot)}</span></div>`:''}
-      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo per 1000 L finali','Cost per 1000 L final')}</span><span class="eco-val">${fmtEuro(costoPerMille)}</span></div>`:''}
+      ${costoTot>0?serbatoi.filter(s=>s.righeSerb&&s.righeSerb.length>0&&(s.costoSerb||0)>0).map(s=>`<div class="eco-row"><span>${TT(`Costo soluzione madre Serb. ${s.key} (${s.vol} L)`,`Tank ${s.key} stock solution cost (${s.vol} L)`)}</span><span class="eco-val">${fmtEuro(s.costoSerb)}</span></div>`).join(''):''}${costoTot>0?`<div class="eco-row"><span>${TT('Costo totale batch','Total batch cost')}</span><span class="eco-val">${fmtEuro(costoTot)}</span></div>`:''}${costoTot>0&&volDiversi?`<div class="eco-row" style="font-size:.73rem;color:var(--ts)"><span>${TT(`↳ sali usati per ciclo da ${volFinale1000L.toFixed(0)} L (tank min)`,`↳ salts used per ${volFinale1000L.toFixed(0)} L cycle (min tank)`)}</span><span class="eco-val">${fmtEuro(costoSaliCicloMin)}</span></div>`:''}${costoTot>0&&costoAcidoBatch>0?`<div class="eco-row"><span>${TT(`Costo acido (${aq.acido==='H3PO4'?'H₃PO₄ 75%':'HNO₃ 38%'}) per ${volFinale1000L.toFixed(0)} L`,`Acid cost (${aq.acido==='H3PO4'?'H₃PO₄ 75%':'HNO₃ 38%'}) for ${volFinale1000L.toFixed(0)} L`)}</span><span class="eco-val">${fmtEuro(costoAcidoBatch)}</span></div>`:''}
+      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo per 1000 L finali','Cost per 1000 L final')}</span><span class="eco-val">${fmtEuro(costoPerMille)}</span></div>${costoAcidoPerMille>0?`<div class="eco-row" style="font-size:.73rem;color:var(--ts)"><span>${TT('↳ di cui sali / acido','↳ of which salts / acid')}</span><span class="eco-val">${fmtEuro(costoSaliPerMille)} + ${fmtEuro(costoAcidoPerMille)}</span></div>`:''}`:''}
       <div class="eco-row"><span>${TT('Concentrato per 1000 L finali (per serb.)','Concentrate per 1000 L final (per tank)')}</span><span class="eco-val">${(1000/dil).toFixed(1)} L</span></div>
       <div class="eco-row"><span>${TT('Soluzione finale da batch (tank min)','Final solution per batch (min tank)')}</span><span class="eco-val">${volFinale1000L.toFixed(0)} L</span></div>
     </div>
@@ -4336,8 +4336,8 @@ html+=`<div class="card" style="margin-top:12px">
           <div class="cb">
             <div class="alert al-inf" style="margin-bottom:8px"><span>ℹ️</span><span>${TT(`Per portare l'acqua (pH ${aq.ph||'—'}, HCO₃⁻ ${aq.hco3} mg/L) a <strong>pH ${phFinale}</strong>: neutralizzati ${acido.meq.toFixed(2)} meq/L di HCO₃⁻. Cambiando il pH target, la dose di acido si aggiorna.`,`To bring the water (pH ${aq.ph||'—'}, HCO₃⁻ ${aq.hco3} mg/L) to <strong>pH ${phFinale}</strong>: ${acido.meq.toFixed(2)} meq/L of HCO₃⁻ neutralized. Changing the target pH updates the acid dose.`)}</span></div>
             <div class="ri-grid" style="grid-template-columns:repeat(3,1fr)">
-              <div class="ri-box"><div class="ri-lbl">HNO₃ 38%</div><div class="ri-val">${acido.volHNO3.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L${aq.acido!=='H3PO4'?TT(' · scelto',' · selected'):''}</div></div>
-              <div class="ri-box"><div class="ri-lbl">H₃PO₄ 75%</div><div class="ri-val">${acido.volH3PO4.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L${aq.acido==='H3PO4'?TT(' · scelto',' · selected'):''}</div></div>
+              <div class="ri-box"><div class="ri-lbl">HNO₃ 38%</div><div class="ri-val">${acido.volHNO3.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L${aq.acido!=='H3PO4'?TT(' · scelto',' · selected'):''}${(getSale('HNO3')?.prezzo>0 && calcolaGrammiAcido(aq,phFinale,'HNO3')>0)?` · ${fmtEuro(calcolaGrammiAcido(aq,phFinale,'HNO3')*(getSale('HNO3')?.prezzo||0)/1000*(volFinale1000L/1000))}`:''}</div></div>
+              <div class="ri-box"><div class="ri-lbl">H₃PO₄ 75%</div><div class="ri-val">${acido.volH3PO4.toFixed(1)}</div><div class="ri-sub">${TT('mL per','mL for')} ${volFinale1000L.toFixed(0)} L${aq.acido==='H3PO4'?TT(' · scelto',' · selected'):''}${(getSale('H3PO4')?.prezzo>0 && calcolaGrammiAcido(aq,phFinale,'H3PO4')>0)?` · ${fmtEuro(calcolaGrammiAcido(aq,phFinale,'H3PO4')*(getSale('H3PO4')?.prezzo||0)/1000*(volFinale1000L/1000))}`:''}</div></div>
               <div class="ri-box"><div class="ri-lbl">${TT('HCO₃⁻ residuo','HCO₃⁻ residual')}</div><div class="ri-val">${acido.residuo.toFixed(2)}</div><div class="ri-sub">${TT('meq/L tampone','meq/L buffer')}</div></div>
             </div>
             <div style="font-size:.72rem;color:var(--ts);margin-top:8px">${TT(`Aggiungere l'acido nell'acqua di diluizione <strong>prima</strong> dei sali, mai nei concentrati. Le dosi dei sali tengono già conto dell'acido scelto (<strong>${aq.acido==='H3PO4'?'H₃PO₄: apporta P':'HNO₃: apporta N'}</strong>): se usi l'altro, cambia la selezione "Acido per i bicarbonati" e ricalcola.`,`Add the acid to the dilution water <strong>before</strong> the salts, never to the concentrates. The salt doses already account for the selected acid (<strong>${aq.acido==='H3PO4'?'H₃PO₄: adds P':'HNO₃: adds N'}</strong>): if you use the other one, change the "Acid for bicarbonates" selection and recalculate.`)}</div>
@@ -4533,7 +4533,7 @@ let righe = '';
 card.querySelectorAll('.sale-row').forEach(row => {
 const isTot = row.classList.contains('tot-row');
 const nome = txt(row.children[0]).replace(/\s+/g,' ').trim();
-const dose = txt(row.children[1]).split('\n')[0] || '';
+const parti = txt(row.children[1]).split('\n').map(s=>s.trim()).filter(Boolean); const dose = parti[1] ? `${parti[0]}<br><small style="color:#666;font-weight:500">${parti[1]}</small>` : (parti[0] || '');
 righe += isTot
 ? `<tr class="tot"><td></td><td>${nome}</td><td class="r" style="color:${col}">${dose}</td></tr>`
 : `<tr><td class="cbx">\u2610</td><td>${nome}</td><td class="r" style="color:${col}">${dose}</td></tr>`;
@@ -5100,7 +5100,7 @@ if(nh4Frac>0) s.nh4Frac=nh4Frac;
 if(isLiquid && density>0){ s.isLiquid=true; s.density=density; }
 if(editIngId){ const idx=catalogo.findIndex(x=>x.id===editIngId); if(idx>-1) catalogo[idx]=s; }
 else { catalogo.push(s); }
-saveCatalogo(); renderCatalogo(); closeModal('modal-ing');
+saveCatalogo(); sincronizzaPrezziDaCatalogo(s.id, s.prezzo); renderCatalogo(); closeModal('modal-ing'); } function sincronizzaPrezziDaCatalogo(idSpecifico, nuovoPrezzo){ if(!Array.isArray(calcRighe)||!calcRighe.length) return; syncDomCalc(); let changed=false; calcRighe.forEach(r=>{ if(!r||!r.id||r.id==='__custom') return; if(idSpecifico){ if(r.id===idSpecifico){ r.prezzo=nuovoPrezzo; changed=true; } } else { const s=getSale(r.id); if(s&&s.prezzo!==undefined){ r.prezzo=s.prezzo; changed=true; } } }); if(changed){ renderCalcTabella(); if(document.getElementById('risultato-stampa')) calcola({noScroll:true}); }
 }
 function eliminaIngrediente(id){
 window._pendingDelete={tipo:'ingrediente',id};
@@ -5198,7 +5198,7 @@ return out;
 })
 .filter(s=>Object.keys(s.el).length>0);
 const scartati = custom.length - nuoviCustom.length;
-catalogo = [...base, ...nuoviCustom];
+catalogo = [...base, ...nuoviCustom]; sincronizzaPrezziDaCatalogo();
 saveCatalogo();
 msg.push(TT(`Catalogo: ${catalogo.length} ingredienti`,`Catalog: ${catalogo.length} ingredients`)+(scartati>0?TT(` (${scartati} scartati: schema non valido)`,` (${scartati} discarded: invalid schema)`):''));
 }
