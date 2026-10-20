@@ -1379,6 +1379,63 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
     close(reg29.sommaC, 4.0, 1e-9));
 
   // ────────────────────────────────────────────────
+  console.log('\n═══ S30. UX snella: flusso in 2 click, serbatoi in primo piano, ricalcolo istantaneo ═══');
+  await resetMotore();
+  const ux30 = await page.evaluate(() => {
+    showTab('ricette');
+    // 1. Click su coltura: seleziona automaticamente la prima fase e mostra subito la ricetta
+    selPianta('pomodoro', 'builtin');
+    const faseAuto = !!faseSel && faseSel === piantaSel.fasi[0];
+    const outVisibile = document.getElementById('ricetta-out-wrap').style.display !== 'none';
+    const noFasiFocus = !document.getElementById('tab-ricette').classList.contains('fasi-focus');
+
+    // 2. Carica ricetta → passa a Calcola, comprime "Sali da Preparare" e calcola subito
+    caricaRicettaCorrente();
+    const tabCalcola = document.getElementById('tab-calcola').classList.contains('active');
+    const saliCompressi = document.getElementById('sali-prep-body').style.display === 'none';
+    const risultatoSubito = !!document.querySelector('#risultato-stampa .serb-card');
+
+    // 3. Gerarchia in #risultato-stampa: le schede Serbatoio A/B precedono "Interventi automatici"
+    const rs = document.getElementById('risultato-stampa');
+    const serbEl = rs.querySelector('.serb-grid');
+    const intEl = [...rs.querySelectorAll('.card')].find(c => /Interventi automatici|Automatic interventions/i.test(c.innerText));
+    const serbPrimaDiInterventi = !!(serbEl && intEl && (serbEl.compareDocumentPosition(intEl) & Node.DOCUMENT_POSITION_FOLLOWING));
+
+    // 4. Ricalcolo automatico al cambio di volA / volB / diluizione senza ripremere Calcola Dosaggi
+    const volAEl = document.getElementById('volA');
+    volAEl.value = 250;
+    volAEl.dispatchEvent(new Event('change'));
+    const titoloA250 = (document.querySelector('#risultato-stampa .serb-card.a .serb-title') || {}).textContent || '';
+    volAEl.value = 100;
+    volAEl.dispatchEvent(new Event('change'));
+
+    // 5. Se manca un ingrediente in scorta, la tabella sali si apre da sola per mostrarlo
+    scorta.delete('CaN');
+    renderCalcTabella();
+    const saliApertiSeManca = document.getElementById('sali-prep-body').style.display !== 'none';
+    scorta.add('CaN');
+    renderCalcTabella();
+
+    return {
+      faseAuto, outVisibile, noFasiFocus,
+      tabCalcola, saliCompressi, risultatoSubito,
+      serbPrimaDiInterventi,
+      titoloA250: titoloA250.replace(/\s+/g, ' ').trim(),
+      saliApertiSeManca,
+    };
+  });
+  check('click su coltura seleziona automaticamente la prima fase e mostra subito l\'anteprima',
+    ux30.faseAuto && ux30.outVisibile && ux30.noFasiFocus);
+  check('click su "Calcola" apre la scheda, comprime la tabella sali e calcola immediatamente le dosi',
+    ux30.tabCalcola && ux30.saliCompressi && ux30.risultatoSubito);
+  check('gerarchia risultati: i Serbatoi A/B sono in primo piano sopra il log "Interventi automatici"',
+    ux30.serbPrimaDiInterventi);
+  check(`cambio volume Serbatoio A ricalcola subito le dosi ("${ux30.titoloA250}")`,
+    /250 L/.test(ux30.titoloA250));
+  check('se un sale non è disponibile in scorta, la tabella "Sali da Preparare" resta aperta',
+    ux30.saliApertiSeManca);
+
+  // ────────────────────────────────────────────────
   console.log(`\n════════════════════════════════════════`);
   console.log(`RISULTATO FINALE: ${pass} passati, ${fail} falliti`);
   if (failures.length) { console.log('\nFallimenti:'); failures.forEach(f => console.log('  • ' + f)); }

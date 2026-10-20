@@ -455,8 +455,8 @@ var s=document.getElementById('splash');if(!s)return;
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 setTimeout(function(){
 s.classList.add('splash-hide');
-setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},500);
-},reduce?700:1950);
+setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},250);
+},reduce?200:400);
 })();
 </script><header>
 <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><rect x="2" y="9" width="9" height="14" rx="2" fill="#4a8c5e" stroke="#fff" stroke-width="1"/><rect x="15" y="9" width="9" height="14" rx="2" fill="#2471a3" stroke="#fff" stroke-width="1.2"/><path d="M7 9V6a2 2 0 0 1 4 0v3M20 9V6a2 2 0 0 1 8 0v3" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/><circle cx="13" cy="4" r="2.5" fill="#d4660a"/></svg>
@@ -467,10 +467,16 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},500);
 </div>
 <div class="hbadge">v2.0</div>
 </header>
-<div class="alert al-blu" style="margin:12px;width:auto">
+<div class="alert al-blu" style="margin:8px 12px;padding:7px 12px;width:auto;cursor:pointer;align-items:center" onclick="const b=document.getElementById('howto-full'),a=document.getElementById('howto-arr');if(b){const open=b.style.display!=='none';b.style.display=open?'none':'block';if(a)a.textContent=open?'▼':'▲';}">
 <span>📖</span>
-<span data-i18n-html="howto.text"><b>Come si usa.</b> FertiControl calcola le soluzioni madri concentrate (Serbatoi A/B/C) per la fertirrigazione partendo dalla tua acqua e dalla ricetta nutritiva.
-<b>① Acqua</b> — inserisci l'analisi dell'acqua di partenza. <b>② Ricette</b> — scegli o crea la ricetta e la fase di crescita. <b>③ Calcola</b> — ottieni dosi dei sali, EC/pH attesi e avvisi di precipitazione. <b>④ Catalogo</b> gestisci i fertilizzanti, <b>⑤ Dati</b> salva/esporta tutto.</span>
+<div style="flex:1">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.76rem">
+<span id="howto-short"><b>① Acqua</b> → <b>② Scegli Coltura</b> → <b>③ Ottieni Ricetta A/B</b></span>
+<span id="howto-arr" style="font-size:.68rem;opacity:.75;white-space:nowrap">▼</span>
+</div>
+<div id="howto-full" data-i18n-html="howto.text" style="display:none;margin-top:6px;padding-top:6px;border-top:1px solid rgba(26,82,118,.2)"><b>Come si usa.</b> FertiControl calcola le soluzioni madri concentrate (Serbatoi A/B/C) per la fertirrigazione partendo dalla tua acqua e dalla ricetta nutritiva.
+<b>① Acqua</b> — inserisci l'analisi dell'acqua di partenza. <b>② Ricette</b> — scegli o crea la ricetta e la fase di crescita. <b>③ Calcola</b> — ottieni dosi dei sali, EC/pH attesi e avvisi di precipitazione. <b>④ Catalogo</b> gestisci i fertilizzanti, <b>⑤ Dati</b> salva/esporta tutto.</div>
+</div>
 </div>
 <div class="tabs" role="tablist" aria-label="Menu principale">
 <div class="tab" role="tab" id="tabbtn-acqua" aria-selected="false" aria-controls="tab-acqua" tabindex="0" onclick="showTab('acqua')" onkeydown="if(event.key==='Enter'||event.key===' '){showTab('acqua');event.preventDefault()}" data-i18n="tab.acqua">💧 Acqua</div>
@@ -569,14 +575,14 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},500);
 <div class="cb">
 <div class="row2">
 <div class="field"><label data-i18n="calcola.serbA">Serbatoio A (L)</label>
-<div class="urow"><input type="number" id="volA" value="100" min="1"><span class="utag">L</span></div>
+<div class="urow"><input type="number" id="volA" value="100" min="1" onchange="if(document.getElementById('risultato-stampa'))calcola()"><span class="utag">L</span></div>
 </div>
 <div class="field"><label data-i18n="calcola.serbB">Serbatoio B (L)</label>
-<div class="urow"><input type="number" id="volB" value="100" min="1"><span class="utag">L</span></div>
+<div class="urow"><input type="number" id="volB" value="100" min="1" onchange="if(document.getElementById('risultato-stampa'))calcola()"><span class="utag">L</span></div>
 </div>
 </div>
 <div class="field"><label><span data-i18n="calcola.diluzione">Fattore diluizione 1 : X</span> <span class="tw"><span class="ii">i</span><span class="tip" data-i18n="calcola.dil.tip">1 L concentrato produce X L soluzione finale. ⚠️ Più X è grande, più la soluzione madre è concentrata e maggiore il rischio precipitazioni. Es: 1:200 = madre 200× concentrata (rischio alto). 1:50 = madre 50× concentrata (più sicuro). Il motore suggerirà il fattore ottimale in base alle dosi inserite.</span></span></label>
-<div class="urow"><span class="utag">1 :</span><input type="number" id="diluizione" value="100" min="1" onchange="aggiornaDiluizioneWarning()"></div>
+<div class="urow"><span class="utag">1 :</span><input type="number" id="diluizione" value="100" min="1" onchange="aggiornaDiluizioneWarning();if(document.getElementById('risultato-stampa'))calcola()"></div>
 </div>
 <div id="diluizione-warning" class="alert al-err" style="display:none;margin-top:6px">
 <span>⚠️</span><span id="diluizione-warning-txt"></span>
@@ -599,8 +605,11 @@ setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},500);
 </div>
 </div>
 <div class="card">
-<div class="ch" id="ch-sali-calc" data-i18n="calcola.sali">🧂 Sali da Preparare</div>
-<div class="cb" style="padding:0">
+<div class="ch" id="ch-sali-calc" style="cursor:pointer;justify-content:space-between;user-select:none" onclick="toggleSaliPrep()">
+<span data-i18n="calcola.sali">🧂 Sali da Preparare</span>
+<span id="sali-prep-badge" style="font-size:.68rem;font-weight:500;opacity:.92;text-transform:none">▲</span>
+</div>
+<div class="cb" id="sali-prep-body" style="padding:0">
 <div class="tbl-wrap">
 <table class="tbl" id="calc-table">
 <thead><tr>
@@ -1229,6 +1238,9 @@ ingCat.options[0].textContent = t('cat.macro');
 ingCat.options[1].textContent = t('cat.micro');
 ingCat.options[2].textContent = t('cat.ph');
 }
+const hs = document.getElementById('howto-short');
+if(hs) hs.innerHTML = currentLang==='en' ? '<b>① Water</b> → <b>② Pick Crop</b> → <b>③ Get A/B Recipe</b>' : '<b>① Acqua</b> → <b>② Scegli Coltura</b> → <b>③ Ottieni Ricetta A/B</b>';
+if(typeof updateSaliPrepBadge==='function') updateSaliPrepBadge();
 }
 const MM={Ca:40.078,Mg:24.305,K:39.098,N:14.007,Na:22.990,Cl:35.453,S:32.06,P:30.974,Si:28.085,
 Fe:55.845,Mn:54.938,Zn:65.38,B:10.811,Cu:63.546,Mo:95.95};
@@ -2100,19 +2112,21 @@ const pNomeSel = tipoRicettaSel==='builtin' ? ricNome(piantaSel) : piantaSel.nom
 document.getElementById('fasi-header-title').textContent =
 `${t('ricette.fasi')} — ${pEmoji} ${pNomeSel}`;
 document.getElementById('card-fasi-wrap').style.display='block';
+document.getElementById('tab-ricette').classList.remove('fasi-focus');
+if(piantaSel && piantaSel.fasi && piantaSel.fasi.length){
+selFase(0, true);
+setTimeout(()=>document.getElementById('card-fasi-wrap').scrollIntoView({behavior:'smooth',block:'start'}),60);
+} else {
 document.getElementById('ricetta-out-wrap').style.display='none';
-// Spazio extra sotto le fasi cosi' possono salire in cima sotto le tab.
-document.getElementById('tab-ricette').classList.add('fasi-focus');
-setTimeout(()=>document.getElementById('card-fasi-wrap').scrollIntoView({behavior:'smooth',block:'start'}),80);
 }
-function selFase(i){
+}
+function selFase(i, noScroll){
 faseSel = piantaSel.fasi[i];
 document.querySelectorAll('.fase-btn').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));
 renderRicettaOut(piantaSel, faseSel, tipoRicettaSel);
-// La composizione riempie lo spazio: togliamo il padding di focus fasi.
 document.getElementById('tab-ricette').classList.remove('fasi-focus');
 document.getElementById('ricetta-out-wrap').style.display='block';
-setTimeout(()=>document.getElementById('ricetta-out-wrap').scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+if(!noScroll) setTimeout(()=>document.getElementById('ricetta-out-wrap').scrollIntoView({behavior:'smooth',block:'nearest'}),80);
 }
 function renderRicettaOut(pianta, fase, tipo){
 const fi = pianta.fasi.indexOf(fase);
@@ -2136,39 +2150,37 @@ const unitMol=isMicroEl?'µmol/L':'mmol/L';
 html+=`<tr><td><strong>${elLabel(el)}</strong></td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ar)">${v}</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--ts)">${targetMgToMol(el,v)} <span style="font-weight:700;color:${isMicroEl?'var(--vi)':'var(--vc)'}">${unitMol}</span></td></tr>`;
 });
 html+=`</tbody></table></div>`;
+html+=`<button class="btn btn-pr" onclick="caricaRicettaCorrente()" style="margin-top:10px">${TT('⚗️ Calcola dosi per i tuoi serbatoi e la tua acqua →','⚗️ Calculate doses for your tanks and water →')}</button>`;
 document.getElementById('ricetta-out').innerHTML=html;
 return;
 }
-const perA = fase.sali.filter(s=>{ const i=getSale(s.id); return i&&i.serb==='A'; });
-const perB = fase.sali.filter(s=>{ const i=getSale(s.id); return i&&i.serb==='B'; });
-const perX = (fase.sali||[]).filter(s=>!getSale(s.id));
-let html=`<div class="ri-grid">
+const saliFase = fase.sali||[];
+const perX = saliFase.filter(s=>!getSale(s.id));
+const totCosto = saliFase.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
+const profBase = profiloDaRighe(saliFase.map(s=>({id:s.id, dose:s.g})), null);
+let html=`<div class="ri-grid" style="margin-bottom:8px">
     <div class="ri-box"><div class="ri-lbl">EC target</div><div class="ri-val">${fase.ec[0]}–${fase.ec[1]}</div><div class="ri-sub">mS/cm</div></div>
     <div class="ri-box"><div class="ri-lbl">pH target</div><div class="ri-val">${fase.ph[0]}–${fase.ph[1]}</div><div class="ri-sub">${t('js.unitaPh')}</div></div>
-    <div class="ri-box"><div class="ri-lbl">${t('js.componenti')}</div><div class="ri-val">${(fase.sali||[]).length}</div><div class="ri-sub">${t('js.sali')}</div></div>
+    <div class="ri-box"><div class="ri-lbl">${totCosto>0?TT('Costo / 1000L','Cost / 1000L'):t('js.componenti')}</div><div class="ri-val">${totCosto>0?fmtEuro(totCosto):saliFase.length}</div><div class="ri-sub">${totCosto>0?TT('sol. finale','final sol.'):t('js.sali')}</div></div>
   </div>`;
-html+=`<div class="serb-grid">`;
-html+=`<div class="serb-card a"><div class="serb-title"><span class="ba">A</span> ${t('js.serbatorio')} A</div>`;
-perA.forEach(s=>{ const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'}; const pz=info.prezzo?(info.prezzo*(s.g/1000)):0;
-html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${salNome(info)}</span><span class="gr-a">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
+html+=`<button class="btn btn-pr" onclick="caricaRicettaCorrente()" style="margin-bottom:8px">${TT('⚗️ Calcola dosi per i tuoi serbatoi e la tua acqua →','⚗️ Calculate doses for your tanks and water →')}</button>`;
+html+=`<div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--cs);border-radius:var(--r);padding:7px 10px;margin-bottom:8px;font-size:.73rem;align-items:center">
+    <span style="font-weight:700;color:var(--ts);text-transform:uppercase;font-size:.64rem;letter-spacing:.04em">${TT('Target mg/L:','Target mg/L:')}</span>
+    ${['N','P','K','Ca','Mg'].map(el=>`<span style="background:#fff;border:1px solid var(--bd);border-radius:4px;padding:2px 7px;font-family:'JetBrains Mono',monospace"><strong>${el}</strong> ${(profBase[el]||0).toFixed(0)}</span>`).join('')}
+  </div>`;
+html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px">`;
+saliFase.forEach(s=>{
+const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'};
+html+=`<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 9px;background:#fff;border:1px solid var(--cs);border-radius:4px;font-size:.75rem">
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${salNome(info)}</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--vs);white-space:nowrap">${fmtGram(s.g)}<small style="font-weight:400;color:var(--ts)">/1000L</small></span>
+  </div>`;
 });
-const tA=perA.reduce((s,r)=>s+r.g,0);
-const cA=perA.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
-html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span class="gr-a">${fmtGram(tA)}<br><span class="costo-txt">${fmtEuro(cA)}</span></span></div></div>`;
-html+=`<div class="serb-card b"><div class="serb-title"><span class="bb">B</span> ${t('js.serbatorio')} B</div>`;
-perB.forEach(s=>{ const info=getSale(s.id); if(!info)return; const c=CAT[info.cat]||{bg:'#555'}; const pz=info.prezzo?(info.prezzo*(s.g/1000)):0;
-html+=`<div class="sale-row"><span class="sale-nome"><span class="bcat" style="background:${c.bg}">${CAT[info.cat]?.label||'?'}</span> ${salNome(info)}</span><span class="gr-b">${fmtGram(s.g)}${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</span></div>`;
-});
-const tB=perB.reduce((s,r)=>s+r.g,0);
-const cB=perB.reduce((s,r)=>{ const i=getSale(r.id); return s+(i&&i.prezzo?i.prezzo*(r.g/1000):0); },0);
-html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span class="gr-b">${fmtGram(tB)}<br><span class="costo-txt">${fmtEuro(cB)}</span></span></div></div>`;
 html+=`</div>`;
-const totCosto=cA+cB;
-if(totCosto>0) html+=`<div class="alert al-inf"><strong>${t('js.costoPer1000')}</strong> ${fmtEuro(totCosto)} ${t('js.prezziDa')}</div>`;
 if((fase.sali||[]).some(s=>s.id==='K2SiO3'))
-html+=`<div class="alert al-err" style="margin-top:8px"><span>⚠️</span><span>${t('js.silicatoWarn')}</span></div>`;
+html+=`<div class="alert al-err" style="margin-top:6px"><span>⚠️</span><span>${t('js.silicatoWarn')}</span></div>`;
 if(perX.length){
-html+=`<div class="alert al-inf" style="margin-top:8px">⚠️ ${perX.length} ${t('js.idNonTrovato')}: ${perX.map(s=>s.id||s.nome||'?').join(', ')}.</div>`;
+html+=`<div class="alert al-inf" style="margin-top:6px">⚠️ ${perX.length} ${t('js.idNonTrovato')}: ${perX.map(s=>s.id||s.nome||'?').join(', ')}.</div>`;
 }
 document.getElementById('ricetta-out').innerHTML=html;
 }
@@ -2203,8 +2215,9 @@ document.getElementById('lbl-ricetta-caricata').textContent=ricettaCaricata.nome
 document.getElementById('lbl-modo-caricato').style.display='inline';
 document.getElementById('lbl-modo-caricato').innerHTML=`<span class="bcat" style="background:var(--vm);color:#fff">${t('js.ricettaFissaG')}</span>`;
 renderCalcTabella();
+setSaliPrepCollapsed(getMancanti().length===0);
 showTab('calcola');
-scrollCalcolaInCima();
+calcola();
 }
 function renderRicetteCustom(){
 piantaSel = null; faseSel = null; tipoRicettaSel = null;
@@ -2256,8 +2269,9 @@ document.getElementById('calc-tbody').innerHTML=`<tr><td colspan="5" style="padd
 }
 window._targetAttivo=null;
 resetStatoCalc(f.modo==='target' ? {targets:{...(f.targets||{})}, pianta:ric.nome, fase:f.nome} : null);
+setSaliPrepCollapsed(f.modo==='target' || getMancanti().length===0);
 showTab('calcola');
-scrollCalcolaInCima();
+calcola();
 }
 function eliminaRicetta(ri){
 window._pendingDelete={tipo:'ricetta',ri};
@@ -2480,20 +2494,44 @@ tb.appendChild(tr);
 });
 updateRicalcolaBar();
 }
+function setSaliPrepCollapsed(collapsed){
+const body=document.getElementById('sali-prep-body');
+if(!body) return;
+body.style.display=collapsed?'none':'block';
+updateSaliPrepBadge();
+}
+function toggleSaliPrep(){
+const body=document.getElementById('sali-prep-body');
+if(!body) return;
+setSaliPrepCollapsed(body.style.display!=='none');
+}
+function updateSaliPrepBadge(){
+const badge=document.getElementById('sali-prep-badge');
+const body=document.getElementById('sali-prep-body');
+if(!badge||!body) return;
+const collapsed=body.style.display==='none';
+const n=calcRighe.length;
+badge.textContent=collapsed
+? (n?`${n} ${TT('sali · ✏️ Modifica dosi ▼','salts · ✏️ Edit doses ▼')}`:TT('Espandi ▼','Expand ▼'))
+: (n?`${n} ${TT('sali · Nascondi ▲','salts · Hide ▲')}`:'▲');
+}
 function getMancanti(){ return calcRighe.filter(r=>r.id!=='__custom'&&!isDisponibile(r.id)); }
 function updateRicalcolaBar(){
+updateSaliPrepBadge();
 const bar=document.getElementById('ricalcola-bar');
 if(!bar) return;
 const mancanti=getMancanti();
 if(mancanti.length>0){
 bar.style.display='block';
 document.getElementById('ricalcola-count').textContent=mancanti.length;
+setSaliPrepCollapsed(false);
 } else {
 bar.style.display='none';
 }
 }
 function aggiungiRigaCalc(){
 if(!catalogo.length){ showToast(t('js.catalogoVuoto'), false); return; }
+setSaliPrepCollapsed(false);
 const info=catalogo[0];
 syncDomCalc();
 calcRighe.push({id:info.id,nome:salNome(info),dose:info.dose,prezzo:info.prezzo||0,fixed:true});
@@ -3808,10 +3846,6 @@ html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span
 } else {
 html+=`<div class="alert al-ok" style="margin-bottom:10px"><span>✅</span><span><strong>${t('js.voto.ok')}.</strong> ${TT(`Tutti i ${sicurezza.audit.length} controlli di compatibilità superati. Nessuna precipitazione attesa.`,`All ${sicurezza.audit.length} compatibility checks passed. No precipitation expected.`)}</span></div>`;
 }
-html+=`<div style="background:#fff8e1;border:1.5px solid #e0a800;border-radius:var(--r);padding:9px 12px;margin-bottom:12px;display:flex;gap:8px;align-items:center;font-size:.78rem;color:#7a5c00">
-    <span style="font-size:1rem">⚠️</span>
-    <span><strong>${t('js.verificaDosi')}</strong> ${t('js.verificaDosiDesc')}</span>
-  </div>`;
 if(ivDil){
 html+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var(--r);padding:13px 15px;margin-bottom:12px">
       <div style="display:flex;gap:10px;align-items:flex-start">
@@ -3837,31 +3871,6 @@ html+=`<div style="background:#fff3e0;border:2px solid #e65100;border-radius:var
         </div>
       </div>
     </div>`;
-}
-const interventiVisibili = interventi.filter(iv=>iv.tipo!=='dil_suggerito');
-if(correzioniAcqua.length>0 || interventiVisibili.length>0){
-html+=`<div class="card" style="margin-bottom:12px;border-color:var(--vc)">
-      <div class="ch" style="background:var(--vm)">${t('js.interventiAuto')}</div>
-      <div class="cb" style="padding:0">`;
-if(correzioniAcqua.length>0){
-html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--cs);font-size:.78rem">
-        <span style="flex-shrink:0">💧</span>
-        <span>${TT(`<strong>Dosi ribilanciate per l'acqua di partenza</strong>${acidoCalc?` (e per l'${acidoCalc.tipo==='HNO3'?'N':'P'} dell'acido ${acidoCalc.tipo==='HNO3'?'nitrico':'fosforico'})`:''}: i sali sono stati ricalcolati perché sali + acqua riproducano il profilo della ricetta (vedi tabella "Fedeltà alla ricetta").`,`<strong>Doses rebalanced for the source water</strong>${acidoCalc?` (and for the ${acidoCalc.tipo==='HNO3'?'N':'P'} of the ${acidoCalc.tipo==='HNO3'?'nitric':'phosphoric'} acid)`:''}: the salts were recalculated so that salts + water reproduce the recipe profile (see the "Recipe fidelity" table).`)}</span>
-      </div>`;
-}
-correzioniAcqua.forEach(co=>{
-html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:7px 14px 7px 38px;border-bottom:1px solid var(--cs);font-size:.76rem">
-        <span>${co.aggiunto
-? TT(`➕ <strong>${esc(co.sale)}</strong> aggiunto: <strong>${co.doseNuova} g/1000L</strong> (compensa ciò che l'acqua non può sostituire).`,`➕ <strong>${esc(co.sale)}</strong> added: <strong>${co.doseNuova} g/1000L</strong> (makes up for what the water cannot replace).`)
-: TT(`<strong>${esc(co.sale)}</strong>: ${co.doseOriginal} → <strong>${co.doseNuova} g/1000L</strong>`,`<strong>${esc(co.sale)}</strong>: ${co.doseOriginal} → <strong>${co.doseNuova} g/1000L</strong>`)}</span>
-      </div>`;
-});
-interventiVisibili.forEach(iv=>{
-html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--cs);font-size:.78rem">
-        <span style="flex-shrink:0">${iv.icona}</span><span>${iv.msg}</span>
-      </div>`;
-});
-html+=`</div></div>`;
 }
 const repDisp = window._ricalcoloReport; window._ricalcoloReport = null;
 if(repDisp){
@@ -3900,10 +3909,87 @@ html+=`<div id="serbC-box" style="background:#f3e8ff;border:2px solid #7b3f9e;bo
             <input type="checkbox" id="chk-serbC" ${usaSerbC?'checked':''} onchange="toggleSerbC(this.checked)" style="width:18px;height:18px;accent-color:#7b3f9e;flex-shrink:0">
             ${usaSerbC ? t('js.usaSerbC') : t('js.abilitaSerbC')}
           </label>
-          ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">${TT('Volume Serb. C (L)','Tank C volume (L)')}</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
+          ${usaSerbC?`<div style="margin-top:8px"><label style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3f9e">${TT('Volume Serb. C (L)','Tank C volume (L)')}</label><div style="display:flex;gap:6px;margin-top:4px"><input type="number" id="volC" value="${volC||100}" min="1" onchange="if(document.getElementById('risultato-stampa'))calcola()" style="max-width:100px;background:#fff"><span style="font-size:.78rem;color:#7b3f9e;align-self:center">L</span></div></div>`:''}
         </div>
       </div>
     </div>`;
+}
+const serbatoi = [
+{key:'A', vol:volA, righeSerb:perA, cls:'a', colore:'var(--sa)'},
+{key:'B', vol:volB, righeSerb:perB, cls:'b', colore:'var(--sb)'},
+...(usaSerbC?[{key:'C', vol:volC||100, righeSerb:perC, cls:'c', colore:'#7b3f9e'}]:[])
+];
+const serbGridClass = usaSerbC ? 'serb-grid serb-grid-3' : 'serb-grid';
+html+=`<div class="${serbGridClass}">`;
+let costoTot=0;
+serbatoi.forEach(({key,vol,righeSerb,cls,badge,colore})=>{
+html+=`<div class="serb-card ${cls}" style="border-color:${colore}">
+      <div class="serb-title" style="background:${colore}">
+        <span style="background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;font-size:.65rem;font-weight:700">${key}</span>
+        ${TT('Serb.','Tank')} ${key} — ${vol} L
+      </div>`;
+let costoSerb=0;
+if(!righeSerb.length){
+html+=`<div style="padding:12px;color:var(--ts);font-size:.78rem">${t('js.nessunSaleAssegnato')}</div>`;
+} else {
+righeSerb.forEach(r=>{
+const g=grConc(r.dose,vol); const pz=(r.prezzo||0)*(g/1000); costoSerb+=pz; costoTot+=pz;
+const infoR=getSale(r.id);
+html+=`<div class="sale-row"><span class="sale-nome">${esc(r.nome||r.nomeCustom||r.id)}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtDose(infoR,g)}</span>${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</div></div>`;
+});
+html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtGram(righeSerb.reduce((s,r)=>s+grConc(r.dose,vol),0))}</span></div>`;
+}
+html+=`</div>`;
+});
+html+=`</div>`;
+const volMin = Math.min(...serbatoi.map(s=>s.vol));
+const volFinale1000L = volMin * dil;
+// Costo per 1000 L finali dalle dosi (g/1000L × €/kg): indipendente dai
+// volumi dei serbatoi. Prima si divideva il costo di TUTTI i serbatoi per la
+// resa del più piccolo, gonfiando il valore se i volumi erano diversi.
+const costoPerMille = wRighe.reduce((s,r)=>s + (+r.dose||0)*(r.prezzo||0)/1000, 0);
+html+=`<div class="card" style="margin-top:12px;margin-bottom:12px">
+    <div class="ch" style="background:var(--ar)">${TT('📊 Riepilogo — Diluizione','📊 Summary — Dilution')} 1:${dil}</div>
+    <div class="cb">
+      <div class="eco-row"><span>${TT('EC soluzione finale','Final solution EC')}</span><span class="eco-val"><strong>${ecFin2.toFixed(2)} mS/cm</strong></span></div>
+      ${serbatoi.map(s=>{
+const ecS = (ecPerSerb[s.key]||0)*dil;
+return `<div class="eco-row"><span>${TT(`EC Serb. ${s.key} nel concentrato (×${dil})`,`Tank ${s.key} EC in concentrate (×${dil})`)}</span><span class="eco-val">${ecS.toFixed(0)} mS/cm</span></div>`;
+}).join('')}
+      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo totale batch','Total batch cost')}</span><span class="eco-val">${fmtEuro(costoTot)}</span></div>`:''}
+      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo per 1000 L finali','Cost per 1000 L final')}</span><span class="eco-val">${fmtEuro(costoPerMille)}</span></div>`:''}
+      <div class="eco-row"><span>${TT('Concentrato per 1000 L finali (per serb.)','Concentrate per 1000 L final (per tank)')}</span><span class="eco-val">${(1000/dil).toFixed(1)} L</span></div>
+      <div class="eco-row"><span>${TT('Soluzione finale da batch (tank min)','Final solution per batch (min tank)')}</span><span class="eco-val">${volFinale1000L.toFixed(0)} L</span></div>
+    </div>
+  </div>`;
+html+=`<div style="background:#fff8e1;border:1.5px solid #e0a800;border-radius:var(--r);padding:9px 12px;margin-bottom:12px;display:flex;gap:8px;align-items:center;font-size:.78rem;color:#7a5c00">
+    <span style="font-size:1rem">⚠️</span>
+    <span><strong>${t('js.verificaDosi')}</strong> ${t('js.verificaDosiDesc')}</span>
+  </div>`;
+const interventiVisibili = interventi.filter(iv=>iv.tipo!=='dil_suggerito');
+if(correzioniAcqua.length>0 || interventiVisibili.length>0){
+html+=`<div class="card" style="margin-bottom:12px;border-color:var(--vc)">
+      <div class="ch" style="background:var(--vm)">${t('js.interventiAuto')}</div>
+      <div class="cb" style="padding:0">`;
+if(correzioniAcqua.length>0){
+html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--cs);font-size:.78rem">
+        <span style="flex-shrink:0">💧</span>
+        <span>${TT(`<strong>Dosi ribilanciate per l'acqua di partenza</strong>${acidoCalc?` (e per l'${acidoCalc.tipo==='HNO3'?'N':'P'} dell'acido ${acidoCalc.tipo==='HNO3'?'nitrico':'fosforico'})`:''}: i sali sono stati ricalcolati perché sali + acqua riproducano il profilo della ricetta (vedi tabella "Fedeltà alla ricetta").`,`<strong>Doses rebalanced for the source water</strong>${acidoCalc?` (and for the ${acidoCalc.tipo==='HNO3'?'N':'P'} of the ${acidoCalc.tipo==='HNO3'?'nitric':'phosphoric'} acid)`:''}: the salts were recalculated so that salts + water reproduce the recipe profile (see the "Recipe fidelity" table).`)}</span>
+      </div>`;
+}
+correzioniAcqua.forEach(co=>{
+html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:7px 14px 7px 38px;border-bottom:1px solid var(--cs);font-size:.76rem">
+        <span>${co.aggiunto
+? TT(`➕ <strong>${esc(co.sale)}</strong> aggiunto: <strong>${co.doseNuova} g/1000L</strong> (compensa ciò che l'acqua non può sostituire).`,`➕ <strong>${esc(co.sale)}</strong> added: <strong>${co.doseNuova} g/1000L</strong> (makes up for what the water cannot replace).`)
+: TT(`<strong>${esc(co.sale)}</strong>: ${co.doseOriginal} → <strong>${co.doseNuova} g/1000L</strong>`,`<strong>${esc(co.sale)}</strong>: ${co.doseOriginal} → <strong>${co.doseNuova} g/1000L</strong>`)}</span>
+      </div>`;
+});
+interventiVisibili.forEach(iv=>{
+html+=`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--cs);font-size:.78rem">
+        <span style="flex-shrink:0">${iv.icona}</span><span>${iv.msg}</span>
+      </div>`;
+});
+html+=`</div></div>`;
 }
 if(aq){
 const pSol=profiloDaRighe(wRighe, aq, acidoCalc);
@@ -3947,54 +4033,6 @@ html+=`<div class="card tech-info" style="margin-bottom:12px">
       </div>`;
 }
 }
-const serbatoi = [
-{key:'A', vol:volA, righeSerb:perA, cls:'a', colore:'var(--sa)'},
-{key:'B', vol:volB, righeSerb:perB, cls:'b', colore:'var(--sb)'},
-...(usaSerbC?[{key:'C', vol:volC||100, righeSerb:perC, cls:'c', colore:'#7b3f9e'}]:[])
-];
-const serbGridClass = usaSerbC ? 'serb-grid serb-grid-3' : 'serb-grid';
-html+=`<div class="${serbGridClass}">`;
-let costoTot=0;
-serbatoi.forEach(({key,vol,righeSerb,cls,badge,colore})=>{
-html+=`<div class="serb-card ${cls}" style="border-color:${colore}">
-      <div class="serb-title" style="background:${colore}">
-        <span style="background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;font-size:.65rem;font-weight:700">${key}</span>
-        ${TT('Serb.','Tank')} ${key} — ${vol} L
-      </div>`;
-let costoSerb=0;
-if(!righeSerb.length){
-html+=`<div style="padding:12px;color:var(--ts);font-size:.78rem">${t('js.nessunSaleAssegnato')}</div>`;
-} else {
-righeSerb.forEach(r=>{
-const g=grConc(r.dose,vol); const pz=(r.prezzo||0)*(g/1000); costoSerb+=pz; costoTot+=pz;
-const infoR=getSale(r.id);
-html+=`<div class="sale-row"><span class="sale-nome">${esc(r.nome||r.nomeCustom||r.id)}</span><div style="text-align:right"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtDose(infoR,g)}</span>${pz?`<br><span class="costo-txt">${fmtEuro(pz,2)}</span>`:''}</div></div>`;
-});
-html+=`<div class="sale-row tot-row"><span>${t('js.totale')}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${colore}">${fmtGram(righeSerb.reduce((s,r)=>s+grConc(r.dose,vol),0))}</span></div>`;
-}
-html+=`</div>`;
-});
-html+=`</div>`;
-const volMin = Math.min(...serbatoi.map(s=>s.vol));
-const volFinale1000L = volMin * dil;
-// Costo per 1000 L finali dalle dosi (g/1000L × €/kg): indipendente dai
-// volumi dei serbatoi. Prima si divideva il costo di TUTTI i serbatoi per la
-// resa del più piccolo, gonfiando il valore se i volumi erano diversi.
-const costoPerMille = wRighe.reduce((s,r)=>s + (+r.dose||0)*(r.prezzo||0)/1000, 0);
-html+=`<div class="card" style="margin-top:12px">
-    <div class="ch" style="background:var(--ar)">${TT('📊 Riepilogo — Diluizione','📊 Summary — Dilution')} 1:${dil}</div>
-    <div class="cb">
-      <div class="eco-row"><span>${TT('EC soluzione finale','Final solution EC')}</span><span class="eco-val"><strong>${ecFin2.toFixed(2)} mS/cm</strong></span></div>
-      ${serbatoi.map(s=>{
-const ecS = (ecPerSerb[s.key]||0)*dil;
-return `<div class="eco-row"><span>${TT(`EC Serb. ${s.key} nel concentrato (×${dil})`,`Tank ${s.key} EC in concentrate (×${dil})`)}</span><span class="eco-val">${ecS.toFixed(0)} mS/cm</span></div>`;
-}).join('')}
-      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo totale batch','Total batch cost')}</span><span class="eco-val">${fmtEuro(costoTot)}</span></div>`:''}
-      ${costoTot>0?`<div class="eco-row"><span>${TT('Costo per 1000 L finali','Cost per 1000 L final')}</span><span class="eco-val">${fmtEuro(costoPerMille)}</span></div>`:''}
-      <div class="eco-row"><span>${TT('Concentrato per 1000 L finali (per serb.)','Concentrate per 1000 L final (per tank)')}</span><span class="eco-val">${(1000/dil).toFixed(1)} L</span></div>
-      <div class="eco-row"><span>${TT('Soluzione finale da batch (tank min)','Final solution per batch (min tank)')}</span><span class="eco-val">${volFinale1000L.toFixed(0)} L</span></div>
-    </div>
-  </div>`;
 try {
 const profilo = profiloDaRighe(wRighe, aq, acidoCalc);
 const tempC = tcAcqua(aq);
